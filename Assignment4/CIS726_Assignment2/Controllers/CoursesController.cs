@@ -16,6 +16,9 @@ namespace CIS726_Assignment2.Controllers
         private IGenericRepository<Course> courses;
         private IGenericRepository<PrerequisiteCourse> prerequisiteCourses;
 
+        private MessageQueuePublisher _publisher;
+        private MessageQueueConsumer _consumer;
+
         /// <summary>
         /// Constructor used by the web application itself
         /// </summary>

@@ -15,7 +15,7 @@ namespace CIS726_Assignment2.Migrations
     {
         public Configuration()
         {
-            AutomaticMigrationsEnabled = false;
+            AutomaticMigrationsEnabled = true;
         }
 
 
