@@ -128,7 +128,6 @@ namespace CIS726_Assignment2
     /// </summary>
     public interface IMessageQueueConsumer<T>
         : IDisposable
-        where T : IModel
     {
         /// <summary>
         /// Raised when data is received from the queue.

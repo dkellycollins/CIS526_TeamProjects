@@ -200,6 +200,13 @@
     <Compile Include="Repositories\RolesImpl.cs" />
     <Compile Include="Repositories\WebSecurityImpl.cs" />
     <Compile Include="SystemBusManager.cs" />
+    <Compile Include="SystemBus\BasicMessageQueueConsumer.cs" />
+    <Compile Include="SystemBus\BasicMessageQueueProducer.cs" />
+    <Compile Include="SystemBus\IMessageQueueConsumer.cs" />
+    <Compile Include="SystemBus\IMessageQueueProducer.cs" />
+    <Compile Include="SystemBus\QueueHelpers.cs" />
+    <Compile Include="SystemBus\RequestWrapper.cs" />
+    <Compile Include="SystemBus\ResponseWrappers.cs" />
     <Compile Include="ViewModels\DropdownCourse.cs" />
     <Compile Include="ViewModels\FlowchartCourse.cs" />
     <Compile Include="ViewModels\LocalPasswordModel.cs" />
