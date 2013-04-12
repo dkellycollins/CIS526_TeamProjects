@@ -18,14 +18,15 @@ namespace CIS726_Assignment2.SystemBus
 
         private bool _recieving;
 
-        public BasicMessageQueueConsumer(string queueName, IMessageFormatter formatter)
+        public BasicMessageQueueConsumer()
         {
-            QueueHelpers.CreateProducerAndConsumerQueues(queueName,
+            string baseQueueName = typeof(T).Namespace;
+            QueueHelpers.CreateProducerAndConsumerQueues(baseQueueName,
                 out _producerQueue,
                 out _consumerQueue);
-            _consumerQueue.Formatter = new ResponseFormatter();
-            _producerQueue.ReceiveCompleted += _queue_ReceiveCompleted;
             _producerQueue.Formatter = new RequestFormatter();
+            _producerQueue.ReceiveCompleted += _producerQueue_ReceiveCompleted;
+            _consumerQueue.Formatter = new ResponseFormatter();
         }
 
         #region IMessageQueueConsumer members
@@ -55,7 +56,7 @@ namespace CIS726_Assignment2.SystemBus
 
         #endregion
 
-        private void _queue_ReceiveCompleted(object sender, ReceiveCompletedEventArgs e)
+        private void _producerQueue_ReceiveCompleted(object sender, ReceiveCompletedEventArgs e)
         {
             if (!_recieving)
                 return;

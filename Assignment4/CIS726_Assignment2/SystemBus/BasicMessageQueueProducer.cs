@@ -17,9 +17,10 @@ namespace CIS726_Assignment2.SystemBus
 
         private Guid _id;
 
-        public BasicMessageQueueProducer(string queueName, IMessageFormatter formatter)
+        public BasicMessageQueueProducer()
         {
-            QueueHelpers.CreateProducerAndConsumerQueues(queueName,
+            string baseQueueName = typeof(T).Namespace;
+            QueueHelpers.CreateProducerAndConsumerQueues(baseQueueName,
                 out _producerQueue,
                 out _consumerQueue);
             _producerQueue.Formatter = new RequestFormatter();
@@ -45,7 +46,7 @@ namespace CIS726_Assignment2.SystemBus
             sendMessage("CREATE", data);
         }
 
-        public void Remove(IList<T> data)
+        public void Remove(IList<int> data)
         {
             sendMessage("REMOVE", data);
         }
@@ -67,7 +68,7 @@ namespace CIS726_Assignment2.SystemBus
         /// <param name="action">Action for the database to perform.</param>
         /// <param name="data">Data for the database to use.</param>
         /// <returns>The id of the message. This can be used to get the response from the queue.</returns>
-        private string sendMessage(string action, IList<T> data)
+        private string sendMessage(string action, object data)
         {
             Message messageToSend = new Message();
             messageToSend.Label = _id.ToString();

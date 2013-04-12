@@ -8,13 +8,16 @@ using System.Web.Mvc;
 using CIS726_Assignment2.Models;
 using PagedList;
 using CIS726_Assignment2.Repositories;
+using CIS726_Assignment2.SystemBus;
 
 namespace CIS726_Assignment2.Controllers
 {
     public class CoursesController : Controller
     {
-        private IGenericRepository<Course> courses;
+        //private IGenericRepository<Course> courses; Use the message queue instead.
         private IGenericRepository<PrerequisiteCourse> prerequisiteCourses;
+
+        private IMessageQueueProducer<Course> _producer;
 
         //private IMessageQueuePublisher _publisher;
         //private IMessageQueueConsumer _consumer;
@@ -25,7 +28,8 @@ namespace CIS726_Assignment2.Controllers
         public CoursesController()
         {
             CourseDBContext context = new CourseDBContext();
-            courses = new GenericRepository<Course>(new StorageContext<Course>(context));
+            //courses = new GenericRepository<Course>(new StorageContext<Course>(context));
+            _producer = new BasicMessageQueueProducer<Course>();
             prerequisiteCourses = new GenericRepository<PrerequisiteCourse>(new StorageContext<PrerequisiteCourse>(context));
         }
 
@@ -35,7 +39,7 @@ namespace CIS726_Assignment2.Controllers
         /// <param name="fake">A "faked" course repository</param>
         public CoursesController(IGenericRepository<Course> fake, IGenericRepository<PrerequisiteCourse> fakePrereq)
         {
-            courses = fake;
+            //courses = fake;
             prerequisiteCourses = fakePrereq;
         }
 
@@ -70,7 +74,8 @@ namespace CIS726_Assignment2.Controllers
             bool hoursAsc = false;
             bool numAsc = false;
 
-            var courseList = from s in courses.GetAll() select s;
+            //var courseList = from s in courses.GetAll() select s;
+            var courseList = _producer.GetAll().AsQueryable();
 
             if (!String.IsNullOrEmpty(filterString))
             {
@@ -281,7 +286,8 @@ namespace CIS726_Assignment2.Controllers
             }
 
             //setting up needed variables in ViewBag
-            List<string> prefixList = courses.GetAll().Select(x => x.coursePrefix).Distinct().ToList();
+            //List<string> prefixList = courses.GetAll().Select(x => x.coursePrefix).Distinct().ToList();
+            List<string> prefixList = _producer.GetAll().AsQueryable().Select(x => x.coursePrefix).Distinct().ToList();
             prefixList.Sort();
             prefixList.Insert(0, "any");
             ViewBag.prefixes  = new SelectList(prefixList, selectedPrefix);
@@ -393,7 +399,8 @@ namespace CIS726_Assignment2.Controllers
 
         public ActionResult Details(int id = 0)
         {
-            Course course = courses.Find(id);
+            //Course course = courses.Find(id);
+            Course course = _producer.GetAll().FirstOrDefault(x => x.ID == null);
             if (course == null)
             {
                 return HttpNotFound();
@@ -418,8 +425,9 @@ namespace CIS726_Assignment2.Controllers
         {
             if (ModelState.IsValid)
             {
-                courses.Add(course);
-                courses.SaveChanges();
+                //courses.Add(course);
+                //courses.SaveChanges();
+                _producer.Create(new List<Course>() {course});
                 return RedirectToAction("Index");
             }
             return View(course);
@@ -430,7 +438,8 @@ namespace CIS726_Assignment2.Controllers
         [Authorize(Roles = "Administrator")]
         public ActionResult Edit(int id = 0)
         {
-            Course course = courses.Find(id);
+            //Course course = courses.Find(id);
+            Course course = _producer.GetAll().FirstOrDefault(x => x.ID == id);
             if (course == null)
             {
                 return HttpNotFound();
@@ -447,7 +456,8 @@ namespace CIS726_Assignment2.Controllers
         {
             if (ModelState.IsValid)
             {
-                Course cAttached = courses.Where(c => c.ID == course.ID).First();
+                //Course cAttached = courses.Where(c => c.ID == course.ID).First();
+                Course cAttached = _producer.GetAll().AsQueryable().Where(c => c.ID == course.ID).First();
                 course.prerequisites = cAttached.prerequisites;
 
                 if (PrerequisiteCourses == null)
@@ -492,7 +502,8 @@ namespace CIS726_Assignment2.Controllers
                     }
                     else
                     {
-                        if (courses.Find(pcourse.prerequisiteCourseID) != null)
+                        
+                        if (_producer.GetAll().FirstOrDefault(x => x.ID == pcourse.prerequisiteCourseID) != null)
                         {
                             prerequisiteCourses.Add(pcourse);
                             prerequisiteCourses.SaveChanges();
@@ -504,8 +515,8 @@ namespace CIS726_Assignment2.Controllers
                         course.prerequisites.Add(pcourseAttached);
                     }
                 }
-                courses.UpdateValues(cAttached, course);
-                courses.SaveChanges();
+                //courses.UpdateValues(cAttached, course);
+                //courses.SaveChanges();
                 return RedirectToAction("Index");
             }
             if (PrerequisiteCourses != null)
@@ -514,7 +525,8 @@ namespace CIS726_Assignment2.Controllers
                 {
                     if (pcourse.prerequisiteCourseID> 0)
                     {
-                        pcourse.prerequisiteCourse = courses.Find(pcourse.prerequisiteCourseID);
+                        //pcourse.prerequisiteCourse = courses.Find(pcourse.prerequisiteCourseID);
+                        pcourse.prerequisiteCourse = _producer.GetAll().FirstOrDefault(x => x.ID == pcourse.prerequisiteCourseID);
                     }
                 }
             }
@@ -551,7 +563,8 @@ namespace CIS726_Assignment2.Controllers
         [Authorize(Roles = "Administrator")]
         public ActionResult Delete(int id = 0)
         {
-            Course course = courses.Find(id);
+            //Course course = courses.Find(id);
+            Course course = _producer.GetAll().FirstOrDefault(x => x.ID == id);
             if (course == null)
             {
                 return HttpNotFound();
@@ -566,9 +579,10 @@ namespace CIS726_Assignment2.Controllers
         [Authorize(Roles = "Administrator")]
         public ActionResult DeleteConfirmed(int id)
         {
-            Course course = courses.Find(id);
-            courses.Remove(course);
-            courses.SaveChanges();
+            //Course course = courses.Find(id);
+            //courses.Remove(course);
+            //courses.SaveChanges();
+            _producer.Remove(new List<int>() {id});
             return RedirectToAction("Index");
         }
 
@@ -580,7 +594,7 @@ namespace CIS726_Assignment2.Controllers
         /// <returns></returns>
         public JsonResult SearchCourses(string term)
         {
-            var keywords = courses.GetAll().AsEnumerable();
+            var keywords = _producer.GetAll().AsEnumerable();
             string[] terms = term.Split(' ');
             foreach(string t in terms){
                 keywords = keywords.Where(course => course.courseHeader.Contains(t));
@@ -591,7 +605,7 @@ namespace CIS726_Assignment2.Controllers
 
         protected override void Dispose(bool disposing)
         {
-            courses.Dispose();
+            _producer.Dispose();
             base.Dispose(disposing);
         }
     }

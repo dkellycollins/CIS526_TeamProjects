@@ -34,6 +34,6 @@ namespace CIS726_Assignment2.SystemBus
         /// Removes all models contains in the list from the database.
         /// </summary>
         /// <param name="data"></param>
-        void Remove(IList<T> data);
+        void Remove(IList<int> data);
     }
 }

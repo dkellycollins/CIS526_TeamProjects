@@ -195,11 +195,11 @@
     <Compile Include="Models\Plan.cs" />
     <Compile Include="Models\PlanCourse.cs" />
     <Compile Include="Models\Semester.cs" />
+    <Compile Include="PretendDB.cs" />
     <Compile Include="Repositories\IRoles.cs" />
     <Compile Include="Repositories\IWebSecurity.cs" />
     <Compile Include="Repositories\RolesImpl.cs" />
     <Compile Include="Repositories\WebSecurityImpl.cs" />
-    <Compile Include="SystemBusManager.cs" />
     <Compile Include="SystemBus\BasicMessageQueueConsumer.cs" />
     <Compile Include="SystemBus\BasicMessageQueueProducer.cs" />
     <Compile Include="SystemBus\IMessageQueueConsumer.cs" />
