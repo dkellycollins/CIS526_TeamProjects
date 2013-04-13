@@ -21,6 +21,11 @@ namespace CIS726_Assignment2.Models
         public DbSet<PlanCourse> PlanCourses { get; set; }
         public DbSet<Semester> Semesters { get; set; }
 
+        public CourseDBContext()
+        {
+            this.Configuration.ProxyCreationEnabled = false;
+        }
+
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Course>().HasMany(p => p.electiveLists).WithRequired(i => i.course);

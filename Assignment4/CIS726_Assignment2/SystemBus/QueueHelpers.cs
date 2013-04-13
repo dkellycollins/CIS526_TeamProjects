@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Messaging;
 using System.Web;
+using CIS726_Assignment2.Models;
 
 namespace CIS726_Assignment2.SystemBus
 {
@@ -29,6 +30,17 @@ namespace CIS726_Assignment2.SystemBus
                 consumerQueue = new MessageQueue(consumerQueueName);
             else
                 consumerQueue = MessageQueue.Create(consumerQueueName);
+
+#if DEBUG
+            producerQueue.Purge();
+            consumerQueue.Purge();
+#endif
         }
+
+        public static readonly IEnumerable<Type> KNOWN_TYPES = new List<Type>()
+        {
+            typeof(Course),
+            typeof(List<Course>)
+        };
     }
 }

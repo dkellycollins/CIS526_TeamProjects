@@ -5,9 +5,11 @@ using System.Linq;
 using System.Messaging;
 using System.Runtime.Serialization;
 using System.Web;
+using CIS726_Assignment2.Models;
 
 namespace CIS726_Assignment2.SystemBus
 {
+    [DataContract(IsReference=true)]
     public class Response
     {
         public Guid ID { get; set; }
@@ -15,9 +17,18 @@ namespace CIS726_Assignment2.SystemBus
         public object Result { get; set; }
     }
 
+    [DataContract()]
+    [KnownType(typeof(Course))]
+    public class Response<T>
+    {
+        public Guid ID { get; set; }
+        public bool Success { get; set; }
+        public T Result { get; set; }
+    }
+
     public class ResponseFormatter : IMessageFormatter
     {
-        private static Type responseType = new Response().GetType();
+        private static Type responseType = typeof(Response);
 
         public bool CanRead(Message message)
         {
@@ -42,23 +53,21 @@ namespace CIS726_Assignment2.SystemBus
         /// <param name="obj"></param>
         public void Write(Message message, object obj)
         {
-            if (!(obj is Response))
-                throw new ArgumentException("Obj must be a response type.");
+            //if (!(obj is Response))
+            //    throw new ArgumentException("Obj must be a response type.");
 
-            using (MemoryStream stream = new MemoryStream())
-            {
-                DataContractSerializer serializer = new DataContractSerializer(responseType);
-                serializer.WriteObject(stream, obj);
-                
-                stream.Position = 0;
+            MemoryStream stream = new MemoryStream();
+            DataContractSerializer serializer = new DataContractSerializer(responseType);
+            serializer.WriteObject(stream, obj);
 
-                message.BodyStream = stream;
-            }
+            stream.Position = 0;
+
+            message.BodyStream = stream;
         }
 
         public object Clone()
         {
-            return this;
+            return new ResponseFormatter();
         }
     }
 }

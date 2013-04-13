@@ -64,27 +64,26 @@ namespace CIS726_Assignment2.SystemBus
             Message recievedMessage = _producerQueue.EndReceive(e.AsyncResult);
             //Let what ever owns this class process the data.
             Request request = (Request)recievedMessage.Body;
-            Response response = new Response()
-            {
-                ID = request.ID
-            };
+            Response<IList<T>> response = new Response<IList<T>>();
             try
-            {
-                response.Result = NewMessage(request.Action, (IList<T>)request.Data);
+            {                response.Result = NewMessage(request.Action, (IList<T>)request.Data);
                 response.Success = true;
             }
             catch (Exception ex)
             {
-                response.Result = ex;
+                response.Result = null;
                 response.Success = false;
             }
 
             //Send the processed data back into the queue.
-            _consumerQueue.Send(new Message()
+            Message message = new Message()
             {
+                Formatter = _consumerQueue.Formatter,
                 Label = request.ID.ToString(),
                 Body = response
-            });
+            };
+            _consumerQueue.Send(message);
+
             //Look for the next message.
             _producerQueue.BeginReceive();
         }

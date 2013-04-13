@@ -70,29 +70,47 @@ namespace CIS726_Assignment2.SystemBus
         /// <returns>The id of the message. This can be used to get the response from the queue.</returns>
         private string sendMessage(string action, object data)
         {
-            Message messageToSend = new Message();
-            messageToSend.Label = _id.ToString();
-            messageToSend.Body = new Request()
+            Message message = new Message()
             {
-                ID = _id,
-                Action = action,
-                Data = data
+                Formatter = _producerQueue.Formatter,
+                Label = _id.ToString(),
+                Body = new Request()
+                {
+                    ID = _id,
+                    Action = action,
+                    Data = data
+                }
             };
+            _producerQueue.Send(message);
 
-            _consumerQueue.Send(messageToSend);
+            return "";
+        }
 
-            return messageToSend.Id;
+        private void sendMessage(string action, IList<T> data)
+        {
+            Message message = new Message()
+            {
+                Formatter = _producerQueue.Formatter,
+                Label = _id.ToString(),
+                Body = new Request<IList<T>>()
+                {
+                    ID = _id,
+                    Action = action,
+                    Data = data
+                }
+            };
+            _producerQueue.Send(message);
         }
 
         private IList<T> reciveMessage()
         {
-            Response response = null;
+            Response<IList<T>> response = null;
             while (response == null)
             {
                 foreach (Message m in _consumerQueue.GetAllMessages())
                 {
                     if (m.Label == _id.ToString())
-                        response = (Response)_consumerQueue.ReceiveById(m.Id).Body;
+                        response = (Response<IList<T>>)_consumerQueue.ReceiveById(m.Id).Body;
                 }
             }
 

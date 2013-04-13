@@ -6,6 +6,7 @@ using System.Data.Entity;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Web.Mvc;
+using System.Runtime.Serialization;
 
 namespace CIS726_Assignment2.Models
 {
