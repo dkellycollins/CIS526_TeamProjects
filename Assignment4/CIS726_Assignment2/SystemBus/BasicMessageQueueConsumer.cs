@@ -20,7 +20,7 @@ namespace CIS726_Assignment2.SystemBus
 
         public BasicMessageQueueConsumer()
         {
-            string baseQueueName = typeof(T).Namespace;
+            string baseQueueName = @".\Private$\"+typeof(T).FullName;
             QueueHelpers.CreateProducerAndConsumerQueues(baseQueueName,
                 out _producerQueue,
                 out _consumerQueue);

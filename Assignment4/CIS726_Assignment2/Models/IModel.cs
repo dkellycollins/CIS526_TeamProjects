@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using System.Runtime.Serialization;
 
 namespace CIS726_Assignment2.Models
 {
@@ -13,6 +14,7 @@ namespace CIS726_Assignment2.Models
     /// 
     /// This ID field MUST be the primary key of your model class in the database for everything to function correctly.
     /// </summary>
+    [DataContract(IsReference = true)]
     public abstract class IModel
     {
         public abstract int ID { get; set; }
