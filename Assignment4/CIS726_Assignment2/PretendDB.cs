@@ -29,10 +29,10 @@ namespace CIS726_Assignment2
             _coursesQueue.NewMessage += _coursesQueue_NewMessage;
         }
 
-        IList<Course> _coursesQueue_NewMessage(string action, IList<Course> courses)
+        List<Course> _coursesQueue_NewMessage(string action, List<Course> courses)
         {
             if (action == "GET")
-                return (IList<Course>)_context.Courses.AsQueryable().ToList();
+                return (List<Course>)_context.Courses.AsQueryable().ToList();
             else
             {
                 if (action == "CREATE")

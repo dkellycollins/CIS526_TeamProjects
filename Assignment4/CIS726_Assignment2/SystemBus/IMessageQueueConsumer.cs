@@ -5,7 +5,7 @@ using System.Web;
 
 namespace CIS726_Assignment2.SystemBus
 {
-    public delegate IList<T> NewMessageHandler<T>(string action, IList<T> course);
+    public delegate List<T> NewMessageHandler<T>(string action, List<T> course);
 
     /// <summary>
     /// An interface for the consumer to continually recieve data from the queue.

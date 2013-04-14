@@ -30,7 +30,7 @@ namespace CIS726_Assignment2.Models
         [StringLength(20, ErrorMessage="The short name can only include up to 20 characters")]
         public String shortName { get; set; }
 
-        public virtual ICollection<ElectiveListCourse> courses { get; set; }
-        public virtual ICollection<ElectiveCourse> electiveCourses { get; set; }
+        public virtual List<ElectiveListCourse> courses { get; set; }
+        public virtual List<ElectiveCourse> electiveCourses { get; set; }
     }
 }

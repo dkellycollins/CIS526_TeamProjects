@@ -24,9 +24,9 @@ namespace CIS726_Assignment2.SystemBus
             QueueHelpers.CreateProducerAndConsumerQueues(baseQueueName,
                 out _producerQueue,
                 out _consumerQueue);
-            _producerQueue.Formatter = new RequestFormatter();
+            _producerQueue.Formatter = new RequestFormatter<List<T>>();
             _producerQueue.ReceiveCompleted += _producerQueue_ReceiveCompleted;
-            _consumerQueue.Formatter = new ResponseFormatter();
+            _consumerQueue.Formatter = new ResponseFormatter<List<T>>();
         }
 
         #region IMessageQueueConsumer members
@@ -63,16 +63,17 @@ namespace CIS726_Assignment2.SystemBus
 
             Message recievedMessage = _producerQueue.EndReceive(e.AsyncResult);
             //Let what ever owns this class process the data.
-            Request request = (Request)recievedMessage.Body;
-            Response<IList<T>> response = new Response<IList<T>>();
+            Request<List<T>> request = (Request<List<T>>)recievedMessage.Body;
+            Response<List<T>> response = new Response<List<T>>();
             try
-            {                response.Result = NewMessage(request.Action, (IList<T>)request.Data);
-                response.Success = true;
+            {                
+                response.Result = NewMessage(request.Action, request.Data);
+                response.ErrorMessage = null;
             }
             catch (Exception ex)
             {
-                response.Result = null;
-                response.Success = false;
+                response.Result = new List<T>();
+                response.ErrorMessage = ex.Message;
             }
 
             //Send the processed data back into the queue.

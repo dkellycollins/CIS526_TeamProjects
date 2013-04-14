@@ -16,24 +16,24 @@ namespace CIS726_Assignment2.SystemBus
         /// Retives all models from the data base.
         /// </summary>
         /// <returns></returns>
-        IList<T> GetAll();
+        List<T> GetAll();
 
         /// <summary>
         /// Updates all models contained in the list.
         /// </summary>
         /// <param name="data"></param>
-        void Update(IList<T> data);
+        void Update(List<T> data);
 
         /// <summary>
         /// Creates all models in the database.
         /// </summary>
         /// <param name="data"></param>
-        void Create(IList<T> data);
+        void Create(List<T> data);
 
         /// <summary>
         /// Removes all models contains in the list from the database.
         /// </summary>
         /// <param name="data"></param>
-        void Remove(IList<int> data);
+        void Remove(List<int> data);
     }
 }

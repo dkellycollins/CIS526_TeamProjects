@@ -23,30 +23,30 @@ namespace CIS726_Assignment2.SystemBus
             QueueHelpers.CreateProducerAndConsumerQueues(baseQueueName,
                 out _producerQueue,
                 out _consumerQueue);
-            _producerQueue.Formatter = new RequestFormatter();
-            _consumerQueue.Formatter = new ResponseFormatter();
+            _producerQueue.Formatter = new RequestFormatter<List<T>>();
+            _consumerQueue.Formatter = new ResponseFormatter<List<T>>();
             _id = Guid.NewGuid();
         }
 
         #region IMessageQueueProducer members
 
-        public IList<T> GetAll()
+        public List<T> GetAll()
         {
-            sendMessage("GET", null);
+            sendMessage("GET", new List<T>());
             return reciveMessage();
         }
 
-        public void Update(IList<T> data)
+        public void Update(List<T> data)
         {
             sendMessage("UPDATE", data);
         }
 
-        public void Create(IList<T> data)
+        public void Create(List<T> data)
         {
             sendMessage("CREATE", data);
         }
 
-        public void Remove(IList<int> data)
+        public void Remove(List<int> data)
         {
             sendMessage("REMOVE", data);
         }
@@ -86,13 +86,13 @@ namespace CIS726_Assignment2.SystemBus
             return "";
         }
 
-        private void sendMessage(string action, IList<T> data)
+        private void sendMessage(string action, List<T> data)
         {
             Message message = new Message()
             {
                 Formatter = _producerQueue.Formatter,
                 Label = _id.ToString(),
-                Body = new Request<IList<T>>()
+                Body = new Request<List<T>>()
                 {
                     ID = _id,
                     Action = action,
@@ -102,23 +102,19 @@ namespace CIS726_Assignment2.SystemBus
             _producerQueue.Send(message);
         }
 
-        private IList<T> reciveMessage()
+        private List<T> reciveMessage()
         {
-            Response<IList<T>> response = null;
+            Response<List<T>> response = null;
             while (response == null)
             {
                 foreach (Message m in _consumerQueue.GetAllMessages())
                 {
                     if (m.Label == _id.ToString())
-                        response = (Response<IList<T>>)_consumerQueue.ReceiveById(m.Id).Body;
+                        response = (Response<List<T>>)_consumerQueue.ReceiveById(m.Id).Body;
                 }
             }
 
-            if (response.Success)
-            {
-                return (IList<T>)response.Result;
-            }
-            return null;
+            return response.Result;
         }
     }
 }

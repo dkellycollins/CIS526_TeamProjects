@@ -17,18 +17,16 @@ namespace CIS726_Assignment2.SystemBus
         public object Result { get; set; }
     }
 
-    [DataContract()]
-    [KnownType(typeof(Course))]
     public class Response<T>
     {
         public Guid ID { get; set; }
-        public bool Success { get; set; }
+        public string ErrorMessage { get; set; }
         public T Result { get; set; }
     }
 
-    public class ResponseFormatter : IMessageFormatter
+    public class ResponseFormatter<T> : IMessageFormatter
     {
-        private static Type responseType = typeof(Response);
+        private Type responseType = typeof(Response<T>);
 
         public bool CanRead(Message message)
         {
@@ -67,7 +65,7 @@ namespace CIS726_Assignment2.SystemBus
 
         public object Clone()
         {
-            return new ResponseFormatter();
+            return new ResponseFormatter<T>();
         }
     }
 }

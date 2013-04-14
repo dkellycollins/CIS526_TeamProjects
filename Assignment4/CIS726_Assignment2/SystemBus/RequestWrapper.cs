@@ -16,8 +16,6 @@ namespace CIS726_Assignment2.SystemBus
         public object Data { get; set; }
     }
 
-    [DataContract()]
-    [KnownType(typeof(Course))]
     public class Request<T>
     {
         public Guid ID { get; set; }
@@ -25,9 +23,9 @@ namespace CIS726_Assignment2.SystemBus
         public T Data { get; set; }
     }
 
-    public class RequestFormatter : IMessageFormatter
+    public class RequestFormatter<T> : IMessageFormatter
     {
-        private static Type requestType = typeof(Request);
+        private Type requestType = typeof(Request<T>);
 
         public bool CanRead(Message message)
         {
@@ -36,7 +34,7 @@ namespace CIS726_Assignment2.SystemBus
 
         public object Read(Message message)
         {
-            DataContractSerializer serializer = new DataContractSerializer(requestType, new DataContractSerializerSettings() );
+            DataContractSerializer serializer = new DataContractSerializer(requestType);
             return serializer.ReadObject(message.BodyStream);
         }
 
@@ -56,7 +54,7 @@ namespace CIS726_Assignment2.SystemBus
 
         public object Clone()
         {
-            return new RequestFormatter();
+            return new RequestFormatter<T>();
         }
     }
 }

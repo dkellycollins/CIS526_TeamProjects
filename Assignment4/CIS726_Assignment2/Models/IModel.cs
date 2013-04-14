@@ -14,7 +14,6 @@ namespace CIS726_Assignment2.Models
     /// 
     /// This ID field MUST be the primary key of your model class in the database for everything to function correctly.
     /// </summary>
-    [DataContract(IsReference = true)]
     public abstract class IModel
     {
         public abstract int ID { get; set; }
