@@ -427,7 +427,7 @@ namespace CIS726_Assignment2.Controllers
             {
                 //courses.Add(course);
                 //courses.SaveChanges();
-                _producer.Create(new List<Course>() {course});
+                _producer.Create(course);
                 return RedirectToAction("Index");
             }
             return View(course);
@@ -582,7 +582,7 @@ namespace CIS726_Assignment2.Controllers
             //Course course = courses.Find(id);
             //courses.Remove(course);
             //courses.SaveChanges();
-            _producer.Remove(new List<int>() {id});
+            _producer.Remove(_producer.GetAll().FirstOrDefault(x => x.ID == id));
             return RedirectToAction("Index");
         }
 

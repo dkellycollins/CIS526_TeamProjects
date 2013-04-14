@@ -5,7 +5,10 @@ using System.Web;
 
 namespace CIS726_Assignment2.SystemBus
 {
-    public delegate List<T> NewMessageHandler<T>(string action, List<T> course);
+    public delegate List<T> GetMessageHandler<T>();
+    public delegate void CreateMessageHandler<T>(T data);
+    public delegate void UpdateMessageHandler<T>(T data);
+    public delegate void RemoveMessageHandler<T>(T data);
 
     /// <summary>
     /// An interface for the consumer to continually recieve data from the queue.
@@ -14,9 +17,24 @@ namespace CIS726_Assignment2.SystemBus
         : IDisposable
     {
         /// <summary>
-        /// Raised when data is received from the queue.
+        /// Raise when a Get request comes in.
         /// </summary>
-        event NewMessageHandler<T> NewMessage;
+        event GetMessageHandler<T> Get;
+
+        /// <summary>
+        /// Raised when a create message comes in. Data will be model to create.
+        /// </summary>
+        event CreateMessageHandler<T> Create;
+
+        /// <summary>
+        /// Raised when an update messsage comes in. Data will be model to update.
+        /// </summary>
+        event UpdateMessageHandler<T> Update;
+
+        /// <summary>
+        /// Raised when a remove message comes in. Data will be model to remove.
+        /// </summary>
+        event RemoveMessageHandler<T> Remove;
 
         /// <summary>
         /// Starts recieving data from the queue.

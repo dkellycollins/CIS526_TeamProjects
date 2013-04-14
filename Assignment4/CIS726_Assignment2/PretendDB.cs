@@ -26,33 +26,37 @@ namespace CIS726_Assignment2
         private void InitQueues()
         {
             _coursesQueue = new BasicMessageQueueConsumer<Course>();
-            _coursesQueue.NewMessage += _coursesQueue_NewMessage;
+            _coursesQueue.Get += _coursesQueue_Get;
+            _coursesQueue.Create += _coursesQueue_Create;
+            _coursesQueue.Update += _coursesQueue_Update;
+            _coursesQueue.Remove += _coursesQueue_Remove;
         }
 
-        List<Course> _coursesQueue_NewMessage(string action, List<Course> courses)
+        #region CourseDB
+
+        void _coursesQueue_Remove(Course course)
         {
-            if (action == "GET")
-                return (List<Course>)_context.Courses.AsQueryable().ToList();
-            else
-            {
-                if (action == "CREATE")
-                {
-                    foreach (Course course in courses)
-                        _context.Courses.Add(course);
-                }
-                else if (action == "UPDATE")
-                {
-                    foreach (Course course in courses)
-                        _context.Entry(course).State = System.Data.EntityState.Modified;
-                }
-                else if (action == "REMOVE")
-                {
-                    foreach (Course course in courses)
-                        _context.Courses.Remove(course);
-                }
-                _context.SaveChanges();
-                return null;
-            }
+            _context.Courses.Remove(course);
+            _context.SaveChanges();
         }
+
+        void _coursesQueue_Update(Course course)
+        {
+            _context.Entry(course).State = System.Data.EntityState.Modified;
+            _context.SaveChanges();
+        }
+
+        void _coursesQueue_Create(Course course)
+        {
+            _context.Courses.Add(course);
+            _context.SaveChanges();
+        }
+
+        List<Course> _coursesQueue_Get()
+        {
+            return _context.Courses.AsQueryable().ToList();
+        }
+
+        #endregion 
     }
 }

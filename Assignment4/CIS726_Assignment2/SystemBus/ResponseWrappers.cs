@@ -5,27 +5,40 @@ using System.Linq;
 using System.Messaging;
 using System.Runtime.Serialization;
 using System.Web;
-using CIS726_Assignment2.Models;
 
 namespace CIS726_Assignment2.SystemBus
 {
-    [DataContract(IsReference=true)]
-    public class Response
-    {
-        public Guid ID { get; set; }
-        public bool Success { get; set; }
-        public object Result { get; set; }
-    }
-
+    /// <summary>
+    /// Wrapper for the response from the database.
+    /// </summary>
+    /// <typeparam name="T">Type of the result.</typeparam>
     public class Response<T>
     {
+        /// <summary>
+        /// ID of the message.
+        /// </summary>
         public Guid ID { get; set; }
+
+        /// <summary>
+        /// If there was an error, this will contain the message from the exception. Otherwise null.
+        /// </summary>
         public string ErrorMessage { get; set; }
+
+        /// <summary>
+        /// Contains the results from the request.
+        /// </summary>
         public T Result { get; set; }
     }
 
+    /// <summary>
+    /// Handles formatting Responses of type T.
+    /// </summary>
+    /// <typeparam name="T">Type of the response.</typeparam>
     public class ResponseFormatter<T> : IMessageFormatter
     {
+        /// <summary>
+        /// This is the actual type of the response.
+        /// </summary>
         private Type responseType = typeof(Response<T>);
 
         public bool CanRead(Message message)

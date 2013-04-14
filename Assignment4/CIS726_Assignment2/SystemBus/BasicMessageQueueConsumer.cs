@@ -20,18 +20,20 @@ namespace CIS726_Assignment2.SystemBus
 
         public BasicMessageQueueConsumer()
         {
-            string baseQueueName = @".\Private$\"+typeof(T).FullName;
+            string baseQueueName = @".\Private$\" + typeof(T).FullName;
             QueueHelpers.CreateProducerAndConsumerQueues(baseQueueName,
                 out _producerQueue,
                 out _consumerQueue);
-            _producerQueue.Formatter = new RequestFormatter<List<T>>();
+            _producerQueue.Formatter = new RequestFormatter<T>();
             _producerQueue.ReceiveCompleted += _producerQueue_ReceiveCompleted;
-            _consumerQueue.Formatter = new ResponseFormatter<List<T>>();
         }
 
         #region IMessageQueueConsumer members
 
-        public event NewMessageHandler<T> NewMessage;
+        public event GetMessageHandler<T> Get;
+        public event CreateMessageHandler<T> Create;
+        public event UpdateMessageHandler<T> Update;
+        public event RemoveMessageHandler<T> Remove;
 
         public void BeginProcessing()
         {
@@ -63,30 +65,77 @@ namespace CIS726_Assignment2.SystemBus
 
             Message recievedMessage = _producerQueue.EndReceive(e.AsyncResult);
             //Let what ever owns this class process the data.
-            Request<List<T>> request = (Request<List<T>>)recievedMessage.Body;
-            Response<List<T>> response = new Response<List<T>>();
-            try
-            {                
-                response.Result = NewMessage(request.Action, request.Data);
-                response.ErrorMessage = null;
-            }
-            catch (Exception ex)
+            Request<T> request = (Request<T>)recievedMessage.Body;
+            switch (request.Action)
             {
-                response.Result = new List<T>();
-                response.ErrorMessage = ex.Message;
+                case "GET":
+                    {
+                        HandleGetAction(request.ID);
+                    }
+                    break;
+                case "CREATE":
+                    {
+                        HandleCreateAction(request.ID, request.Data);
+                    }
+                    break;
+                case "UPDATE":
+                    {
+                        HandleUpdateAction(request.ID, request.Data);
+                    }
+                    break;
+                case "REMOVE":
+                    {
+                        HandleRemoveAction(request.ID, request.Data);
+                    }
+                    break;
             }
-
-            //Send the processed data back into the queue.
-            Message message = new Message()
-            {
-                Formatter = _consumerQueue.Formatter,
-                Label = request.ID.ToString(),
-                Body = response
-            };
-            _consumerQueue.Send(message);
 
             //Look for the next message.
             _producerQueue.BeginReceive();
         }
+
+        private void HandleGetAction(Guid id)
+        {
+            Response<List<T>> response = new Response<List<T>>()
+            {
+                ID = id
+            };
+
+            try
+            {
+                response.Result = Get();
+                response.ErrorMessage = null;
+            }
+            catch (Exception e)
+            {
+                response.Result = new List<T>();
+                response.ErrorMessage = e.Message;
+            }
+
+            Message message = new Message()
+            {
+                Formatter = new ResponseFormatter<List<T>>(),
+                Label = id.ToString(),
+                Body = response
+            };
+
+            _consumerQueue.Send(message);
+        }
+
+        private void HandleCreateAction(Guid id, T data)
+        {
+            Create(data);
+        }
+
+        private void HandleUpdateAction(Guid id, T data)
+        {
+            Update(data);
+        }
+
+        private void HandleRemoveAction(Guid id, T data)
+        {
+            Remove(data);
+        }
+
     }
 }

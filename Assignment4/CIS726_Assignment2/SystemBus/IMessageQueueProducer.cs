@@ -22,18 +22,18 @@ namespace CIS726_Assignment2.SystemBus
         /// Updates all models contained in the list.
         /// </summary>
         /// <param name="data"></param>
-        void Update(List<T> data);
+        void Update(T data);
 
         /// <summary>
         /// Creates all models in the database.
         /// </summary>
         /// <param name="data"></param>
-        void Create(List<T> data);
+        void Create(T data);
 
         /// <summary>
         /// Removes all models contains in the list from the database.
         /// </summary>
         /// <param name="data"></param>
-        void Remove(List<int> data);
+        void Remove(T data);
     }
 }

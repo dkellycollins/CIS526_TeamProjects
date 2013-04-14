@@ -23,7 +23,6 @@ namespace CIS726_Assignment2.SystemBus
             QueueHelpers.CreateProducerAndConsumerQueues(baseQueueName,
                 out _producerQueue,
                 out _consumerQueue);
-            _producerQueue.Formatter = new RequestFormatter<List<T>>();
             _consumerQueue.Formatter = new ResponseFormatter<List<T>>();
             _id = Guid.NewGuid();
         }
@@ -32,21 +31,21 @@ namespace CIS726_Assignment2.SystemBus
 
         public List<T> GetAll()
         {
-            sendMessage("GET", new List<T>());
+            sendMessage("GET", default(T));
             return reciveMessage();
         }
 
-        public void Update(List<T> data)
+        public void Update(T data)
         {
             sendMessage("UPDATE", data);
         }
 
-        public void Create(List<T> data)
+        public void Create(T data)
         {
             sendMessage("CREATE", data);
         }
 
-        public void Remove(List<int> data)
+        public void Remove(T data)
         {
             sendMessage("REMOVE", data);
         }
@@ -68,13 +67,13 @@ namespace CIS726_Assignment2.SystemBus
         /// <param name="action">Action for the database to perform.</param>
         /// <param name="data">Data for the database to use.</param>
         /// <returns>The id of the message. This can be used to get the response from the queue.</returns>
-        private string sendMessage(string action, object data)
+        private string sendMessage(string action, T data)
         {
             Message message = new Message()
             {
-                Formatter = _producerQueue.Formatter,
+                Formatter = new RequestFormatter<T>(),
                 Label = _id.ToString(),
-                Body = new Request()
+                Body = new Request<T>()
                 {
                     ID = _id,
                     Action = action,
@@ -84,22 +83,6 @@ namespace CIS726_Assignment2.SystemBus
             _producerQueue.Send(message);
 
             return "";
-        }
-
-        private void sendMessage(string action, List<T> data)
-        {
-            Message message = new Message()
-            {
-                Formatter = _producerQueue.Formatter,
-                Label = _id.ToString(),
-                Body = new Request<List<T>>()
-                {
-                    ID = _id,
-                    Action = action,
-                    Data = data
-                }
-            };
-            _producerQueue.Send(message);
         }
 
         private List<T> reciveMessage()
