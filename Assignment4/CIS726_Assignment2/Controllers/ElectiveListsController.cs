@@ -8,6 +8,7 @@ using System.Web.Mvc;
 using CIS726_Assignment2.Models;
 using PagedList;
 using CIS726_Assignment2.Repositories;
+using CIS726_Assignment2.SystemBus;
 
 namespace CIS726_Assignment2.Controllers
 {
@@ -23,10 +24,9 @@ namespace CIS726_Assignment2.Controllers
         /// </summary>
         public ElectiveListsController()
         {
-            CourseDBContext context = new CourseDBContext();
-            electiveLists = new GenericRepository<ElectiveList>(new StorageContext<ElectiveList>(context));
-            courses = new GenericRepository<Course>(new StorageContext<Course>(context));
-            electiveListCourses = new GenericRepository<ElectiveListCourse>(new StorageContext<ElectiveListCourse>(context));
+            electiveLists = new MessageQueueRepository<ElectiveList>(new BasicMessageQueueProducer<ElectiveList>());
+            courses = new MessageQueueRepository<Course>(new BasicMessageQueueProducer<Course>());
+            electiveListCourses = new MessageQueueRepository<ElectiveListCourse>(new BasicMessageQueueProducer<ElectiveListCourse>());
         }
 
         /// <summary>

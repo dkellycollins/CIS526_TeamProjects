@@ -9,6 +9,7 @@ using CIS726_Assignment2.Models;
 using PagedList;
 using CIS726_Assignment2.Repositories;
 using CIS726_Assignment2.ViewModels;
+using CIS726_Assignment2.SystemBus;
 
 namespace CIS726_Assignment2.Controllers
 {
@@ -26,12 +27,11 @@ namespace CIS726_Assignment2.Controllers
         /// </summary>
         public DegreeProgramsController()
         {
-            CourseDBContext context = new CourseDBContext();
-            degreePrograms = new GenericRepository<DegreeProgram>(new StorageContext<DegreeProgram>(context));
-            requiredCourses = new GenericRepository<RequiredCourse>(new StorageContext<RequiredCourse>(context));
-            electiveCourses = new GenericRepository<ElectiveCourse>(new StorageContext<ElectiveCourse>(context));
-            electiveLists = new GenericRepository<ElectiveList>(new StorageContext<ElectiveList>(context));
-            courses = new GenericRepository<Course>(new StorageContext<Course>(context));
+            degreePrograms = new MessageQueueRepository<DegreeProgram>(new BasicMessageQueueProducer<DegreeProgram>());
+            requiredCourses = new MessageQueueRepository<RequiredCourse>(new BasicMessageQueueProducer<RequiredCourse>());
+            electiveCourses = new MessageQueueRepository<ElectiveCourse>(new BasicMessageQueueProducer<ElectiveCourse>());
+            electiveLists = new MessageQueueRepository<ElectiveList>(new BasicMessageQueueProducer<ElectiveList>());
+            courses = new MessageQueueRepository<Course>(new BasicMessageQueueProducer<Course>());
         }
 
         /// <summary>

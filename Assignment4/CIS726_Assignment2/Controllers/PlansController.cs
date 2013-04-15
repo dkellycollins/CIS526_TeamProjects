@@ -10,6 +10,7 @@ using CIS726_Assignment2.ViewModels;
 using CIS726_Assignment2.Repositories;
 using PagedList;
 using System.Net;
+using CIS726_Assignment2.SystemBus;
 
 namespace CIS726_Assignment2.Controllers
 {
@@ -26,12 +27,11 @@ namespace CIS726_Assignment2.Controllers
 
         public PlansController()
         {
-            CourseDBContext context = new CourseDBContext();
-            plans = new GenericRepository<Plan>(new StorageContext<Plan>(context));
-            planCourses = new GenericRepository<PlanCourse>(new StorageContext<PlanCourse>(context));
-            semesters = new GenericRepository<Semester>(new StorageContext<Semester>(context));
-            users = new GenericRepository<User>(new StorageContext<User>(context));
-            degreePrograms = new GenericRepository<DegreeProgram>(new StorageContext<DegreeProgram>(context));
+            users = new GenericRepository<User>(new StorageContext<User>(new CourseDBContext()));
+            plans = new MessageQueueRepository<Plan>(new BasicMessageQueueProducer<Plan>());
+            planCourses = new MessageQueueRepository<PlanCourse>(new BasicMessageQueueProducer<PlanCourse>());
+            semesters = new MessageQueueRepository<Semester>(new BasicMessageQueueProducer<Semester>());
+            degreePrograms = new MessageQueueRepository<DegreeProgram>(new BasicMessageQueueProducer<DegreeProgram>());
             roles = new RolesImpl();
             webSecurity = new WebSecurityImpl();
         }

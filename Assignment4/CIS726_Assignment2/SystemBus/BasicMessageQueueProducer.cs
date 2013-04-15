@@ -49,6 +49,7 @@ namespace CIS726_Assignment2.SystemBus
         public void Create(T data)
         {
             sendMessage("CREATE", data);
+            data = recieveMessage().FirstOrDefault();
         }
 
         public void Remove(T data)
