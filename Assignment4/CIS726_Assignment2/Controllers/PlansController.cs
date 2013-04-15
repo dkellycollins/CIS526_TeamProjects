@@ -8,6 +8,7 @@ using System.Web.Mvc;
 using CIS726_Assignment2.Models;
 using CIS726_Assignment2.ViewModels;
 using CIS726_Assignment2.Repositories;
+using CIS726_Assignment2.SystemBus;
 using PagedList;
 using System.Net;
 
@@ -24,6 +25,8 @@ namespace CIS726_Assignment2.Controllers
         private IRoles roles;
         private IWebSecurity webSecurity;
 
+        private IMessageQueueProducer<Plan> _planProducer;
+
         public PlansController()
         {
             CourseDBContext context = new CourseDBContext();
@@ -34,6 +37,8 @@ namespace CIS726_Assignment2.Controllers
             degreePrograms = new GenericRepository<DegreeProgram>(new StorageContext<DegreeProgram>(context));
             roles = new RolesImpl();
             webSecurity = new WebSecurityImpl();
+
+            _planProducer = new BasicMessageQueueProducer<Plan>();
         }
 
 
@@ -58,8 +63,22 @@ namespace CIS726_Assignment2.Controllers
             String currentSort = "";
 
             bool titleAsc = false;
+            /*
+            var plansListA = from s in plans.GetAll() select s;
+            var plansList = plansListA
+                .Include(pl => pl.degreeProgram)
+                .Include(pl => pl.degreeProgram.requiredCourses.Select(s => s.course.prerequisites))
+                .Include(pl => pl.degreeProgram.requiredCourses.Select(s => s.course.prerequisiteFor))
+                .Include(pl => pl.degreeProgram.electiveCourses.Select(s => s.electiveList))
+                .Include(pl => pl.user)
+                .Include(pl => pl.semester)
+                .Include(pl => pl.planCourses.Select(s => s.plan))
+                .Include(pl=>pl.planCourses.Select(s => s.course))
+                .Include(pl=>pl.planCourses.Select(s=>s.electiveList))
+                .Include(pl=>;
+            */
 
-            var plansList = from s in plans.GetAll() select s;
+            var plansList = _planProducer.GetAll().AsQueryable();
 
             if (!webSecurity.CurrentUser.IsInRole("Advisor"))
             {
@@ -259,7 +278,17 @@ namespace CIS726_Assignment2.Controllers
 
         private void ChangeDegreeProgram(Plan plan)
         {
-            List<PlanCourse> plans = planCourses.Where(i => i.planID == plan.ID).ToList();
+            List<PlanCourse> plans = planCourses.Where(i => i.planID == plan.ID)
+                .Include(pc => pc.plan)
+                .Include(pc => pc.plan.degreeProgram)
+                .Include(pc => pc.plan.planCourses.Select(s => s.course.prerequisites))
+                .Include(pc => pc.plan.planCourses.Select(s => s.course.prerequisiteFor))
+                .Include(pc => pc.plan.semester)
+                .Include(pc => pc.plan.user)
+                .Include(pc => pc.semester)
+                .Include(pc => pc.electiveList)
+                .Include(pc => pc.course)
+            .ToList();
             foreach (PlanCourse planCourse in plans)
             {
                 planCourses.Remove(planCourse);
