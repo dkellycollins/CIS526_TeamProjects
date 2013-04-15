@@ -36,11 +36,5 @@ namespace CIS726_Assignment2.SystemBus
             consumerQueue.Purge();
 #endif
         }
-
-        public static readonly IEnumerable<Type> KNOWN_TYPES = new List<Type>()
-        {
-            typeof(Course),
-            typeof(List<Course>)
-        };
     }
 }

@@ -140,10 +140,10 @@ namespace CIS726_Assignment2.Models
             }
         }
 
-        public virtual List<ElectiveListCourse> electiveLists { get; set; }
-        public virtual List<RequiredCourse> degreePrograms { get; set; }
+        public virtual ICollection<ElectiveListCourse> electiveLists { get; set; }
+        public virtual ICollection<RequiredCourse> degreePrograms { get; set; }
 
-        public virtual List<PrerequisiteCourse> prerequisites { get; set; }
-        public virtual List<PrerequisiteCourse> prerequisiteFor { get; set; }
+        public virtual ICollection<PrerequisiteCourse> prerequisites { get; set; }
+        public virtual ICollection<PrerequisiteCourse> prerequisiteFor { get; set; }
     }
 }

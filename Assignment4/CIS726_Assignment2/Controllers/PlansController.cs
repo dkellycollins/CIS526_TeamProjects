@@ -26,6 +26,8 @@ namespace CIS726_Assignment2.Controllers
         private IWebSecurity webSecurity;
 
         private IMessageQueueProducer<Plan> _planProducer;
+        private IMessageQueueProducer<PlanCourse> _planCourseProducer;
+        private IMessageQueueProducer<Semester> _semesterProducer;
 
         public PlansController()
         {
@@ -39,6 +41,8 @@ namespace CIS726_Assignment2.Controllers
             webSecurity = new WebSecurityImpl();
 
             _planProducer = new BasicMessageQueueProducer<Plan>();
+            _planCourseProducer = new BasicMessageQueueProducer<PlanCourse>();
+            _semesterProducer = new BasicMessageQueueProducer<Semester>();
         }
 
 
@@ -140,14 +144,18 @@ namespace CIS726_Assignment2.Controllers
         [Authorize]
         public ActionResult Details(int id = 0)
         {
-            Plan plan = plans.Find(id);
+            //Plan plan = plans.Find(id);
+
+            Plan plan = _planProducer.Get(new Plan() { ID = id });
+
             if (plan == null)
             {
                 return HttpNotFound();
             }
             if (webSecurity.CurrentUser.IsInRole("Advisor") || plan.userID == webSecurity.CurrentUserId)
             {  
-                var semesterList = semesters.Where(s => s.ID > plan.semesterID);
+                //var semesterList = semesters.Where(s => s.ID > plan.semesterID);
+                var semesterList = _semesterProducer.GetAll().Where(s => s.ID > plan.semesterID);
                 ViewBag.semesterID = new SelectList(semesterList.AsEnumerable(), "ID", "semesterName");
                 return View(plan);
             }
@@ -163,6 +171,7 @@ namespace CIS726_Assignment2.Controllers
         public ActionResult Create()
         {
             ViewBag.degreeProgramID = new SelectList(degreePrograms.GetAll().AsEnumerable(), "ID", "degreeProgramName");
+            //ViewBag.degreeProgramID = new SelectList(
             if (webSecurity.CurrentUser.IsInRole("Advisor"))
             {
                 ViewBag.userID = new SelectList(users.GetAll().AsEnumerable(), "ID", "username");
@@ -186,10 +195,14 @@ namespace CIS726_Assignment2.Controllers
         {
             if (ModelState.IsValid)
             {
-                plans.Add(plan);
-                plans.SaveChanges();
-                Plan newPlan = plans.Find(plan.ID);
-                newPlan.degreeProgram = degreePrograms.Find(newPlan.degreeProgramID);
+                //plans.Add(plan);
+                //plans.SaveChanges();
+                Plan newPlan = _planProducer.Create(plan).First();
+
+                //Plan newPlan = plans.Find(plan.ID);
+                //Plan newPlan = _planProducer.Get(new Plan() { ID = id });
+                newPlan = _planProducer.Get(newPlan);
+                //newPlan.degreeProgram = degreePrograms.Find(newPlan.degreeProgramID);
                 ChangeDegreeProgram(newPlan);
                 return RedirectToAction("Index");
             }
@@ -249,7 +262,9 @@ namespace CIS726_Assignment2.Controllers
         {
             if (ModelState.IsValid)
             {
-                Plan planAttached = plans.Find(plan.ID);
+                //Plan planAttached = plans.Find(plan.ID);
+                Plan planAttached = _planProducer.Get(plan);
+
                 plan.userID = planAttached.userID;
                 if (webSecurity.CurrentUser.IsInRole("Advisor") || plan.userID == webSecurity.CurrentUserId)
                 {
@@ -278,26 +293,21 @@ namespace CIS726_Assignment2.Controllers
 
         private void ChangeDegreeProgram(Plan plan)
         {
-            List<PlanCourse> plans = planCourses.Where(i => i.planID == plan.ID)
-                .Include(pc => pc.plan)
-                .Include(pc => pc.plan.degreeProgram)
-                .Include(pc => pc.plan.planCourses.Select(s => s.course.prerequisites))
-                .Include(pc => pc.plan.planCourses.Select(s => s.course.prerequisiteFor))
-                .Include(pc => pc.plan.semester)
-                .Include(pc => pc.plan.user)
-                .Include(pc => pc.semester)
-                .Include(pc => pc.electiveList)
-                .Include(pc => pc.course)
-            .ToList();
+            //List<PlanCourse> plans = planCourses.Where(i => i.planID == plan.ID.ToList();
+            List<PlanCourse> plans = _planCourseProducer.GetAll();
+            plans = plans.Where(pc => pc.planID == plan.ID).ToList();
+
             foreach (PlanCourse planCourse in plans)
             {
-                planCourses.Remove(planCourse);
-                planCourses.SaveChanges();
+                _planCourseProducer.Remove(planCourse);
+                //planCourses.Remove(planCourse);
+                //planCourses.SaveChanges();
             }
             Dictionary<int, int> semesterOrders = new Dictionary<int, int>();
             Dictionary<int, int> semesterMap = new Dictionary<int, int>();
             int nowSem = 1;
-            List<Semester> semesterList = semesters.Where(i => i.ID >= plan.semesterID).ToList();
+            //List<Semester> semesterList = semesters.Where(i => i.ID >= plan.semesterID).ToList();
+            List<Semester> semesterList = _semesterProducer.GetAll().Where(s=>s.ID >= plan.semesterID).ToList();
             foreach (Semester sem in semesterList)
             {
                 if (sem.standard == true)
@@ -319,8 +329,9 @@ namespace CIS726_Assignment2.Controllers
                 pcourse.semesterID = semesterMap[req.semester];
                 pcourse.courseID = req.courseID;
                 pcourse.credits = req.course.courseHours;
-                planCourses.Add(pcourse);
-                planCourses.SaveChanges();
+                _planCourseProducer.Create(pcourse);
+                //planCourses.Add(pcourse);
+                //planCourses.SaveChanges();
             }
 
             List<ElectiveCourse> elects = plan.degreeProgram.electiveCourses.ToList();
@@ -334,8 +345,9 @@ namespace CIS726_Assignment2.Controllers
                 pcourse.semesterID = semesterMap[elect.semester];
                 pcourse.electiveListID = elect.electiveListID;
                 pcourse.credits = elect.credits.ToString();
-                planCourses.Add(pcourse);
-                planCourses.SaveChanges();
+                _planCourseProducer.Create(pcourse);
+                //planCourses.Add(pcourse);
+                //planCourses.SaveChanges();
             }
         }
 
@@ -344,7 +356,9 @@ namespace CIS726_Assignment2.Controllers
         [Authorize]
         public ActionResult Delete(int id = 0)
         {
-            Plan plan = plans.Find(id);
+            //Plan plan = plans.Find(id);
+            Plan plan = _planProducer.Get(new Plan() { ID = id });
+
             if (plan == null)
             {
                 return HttpNotFound();
@@ -366,11 +380,14 @@ namespace CIS726_Assignment2.Controllers
         [Authorize]
         public ActionResult DeleteConfirmed(int id)
         {
-            Plan plan = plans.Find(id);
+            //Plan plan = plans.Find(id);
+            Plan plan = _planProducer.Get(new Plan() { ID = id });
+
             if (webSecurity.CurrentUser.IsInRole("Advisor") || plan.userID == webSecurity.CurrentUserId)
             {
-                plans.Remove(plan);
-                plans.SaveChanges();
+                //plans.Remove(plan);
+                //plans.SaveChanges();
+                _planProducer.Remove(plan);
             }
             return RedirectToAction("Index");
         }

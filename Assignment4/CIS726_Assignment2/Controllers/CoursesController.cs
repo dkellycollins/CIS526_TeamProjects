@@ -14,10 +14,9 @@ namespace CIS726_Assignment2.Controllers
 {
     public class CoursesController : Controller
     {
-        //private IGenericRepository<Course> courses; Use the message queue instead.
         private IGenericRepository<PrerequisiteCourse> prerequisiteCourses;
 
-        private IMessageQueueProducer<Course> _producer;
+        private IMessageQueueProducer<Course> _courseProducer;
 
         //private IMessageQueuePublisher _publisher;
         //private IMessageQueueConsumer _consumer;
@@ -27,9 +26,9 @@ namespace CIS726_Assignment2.Controllers
         /// </summary>
         public CoursesController()
         {
+            _courseProducer = new BasicMessageQueueProducer<Course>();
+
             CourseDBContext context = new CourseDBContext();
-            //courses = new GenericRepository<Course>(new StorageContext<Course>(context));
-            _producer = new BasicMessageQueueProducer<Course>();
             prerequisiteCourses = new GenericRepository<PrerequisiteCourse>(new StorageContext<PrerequisiteCourse>(context));
         }
 
@@ -74,8 +73,9 @@ namespace CIS726_Assignment2.Controllers
             bool hoursAsc = false;
             bool numAsc = false;
 
-            //var courseList = from s in courses.GetAll() select s;
-            var courseList = _producer.GetAll().AsQueryable();
+            
+            var courseList = _courseProducer.GetAll();
+            var courseQuery = from s in courseList select s;
 
             if (!String.IsNullOrEmpty(filterString))
             {
@@ -89,26 +89,26 @@ namespace CIS726_Assignment2.Controllers
                     if (filter.Contains("prefix"))
                     {
                         String prefixes = filter.Replace("prefix:", "");
-                        courseList = courseList.Where(c => c.coursePrefix.Equals(prefixes));
+                        courseQuery = courseQuery.Where(c => c.coursePrefix.Equals(prefixes));
                         selectedPrefix = prefixes;
                         ViewBag.filtered = true;
                     }
 
                     if (filter.Equals("ugrad"))
                     {
-                        courseList = courseList.Where(c => c.undergrad.Equals(true));
+                        courseQuery = courseQuery.Where(c => c.undergrad.Equals(true));
                         ViewBag.grad = false;
                         ViewBag.filtered = true;
                     }
                     if (filter.Equals("grad"))
                     {
-                        courseList = courseList.Where(c => c.graduate.Equals(true));
+                        courseQuery = courseQuery.Where(c => c.graduate.Equals(true));
                         ViewBag.ugrad = false;
                         ViewBag.filtered = true;
                     }
                     if (filter.Equals("none"))
                     {
-                        courseList = courseList.Where(c => c.courseNumber.Equals(-1));
+                        courseQuery = courseQuery.Where(c => c.courseNumber.Equals(-1));
                         ViewBag.ugrad = false;
                         ViewBag.grad = false;
                         ViewBag.filtered = true;
@@ -122,7 +122,7 @@ namespace CIS726_Assignment2.Controllers
                         {
                             if (minNum > 0)
                             {
-                                courseList = courseList.Where(c => c.courseNumber >= minNum);
+                                courseQuery = courseQuery.Where(c => c.courseNumber >= minNum);
                                 ViewBag.minNum = minNum.ToString();
                                 ViewBag.filtered = true;
                             }
@@ -137,7 +137,7 @@ namespace CIS726_Assignment2.Controllers
                         {
                             if (maxNum < 999)
                             {
-                                courseList = courseList.Where(c => c.courseNumber <= maxNum);
+                                courseQuery = courseQuery.Where(c => c.courseNumber <= maxNum);
                                 ViewBag.maxNum = maxNum.ToString();
                                 ViewBag.filtered = true;
                             }
@@ -152,7 +152,7 @@ namespace CIS726_Assignment2.Controllers
                         {
                             if (minHrs > 0)
                             {
-                                courseList = courseList.Where(c => c.maxHours >= minHrs);
+                                courseQuery = courseQuery.Where(c => c.maxHours >= minHrs);
                                 ViewBag.minHrs = minHrs.ToString();
                                 ViewBag.filtered = true;
                             }
@@ -167,7 +167,7 @@ namespace CIS726_Assignment2.Controllers
                         {
                             if (maxHrs < 18)
                             {
-                                courseList = courseList.Where(c => c.minHours <= maxHrs);
+                                courseQuery = courseQuery.Where(c => c.minHours <= maxHrs);
                                 ViewBag.maxHrs = maxHrs.ToString();
                                 ViewBag.filtered = true;
                             }
@@ -231,7 +231,7 @@ namespace CIS726_Assignment2.Controllers
                 }
             }
 
-            var courseListEnum = courseList.AsEnumerable();
+            var courseListEnum = courseQuery.AsEnumerable();
 
             //doing sorts
             foreach (string s in sorts)
@@ -286,8 +286,7 @@ namespace CIS726_Assignment2.Controllers
             }
 
             //setting up needed variables in ViewBag
-            //List<string> prefixList = courses.GetAll().Select(x => x.coursePrefix).Distinct().ToList();
-            List<string> prefixList = _producer.GetAll().AsQueryable().Select(x => x.coursePrefix).Distinct().ToList();
+            List<string> prefixList = courseList.AsQueryable().Select(x => x.coursePrefix).Distinct().ToList();
             prefixList.Sort();
             prefixList.Insert(0, "any");
             ViewBag.prefixes  = new SelectList(prefixList, selectedPrefix);
@@ -399,8 +398,7 @@ namespace CIS726_Assignment2.Controllers
 
         public ActionResult Details(int id = 0)
         {
-            //Course course = courses.Find(id);
-            Course course = _producer.GetAll().FirstOrDefault(x => x.ID == null);
+            Course course = _courseProducer.Get(new Course() { ID = id });
             if (course == null)
             {
                 return HttpNotFound();
@@ -425,9 +423,7 @@ namespace CIS726_Assignment2.Controllers
         {
             if (ModelState.IsValid)
             {
-                //courses.Add(course);
-                //courses.SaveChanges();
-                _producer.Create(course);
+                _courseProducer.Create(course);
                 return RedirectToAction("Index");
             }
             return View(course);
@@ -438,8 +434,7 @@ namespace CIS726_Assignment2.Controllers
         [Authorize(Roles = "Administrator")]
         public ActionResult Edit(int id = 0)
         {
-            //Course course = courses.Find(id);
-            Course course = _producer.GetAll().FirstOrDefault(x => x.ID == id);
+            Course course = _courseProducer.Get(new Course() { ID = id });
             if (course == null)
             {
                 return HttpNotFound();
@@ -454,10 +449,10 @@ namespace CIS726_Assignment2.Controllers
         [Authorize(Roles = "Administrator")]
         public ActionResult Edit(Course course, IEnumerable<PrerequisiteCourse> PrerequisiteCourses)
         {
+            var courseList = _courseProducer.GetAll();
             if (ModelState.IsValid)
             {
-                //Course cAttached = courses.Where(c => c.ID == course.ID).First();
-                Course cAttached = _producer.GetAll().AsQueryable().Where(c => c.ID == course.ID).First();
+                Course cAttached = courseList.AsQueryable().Where(c => c.ID == course.ID).First();
                 course.prerequisites = cAttached.prerequisites;
 
                 if (PrerequisiteCourses == null)
@@ -503,7 +498,7 @@ namespace CIS726_Assignment2.Controllers
                     else
                     {
                         
-                        if (_producer.GetAll().FirstOrDefault(x => x.ID == pcourse.prerequisiteCourseID) != null)
+                        if (courseList.FirstOrDefault(x => x.ID == pcourse.prerequisiteCourseID) != null)
                         {
                             prerequisiteCourses.Add(pcourse);
                             prerequisiteCourses.SaveChanges();
@@ -526,7 +521,7 @@ namespace CIS726_Assignment2.Controllers
                     if (pcourse.prerequisiteCourseID> 0)
                     {
                         //pcourse.prerequisiteCourse = courses.Find(pcourse.prerequisiteCourseID);
-                        pcourse.prerequisiteCourse = _producer.GetAll().FirstOrDefault(x => x.ID == pcourse.prerequisiteCourseID);
+                        pcourse.prerequisiteCourse = courseList.FirstOrDefault(x => x.ID == pcourse.prerequisiteCourseID);
                     }
                 }
             }
@@ -563,8 +558,7 @@ namespace CIS726_Assignment2.Controllers
         [Authorize(Roles = "Administrator")]
         public ActionResult Delete(int id = 0)
         {
-            //Course course = courses.Find(id);
-            Course course = _producer.GetAll().FirstOrDefault(x => x.ID == id);
+            Course course = _courseProducer.Get(new Course() { ID = id });
             if (course == null)
             {
                 return HttpNotFound();
@@ -579,10 +573,8 @@ namespace CIS726_Assignment2.Controllers
         [Authorize(Roles = "Administrator")]
         public ActionResult DeleteConfirmed(int id)
         {
-            //Course course = courses.Find(id);
-            //courses.Remove(course);
-            //courses.SaveChanges();
-            _producer.Remove(_producer.GetAll().FirstOrDefault(x => x.ID == id));
+            Course course = _courseProducer.Get(new Course() { ID = id });
+            _courseProducer.Remove(course);
             return RedirectToAction("Index");
         }
 
@@ -594,7 +586,7 @@ namespace CIS726_Assignment2.Controllers
         /// <returns></returns>
         public JsonResult SearchCourses(string term)
         {
-            var keywords = _producer.GetAll().AsEnumerable();
+            var keywords = _courseProducer.GetAll().AsEnumerable();
             string[] terms = term.Split(' ');
             foreach(string t in terms){
                 keywords = keywords.Where(course => course.courseHeader.Contains(t));
@@ -605,7 +597,7 @@ namespace CIS726_Assignment2.Controllers
 
         protected override void Dispose(bool disposing)
         {
-            _producer.Dispose();
+            _courseProducer.Dispose();
             base.Dispose(disposing);
         }
     }
