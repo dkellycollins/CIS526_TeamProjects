@@ -149,7 +149,31 @@ namespace CIS726_Assignment2.SystemBus
 
         private void HandleCreateAction(Guid id, T data)
         {
-            Create(data);
+            Response<List<T>> response = new Response<List<T>>()
+            {
+                ID = id
+            };
+
+            try
+            {
+                T createdData = Create(data);
+                response.Result = new List<T>() { createdData };
+                response.ErrorMessage = null;
+            }
+            catch (Exception e)
+            {
+                response.Result = new List<T>();
+                response.ErrorMessage = e.Message;
+            }
+
+            Message message = new Message()
+            {
+                Formatter = new ResponseFormatter<List<T>>(),
+                Label = id.ToString(),
+                Body = response
+            };
+
+            _consumerQueue.Send(message);
         }
 
         private void HandleUpdateAction(Guid id, T data)

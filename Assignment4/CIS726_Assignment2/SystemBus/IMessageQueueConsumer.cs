@@ -7,7 +7,7 @@ namespace CIS726_Assignment2.SystemBus
 {
     public delegate T GetMessageHandler<T>(T data);
     public delegate List<T> GetAllMessageHandler<T>();
-    public delegate void CreateMessageHandler<T>(T data);
+    public delegate T CreateMessageHandler<T>(T data);
     public delegate void UpdateMessageHandler<T>(T data);
     public delegate void RemoveMessageHandler<T>(T data);
 
