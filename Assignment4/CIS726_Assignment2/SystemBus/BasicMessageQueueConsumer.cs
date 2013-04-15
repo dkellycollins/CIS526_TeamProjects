@@ -31,6 +31,7 @@ namespace CIS726_Assignment2.SystemBus
         #region IMessageQueueConsumer members
 
         public event GetMessageHandler<T> Get;
+        public event GetAllMessageHandler<T> GetAll;
         public event CreateMessageHandler<T> Create;
         public event UpdateMessageHandler<T> Update;
         public event RemoveMessageHandler<T> Remove;
@@ -69,24 +70,19 @@ namespace CIS726_Assignment2.SystemBus
             switch (request.Action)
             {
                 case "GET":
-                    {
-                        HandleGetAction(request.ID);
-                    }
+                    HandleGetAction(request.ID, request.Data);
+                    break;
+                case "GET_ALL":
+                    HandleGetAllAction(request.ID);
                     break;
                 case "CREATE":
-                    {
-                        HandleCreateAction(request.ID, request.Data);
-                    }
+                    HandleCreateAction(request.ID, request.Data);
                     break;
                 case "UPDATE":
-                    {
-                        HandleUpdateAction(request.ID, request.Data);
-                    }
+                    HandleUpdateAction(request.ID, request.Data);
                     break;
                 case "REMOVE":
-                    {
-                        HandleRemoveAction(request.ID, request.Data);
-                    }
+                    HandleRemoveAction(request.ID, request.Data);
                     break;
             }
 
@@ -94,7 +90,7 @@ namespace CIS726_Assignment2.SystemBus
             _producerQueue.BeginReceive();
         }
 
-        private void HandleGetAction(Guid id)
+        private void HandleGetAction(Guid id, T data)
         {
             Response<List<T>> response = new Response<List<T>>()
             {
@@ -103,7 +99,36 @@ namespace CIS726_Assignment2.SystemBus
 
             try
             {
-                response.Result = Get();
+                T result = Get(data);
+                response.Result = new List<T> { result };
+                response.ErrorMessage = null;
+            }
+            catch (Exception e)
+            {
+                response.Result = new List<T>();
+                response.ErrorMessage = e.Message;
+            }
+
+            Message message = new Message()
+            {
+                Formatter = new ResponseFormatter<List<T>>(),
+                Label = id.ToString(),
+                Body = response
+            };
+
+            _consumerQueue.Send(message);
+        }
+
+        private void HandleGetAllAction(Guid id)
+        {
+            Response<List<T>> response = new Response<List<T>>()
+            {
+                ID = id
+            };
+
+            try
+            {
+                response.Result = GetAll();
                 response.ErrorMessage = null;
             }
             catch (Exception e)

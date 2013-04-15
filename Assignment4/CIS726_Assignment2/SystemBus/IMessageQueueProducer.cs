@@ -13,6 +13,13 @@ namespace CIS726_Assignment2.SystemBus
         : IDisposable
     {
         /// <summary>
+        /// Retrives a single model from the data base.
+        /// </summary>
+        /// <param name="data">A model that contains some or all of the information to get.</param>
+        /// <returns></returns>
+        T Get(T data);
+
+        /// <summary>
         /// Retives all models from the data base.
         /// </summary>
         /// <returns></returns>

@@ -29,10 +29,16 @@ namespace CIS726_Assignment2.SystemBus
 
         #region IMessageQueueProducer members
 
+        public T Get(T data)
+        {
+            sendMessage("GET", data);
+            return recieveMessage().FirstOrDefault();
+        }
+
         public List<T> GetAll()
         {
-            sendMessage("GET", default(T));
-            return reciveMessage();
+            sendMessage("GET_ALL", default(T));
+            return recieveMessage();
         }
 
         public void Update(T data)
@@ -85,7 +91,7 @@ namespace CIS726_Assignment2.SystemBus
             return "";
         }
 
-        private List<T> reciveMessage()
+        private List<T> recieveMessage()
         {
             Response<List<T>> response = null;
             while (response == null)

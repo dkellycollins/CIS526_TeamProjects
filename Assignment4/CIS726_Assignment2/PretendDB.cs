@@ -4,6 +4,7 @@ using System.Linq;
 using System.Web;
 using CIS726_Assignment2.Models;
 using CIS726_Assignment2.SystemBus;
+using System.Data.Entity;
 
 namespace CIS726_Assignment2
 {
@@ -27,6 +28,7 @@ namespace CIS726_Assignment2
         {
             _coursesQueue = new BasicMessageQueueConsumer<Course>();
             _coursesQueue.Get += _coursesQueue_Get;
+            _coursesQueue.GetAll += _coursesQueue_GetAll;
             _coursesQueue.Create += _coursesQueue_Create;
             _coursesQueue.Update += _coursesQueue_Update;
             _coursesQueue.Remove += _coursesQueue_Remove;
@@ -52,9 +54,19 @@ namespace CIS726_Assignment2
             _context.SaveChanges();
         }
 
-        List<Course> _coursesQueue_Get()
+        List<Course> _coursesQueue_GetAll()
         {
-            return _context.Courses.AsQueryable().ToList();
+            return _context.Set<Course>()
+                .Include("prerequisites")
+                .Include("degreePrograms")
+                .Include("electiveLists")
+                .Include("prerequisiteFor")
+                .ToList();
+        }
+
+        Course _coursesQueue_Get(Course partialCourse)
+        {
+            return _context.Courses.Find(partialCourse.ID);
         }
 
         #endregion 

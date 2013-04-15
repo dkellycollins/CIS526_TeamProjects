@@ -5,7 +5,8 @@ using System.Web;
 
 namespace CIS726_Assignment2.SystemBus
 {
-    public delegate List<T> GetMessageHandler<T>();
+    public delegate T GetMessageHandler<T>(T data);
+    public delegate List<T> GetAllMessageHandler<T>();
     public delegate void CreateMessageHandler<T>(T data);
     public delegate void UpdateMessageHandler<T>(T data);
     public delegate void RemoveMessageHandler<T>(T data);
@@ -17,9 +18,14 @@ namespace CIS726_Assignment2.SystemBus
         : IDisposable
     {
         /// <summary>
-        /// Raise when a Get request comes in.
+        /// Raised when a Get request comes in.
         /// </summary>
         event GetMessageHandler<T> Get;
+
+        /// <summary>
+        /// Raise when a GetAll request comes in.
+        /// </summary>
+        event GetAllMessageHandler<T> GetAll;
 
         /// <summary>
         /// Raised when a create message comes in. Data will be model to create.
