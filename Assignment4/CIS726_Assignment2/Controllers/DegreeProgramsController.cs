@@ -9,17 +9,23 @@ using CIS726_Assignment2.Models;
 using PagedList;
 using CIS726_Assignment2.Repositories;
 using CIS726_Assignment2.ViewModels;
+using CIS726_Assignment2.SystemBus;
 
 namespace CIS726_Assignment2.Controllers
 {
     public class DegreeProgramsController : Controller
     {
-        private IGenericRepository<DegreeProgram> degreePrograms;
-        private IGenericRepository<RequiredCourse> requiredCourses;
-        private IGenericRepository<ElectiveCourse> electiveCourses;
-        private IGenericRepository<ElectiveList> electiveLists;
-        private IGenericRepository<Course> courses;
+        //private IGenericRepository<DegreeProgram> degreePrograms;
+        //private IGenericRepository<RequiredCourse> requiredCourses;
+        //private IGenericRepository<ElectiveCourse> electiveCourses;
+        //private IGenericRepository<ElectiveList> electiveLists;
+        //private IGenericRepository<Course> courses;
 
+        IMessageQueueProducer<DegreeProgram> _degreeProgramProducer;
+        IMessageQueueProducer<RequiredCourse> _requiredCourseProducer;
+        IMessageQueueProducer<ElectiveCourse> _electiveCourseProducer;
+        IMessageQueueProducer<ElectiveList> _electiveListProducer;
+        IMessageQueueProducer<Course> _courseProducer;
 
         /// <summary>
         /// Constructor used by the web application itself
@@ -27,11 +33,17 @@ namespace CIS726_Assignment2.Controllers
         public DegreeProgramsController()
         {
             CourseDBContext context = new CourseDBContext();
-            degreePrograms = new GenericRepository<DegreeProgram>(new StorageContext<DegreeProgram>(context));
-            requiredCourses = new GenericRepository<RequiredCourse>(new StorageContext<RequiredCourse>(context));
-            electiveCourses = new GenericRepository<ElectiveCourse>(new StorageContext<ElectiveCourse>(context));
-            electiveLists = new GenericRepository<ElectiveList>(new StorageContext<ElectiveList>(context));
-            courses = new GenericRepository<Course>(new StorageContext<Course>(context));
+            //degreePrograms = new GenericRepository<DegreeProgram>(new StorageContext<DegreeProgram>(context));
+            //requiredCourses = new GenericRepository<RequiredCourse>(new StorageContext<RequiredCourse>(context));
+            //electiveCourses = new GenericRepository<ElectiveCourse>(new StorageContext<ElectiveCourse>(context));
+            //electiveLists = new GenericRepository<ElectiveList>(new StorageContext<ElectiveList>(context));
+            //courses = new GenericRepository<Course>(new StorageContext<Course>(context));
+
+            _degreeProgramProducer = new BasicMessageQueueProducer<DegreeProgram>();
+            _requiredCourseProducer = new BasicMessageQueueProducer<RequiredCourse>();
+            _electiveCourseProducer = new BasicMessageQueueProducer<ElectiveCourse>();
+            _electiveListProducer = new BasicMessageQueueProducer<ElectiveList>();
+            _courseProducer = new BasicMessageQueueProducer<Course>();
         }
 
         /// <summary>
@@ -39,11 +51,11 @@ namespace CIS726_Assignment2.Controllers
         /// </summary>
         public DegreeProgramsController(IGenericRepository<DegreeProgram> fakeDegree, IGenericRepository<RequiredCourse> fakeRequired, IGenericRepository<ElectiveCourse> fakeElecCourse, IGenericRepository<ElectiveList> fakeElecList, IGenericRepository<Course> fakeCourse)
         {
-            degreePrograms = fakeDegree;
-            requiredCourses = fakeRequired;
-            electiveCourses = fakeElecCourse;
-            electiveLists = fakeElecList;
-            courses = fakeCourse;
+            //degreePrograms = fakeDegree;
+            //requiredCourses = fakeRequired;
+            //electiveCourses = fakeElecCourse;
+            //electiveLists = fakeElecList;
+            //courses = fakeCourse;
         }
 
         //
@@ -58,8 +70,8 @@ namespace CIS726_Assignment2.Controllers
 
             bool titleAsc = false;
 
-            var degreeProgramList = from s in degreePrograms.GetAll() select s;
-
+            //var degreeProgramList = from s in degreePrograms.GetAll() select s;
+            var degreeProgramList = _degreeProgramProducer.GetAll().AsQueryable();
             if (sortOrder == null)
             {
                 sortOrder = "title_asc";
@@ -114,7 +126,8 @@ namespace CIS726_Assignment2.Controllers
 
         public ActionResult Details(int id = 0)
         {
-            DegreeProgram degreeprogram = degreePrograms.Find(id);
+            //DegreeProgram degreeprogram = degreePrograms.Find(id);
+            DegreeProgram degreeprogram = _degreeProgramProducer.Get(new DegreeProgram() { ID = id });
             if (degreeprogram == null)
             {
                 return HttpNotFound();
@@ -140,8 +153,10 @@ namespace CIS726_Assignment2.Controllers
         {
             if (ModelState.IsValid)
             {
-                degreePrograms.Add(degreeprogram);
-                degreePrograms.SaveChanges();
+                //degreePrograms.Add(degreeprogram);
+                //degreePrograms.SaveChanges();
+                degreeprogram = _degreeProgramProducer.Create(degreeprogram).First();
+                degreeprogram = _degreeProgramProducer.Get(degreeprogram);
                 return RedirectToAction("Edit", new { id = degreeprogram.ID });
             }
 
@@ -153,7 +168,8 @@ namespace CIS726_Assignment2.Controllers
         [Authorize(Roles = "Administrator")]
         public ActionResult Edit(int id = 0)
         {
-            DegreeProgram degreeprogram = degreePrograms.Find(id);
+            //DegreeProgram degreeprogram = degreePrograms.Find(id);
+            DegreeProgram degreeprogram = _degreeProgramProducer.Get(new DegreeProgram() { ID = id });
             if (degreeprogram == null)
             {
                 return HttpNotFound();
@@ -172,7 +188,8 @@ namespace CIS726_Assignment2.Controllers
         {
             if (ModelState.IsValid)
             {
-                DegreeProgram degreeAttached = degreePrograms.Where(degree => degree.ID == degreeprogram.ID).First();
+                //DegreeProgram degreeAttached = degreePrograms.Where(degree => degree.ID == degreeprogram.ID).First();
+                DegreeProgram degreeAttached = _degreeProgramProducer.Get(new DegreeProgram() { ID = degreeprogram.ID });
                 degreeprogram.requiredCourses = degreeAttached.requiredCourses;
                 degreeprogram.electiveCourses = degreeAttached.electiveCourses;
 
@@ -193,7 +210,8 @@ namespace CIS726_Assignment2.Controllers
                     {
                         if (!RequiredCourses.Contains(course))
                         {
-                            RequiredCourse reqcourseAttached = requiredCourses.Where(reqc => reqc.ID == course.ID).First();
+                            //RequiredCourse reqcourseAttached = requiredCourses.Where(reqc => reqc.ID == course.ID).First();
+                            RequiredCourse reqcourseAttached = _requiredCourseProducer.Get(new RequiredCourse() { ID = course.ID });
                             toRemove.AddFirst(reqcourseAttached);
                         }
                     }
@@ -202,7 +220,8 @@ namespace CIS726_Assignment2.Controllers
                 while(toRemove.Count > 0){
                     RequiredCourse removeme = toRemove.First();
                     toRemove.RemoveFirst();
-                    requiredCourses.Remove(removeme);
+                    //requiredCourses.Remove(removeme);
+                    _requiredCourseProducer.Remove(removeme);
                 }
                 //clears the list
                 degreeprogram.requiredCourses.Clear();
@@ -212,16 +231,21 @@ namespace CIS726_Assignment2.Controllers
                     RequiredCourse reqcourseAttached = null; ;
                     if (reqcourse.ID > 0)
                     {
-                        reqcourseAttached = requiredCourses.Where(reqc => reqc.ID == reqcourse.ID).First();
-                        requiredCourses.UpdateValues(reqcourseAttached, reqcourse);
+                        //reqcourseAttached = requiredCourses.Where(reqc => reqc.ID == reqcourse.ID).First();
+                        reqcourseAttached = _requiredCourseProducer.Get(new RequiredCourse() { ID = reqcourse.ID });
+                        //requiredCourses.UpdateValues(reqcourseAttached, reqcourse);
+                        _requiredCourseProducer.Update(reqcourse);
                     }
                     else
                     {
-                        if (courses.Find(reqcourse.courseID) != null)
+                        //if (courses.Find(reqcourse.courseID) != null)
+                        if(_courseProducer.Get(new Course(){ID = reqcourse.courseID}) != null)
                         {
-                            requiredCourses.Add(reqcourse);
-                            requiredCourses.SaveChanges();
-                            reqcourseAttached = requiredCourses.Where(reqc => reqc.ID == reqcourse.ID).First();
+                            //requiredCourses.Add(reqcourse);
+                            //requiredCourses.SaveChanges();
+                            _requiredCourseProducer.Create(reqcourse);
+                            //reqcourseAttached = requiredCourses.Where(reqc => reqc.ID == reqcourse.ID).First();
+                            reqcourseAttached = _requiredCourseProducer.Get(new RequiredCourse() { ID = reqcourse.ID });
                         }
                     }
                     if (reqcourseAttached != null)
@@ -236,7 +260,8 @@ namespace CIS726_Assignment2.Controllers
                 {
                     if (!ElectiveCourses.Contains(course))
                     {
-                        ElectiveCourse elcourseAttached = electiveCourses.Where(elc => elc.ID == course.ID).First();
+                        //ElectiveCourse elcourseAttached = electiveCourses.Where(elc => elc.ID == course.ID).First();
+                        ElectiveCourse elcourseAttached = _electiveCourseProducer.Get(new ElectiveCourse() { ID = course.ID });
                         toRemoveMe.AddFirst(elcourseAttached);
                     }
                 }
@@ -245,7 +270,8 @@ namespace CIS726_Assignment2.Controllers
                 {
                     ElectiveCourse removeme = toRemoveMe.First();
                     toRemoveMe.RemoveFirst();
-                    electiveCourses.Remove(removeme);
+                    //electiveCourses.Remove(removeme);
+                    _electiveCourseProducer.Remove(removeme);
                 }
                 //clear the list
                 degreeprogram.electiveCourses.Clear();
@@ -255,16 +281,21 @@ namespace CIS726_Assignment2.Controllers
                     ElectiveCourse elcourseAttached = null; ;
                     if (elcourse.ID > 0)
                     {
-                        elcourseAttached = electiveCourses.Where(elc => elc.ID == elcourse.ID).First();
-                        electiveCourses.UpdateValues(elcourseAttached, elcourse);
+                        //elcourseAttached = electiveCourses.Where(elc => elc.ID == elcourse.ID).First();
+                        elcourseAttached = _electiveCourseProducer.Get(new ElectiveCourse() { ID = elcourse.ID });
+                        //electiveCourses.UpdateValues(elcourseAttached, elcourse);
+                        _electiveCourseProducer.Update(elcourse);
                     }
                     else
                     {
-                        if (electiveLists.Find(elcourse.electiveListID) != null)
+                        //if (electiveLists.Find(elcourse.electiveListID) != null)
+                        if(_electiveListProducer.Get(new ElectiveList(){ID = elcourse.electiveListID}) != null)
                         {
-                            electiveCourses.Add(elcourse);
-                            electiveCourses.SaveChanges();
-                            elcourseAttached = electiveCourses.Where(elc => elc.ID == elcourse.ID).First();
+                            //electiveCourses.Add(elcourse);
+                            //electiveCourses.SaveChanges();
+                            _electiveCourseProducer.Create(elcourse);
+                            //elcourseAttached = electiveCourses.Where(elc => elc.ID == elcourse.ID).First();
+                            elcourseAttached = _electiveCourseProducer.Get(new ElectiveCourse() { ID = elcourse.ID });
                         }
                     }
                     if (elcourseAttached != null)
@@ -273,8 +304,9 @@ namespace CIS726_Assignment2.Controllers
                     }
                 }    
                 
-                degreePrograms.UpdateValues(degreeAttached, degreeprogram);
-                degreePrograms.SaveChanges();
+                //degreePrograms.UpdateValues(degreeAttached, degreeprogram);
+                //degreePrograms.SaveChanges();
+                _degreeProgramProducer.Update(degreeprogram);
                 return RedirectToAction("Index");
             }
             if (RequiredCourses != null)
@@ -283,7 +315,8 @@ namespace CIS726_Assignment2.Controllers
                 {
                     if (course.courseID > 0)
                     {
-                        course.course = courses.Find(course.courseID);
+                        //course.course = courses.Find(course.courseID);
+                        course.course = _courseProducer.Get(new Course() { ID = course.courseID });
                     }
                 }
             }
@@ -295,7 +328,8 @@ namespace CIS726_Assignment2.Controllers
                 {
                     if (course.electiveListID > 0)
                     {
-                        course.electiveList = electiveLists.Find(course.electiveListID);
+                        //course.electiveList = electiveLists.Find(course.electiveListID);
+                        course.electiveList = _electiveListProducer.Get(new ElectiveList() { ID = course.electiveListID });
                     }
                 }
             }
@@ -358,7 +392,8 @@ namespace CIS726_Assignment2.Controllers
         [Authorize(Roles = "Administrator")]
         public ActionResult Delete(int id = 0)
         {
-            DegreeProgram degreeprogram = degreePrograms.Find(id);
+            //DegreeProgram degreeprogram = degreePrograms.Find(id);
+            DegreeProgram degreeprogram = _degreeProgramProducer.Get(new DegreeProgram() { ID = id });
             if (degreeprogram == null)
             {
                 return HttpNotFound();
@@ -375,15 +410,18 @@ namespace CIS726_Assignment2.Controllers
         [Authorize(Roles = "Administrator")]
         public ActionResult DeleteConfirmed(int id)
         {
-            DegreeProgram degreeprogram = degreePrograms.Find(id);
-            degreePrograms.Remove(degreeprogram);
-            degreePrograms.SaveChanges();
+            //DegreeProgram degreeprogram = degreePrograms.Find(id);
+            DegreeProgram degreeprogram = _degreeProgramProducer.Get(new DegreeProgram() { ID = id });
+            //degreePrograms.Remove(degreeprogram);
+            //degreePrograms.SaveChanges();
+            _degreeProgramProducer.Remove(degreeprogram);
             return RedirectToAction("Index");
         }
 
         public JsonResult GetCourses(int id)
         {
-            DegreeProgram degreeProgram = degreePrograms.Find(id);
+            //DegreeProgram degreeProgram = degreePrograms.Find(id);
+            DegreeProgram degreeProgram = _degreeProgramProducer.Get(new DegreeProgram() { ID = id });
             if (degreeProgram != null)
             {
                 List<FlowchartCourse> results = new List<FlowchartCourse>();
@@ -436,11 +474,11 @@ namespace CIS726_Assignment2.Controllers
 
         protected override void Dispose(bool disposing)
         {
-            degreePrograms.Dispose();
-            electiveLists.Dispose();
-            requiredCourses.Dispose();
-            courses.Dispose();
-            electiveCourses.Dispose();
+            //degreePrograms.Dispose();
+            //electiveLists.Dispose();
+            //requiredCourses.Dispose();
+            //courses.Dispose();
+            //electiveCourses.Dispose();
             base.Dispose(disposing);
         }
     }

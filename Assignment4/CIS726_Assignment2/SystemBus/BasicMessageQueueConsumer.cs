@@ -156,7 +156,8 @@ namespace CIS726_Assignment2.SystemBus
 
             try
             {
-                response.Result = Create(data);
+                T createdData = Create(data);
+                response.Result = new List<T>() { createdData };
                 response.ErrorMessage = null;
             }
             catch (Exception e)

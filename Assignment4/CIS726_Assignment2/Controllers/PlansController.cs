@@ -16,11 +16,11 @@ namespace CIS726_Assignment2.Controllers
 {
     public class PlansController : Controller
     {
-        private IGenericRepository<Plan> plans;
-        private IGenericRepository<PlanCourse> planCourses;
-        private IGenericRepository<Semester> semesters;
+        //private IGenericRepository<Plan> plans;
+        //private IGenericRepository<PlanCourse> planCourses;
+        //private IGenericRepository<Semester> semesters;
         private IGenericRepository<User> users;
-        private IGenericRepository<DegreeProgram> degreePrograms;
+        //private IGenericRepository<DegreeProgram> degreePrograms;
 
         private IRoles roles;
         private IWebSecurity webSecurity;
@@ -28,31 +28,33 @@ namespace CIS726_Assignment2.Controllers
         private IMessageQueueProducer<Plan> _planProducer;
         private IMessageQueueProducer<PlanCourse> _planCourseProducer;
         private IMessageQueueProducer<Semester> _semesterProducer;
+        private IMessageQueueProducer<DegreeProgram> _degreeProgramProducer;
 
         public PlansController()
         {
             CourseDBContext context = new CourseDBContext();
-            plans = new GenericRepository<Plan>(new StorageContext<Plan>(context));
-            planCourses = new GenericRepository<PlanCourse>(new StorageContext<PlanCourse>(context));
-            semesters = new GenericRepository<Semester>(new StorageContext<Semester>(context));
+            //plans = new GenericRepository<Plan>(new StorageContext<Plan>(context));
+            //planCourses = new GenericRepository<PlanCourse>(new StorageContext<PlanCourse>(context));
+            //semesters = new GenericRepository<Semester>(new StorageContext<Semester>(context));
             users = new GenericRepository<User>(new StorageContext<User>(context));
-            degreePrograms = new GenericRepository<DegreeProgram>(new StorageContext<DegreeProgram>(context));
+            //degreePrograms = new GenericRepository<DegreeProgram>(new StorageContext<DegreeProgram>(context));
             roles = new RolesImpl();
             webSecurity = new WebSecurityImpl();
 
             _planProducer = new BasicMessageQueueProducer<Plan>();
             _planCourseProducer = new BasicMessageQueueProducer<PlanCourse>();
             _semesterProducer = new BasicMessageQueueProducer<Semester>();
+            _degreeProgramProducer = new BasicMessageQueueProducer<DegreeProgram>();
         }
 
 
         public PlansController(IGenericRepository<Plan> fakePlan, IGenericRepository<PlanCourse> fakePlanCourse, IGenericRepository<Semester> fakeSem, IGenericRepository<User> fakeUser, IGenericRepository<DegreeProgram> fakeDegree, IRoles fakeRoles, IWebSecurity fakeWebSecurity)
         {
-            plans = fakePlan;
-            planCourses = fakePlanCourse;
-            semesters = fakeSem;
+            //plans = fakePlan;
+            //planCourses = fakePlanCourse;
+            //semesters = fakeSem;
             users = fakeUser;
-            degreePrograms = fakeDegree;
+            //degreePrograms = fakeDegree;
             roles = fakeRoles;
             webSecurity = fakeWebSecurity;
         }
@@ -170,8 +172,8 @@ namespace CIS726_Assignment2.Controllers
         [Authorize]
         public ActionResult Create()
         {
-            ViewBag.degreeProgramID = new SelectList(degreePrograms.GetAll().AsEnumerable(), "ID", "degreeProgramName");
-            //ViewBag.degreeProgramID = new SelectList(
+            //ViewBag.degreeProgramID = new SelectList(degreePrograms.GetAll().AsEnumerable(), "ID", "degreeProgramName");
+            ViewBag.degreeProgramID = new SelectList(_degreeProgramProducer.GetAll().AsEnumerable(), "ID", "degreeProgramName");
             if (webSecurity.CurrentUser.IsInRole("Advisor"))
             {
                 ViewBag.userID = new SelectList(users.GetAll().AsEnumerable(), "ID", "username");
@@ -182,7 +184,8 @@ namespace CIS726_Assignment2.Controllers
                 ViewBag.userID = webSecurity.CurrentUserId;
                 ViewBag.Advisor = false;
             }
-            ViewBag.semesterID = new SelectList(semesters.Where(i => i.standard == true).AsEnumerable(), "ID", "semesterName");
+            //ViewBag.semesterID = new SelectList(semesters.Where(i => i.standard == true).AsEnumerable(), "ID", "semesterName");
+            ViewBag.semesterID = new SelectList(_semesterProducer.GetAll().Where(i => i.standard == true).AsEnumerable(), "ID", "semesterName");
             return View();
         }
 
@@ -206,7 +209,8 @@ namespace CIS726_Assignment2.Controllers
                 ChangeDegreeProgram(newPlan);
                 return RedirectToAction("Index");
             }
-            ViewBag.degreeProgramID = new SelectList(degreePrograms.GetAll().AsEnumerable(), "ID", "degreeProgramName", plan.degreeProgramID);
+            ViewBag.degreeProgramID = new SelectList(_degreeProgramProducer.GetAll().AsEnumerable(), "ID", "degreeProgramName", plan.degreeProgramID);
+            //ViewBag.degreeProgramID = new SelectList(degreePrograms.GetAll().AsEnumerable(), "ID", "degreeProgramName", plan.degreeProgramID);
             if (webSecurity.CurrentUser.IsInRole("Advisor"))
             {
                 ViewBag.userID = new SelectList(users.GetAll().AsEnumerable(), "ID", "username");
@@ -217,7 +221,8 @@ namespace CIS726_Assignment2.Controllers
                 ViewBag.userID = webSecurity.CurrentUserId;
                 ViewBag.Advisor = false;
             }
-            ViewBag.semesterID = new SelectList(semesters.Where(i => i.standard == true).AsEnumerable(), "ID", "semesterName");
+            var semesterList = _semesterProducer.GetAll().Where(i => i.standard == true);
+            ViewBag.semesterID = new SelectList(semesterList.AsEnumerable(), "ID", "semesterName");
             return View(plan);
         }
 
@@ -226,14 +231,16 @@ namespace CIS726_Assignment2.Controllers
         [Authorize]
         public ActionResult Edit(int id = 0)
         {
-            Plan plan = plans.Find(id);
+            //Plan plan = plans.Find(id);
+            Plan plan = _planProducer.Get(new Plan() { ID = id });
             if (plan == null)
             {
                 return HttpNotFound();
             }
             if (webSecurity.CurrentUser.IsInRole("Advisor") || plan.userID == webSecurity.CurrentUserId)
             {
-                ViewBag.degreeProgramID = new SelectList(degreePrograms.GetAll().AsEnumerable(), "ID", "degreeProgramName", plan.degreeProgramID);
+                //ViewBag.degreeProgramID = new SelectList(degreePrograms.GetAll().AsEnumerable(), "ID", "degreeProgramName", plan.degreeProgramID);
+                ViewBag.degreeProgramID = new SelectList(_degreeProgramProducer.GetAll().AsEnumerable(), "ID", "degreeProgramName", plan.degreeProgramID);
                 if (webSecurity.CurrentUser.IsInRole("Advisor"))
                 {
                     ViewBag.userID = new SelectList(users.GetAll().AsEnumerable(), "ID", "username", plan.userID);
@@ -244,7 +251,8 @@ namespace CIS726_Assignment2.Controllers
                     ViewBag.userID = webSecurity.CurrentUserId;
                     ViewBag.Advisor = false;
                 }
-                ViewBag.semesterID = new SelectList(semesters.Where(i => i.standard == true).AsEnumerable(), "ID", "semesterName", plan.semesterID);
+                //ViewBag.semesterID = new SelectList(semesters.Where(i => i.standard == true).AsEnumerable(), "ID", "semesterName", plan.semesterID);
+                ViewBag.semesterID = new SelectList(_semesterProducer.GetAll().Where(i => i.standard == true).AsEnumerable(), "ID", "semesterName", plan.semesterID);
                 return View(plan);
             }
             else
@@ -268,15 +276,18 @@ namespace CIS726_Assignment2.Controllers
                 plan.userID = planAttached.userID;
                 if (webSecurity.CurrentUser.IsInRole("Advisor") || plan.userID == webSecurity.CurrentUserId)
                 {
-                    plans.UpdateValues(planAttached, plan);
-                    plans.SaveChanges();
-                    Plan newPlan = plans.Find(plan.ID);
-                    newPlan.degreeProgram = degreePrograms.Find(newPlan.degreeProgramID);
+                    _planProducer.Update(plan);
+                    //plans.UpdateValues(planAttached, plan);
+                    //plans.SaveChanges();
+                    //Plan newPlan = plans.Find(plan.ID);
+                    Plan newPlan = _planProducer.Get(plan);
+                    //newPlan.degreeProgram = degreePrograms.Find(newPlan.degreeProgramID);
                     ChangeDegreeProgram(newPlan);
                     return RedirectToAction("Index");
                 }
             }
-            ViewBag.degreeProgramID = new SelectList(degreePrograms.GetAll().AsEnumerable(), "ID", "degreeProgramName", plan.degreeProgramID);
+            //ViewBag.degreeProgramID = new SelectList(degreePrograms.GetAll().AsEnumerable(), "ID", "degreeProgramName", plan.degreeProgramID);
+            ViewBag.degreeProgramID = new SelectList(_degreeProgramProducer.GetAll().AsEnumerable(), "ID", "degreeProgramName", plan.degreeProgramID);
             if (webSecurity.CurrentUser.IsInRole("Advisor"))
             {
                 ViewBag.userID = new SelectList(users.GetAll().AsEnumerable(), "ID", "username", plan.userID);
@@ -287,15 +298,15 @@ namespace CIS726_Assignment2.Controllers
                 ViewBag.userID = webSecurity.CurrentUserId;
                 ViewBag.Advisor = false;
             }
-            ViewBag.semesterID = new SelectList(semesters.Where(i => i.standard == true).AsEnumerable(), "ID", "semesterName", plan.semesterID);
+            //ViewBag.semesterID = new SelectList(semesters.Where(i => i.standard == true).AsEnumerable(), "ID", "semesterName", plan.semesterID);
+            ViewBag.semesterID = new SelectList(_semesterProducer.GetAll().Where(i => i.standard == true).AsEnumerable(), "ID", "semesterName", plan.semesterID);
             return View(plan);
         }
 
         private void ChangeDegreeProgram(Plan plan)
         {
             //List<PlanCourse> plans = planCourses.Where(i => i.planID == plan.ID.ToList();
-            List<PlanCourse> plans = _planCourseProducer.GetAll();
-            plans = plans.Where(pc => pc.planID == plan.ID).ToList();
+            List<PlanCourse> plans = _planCourseProducer.GetAll().Where(pc => pc.planID == plan.ID).ToList();
 
             foreach (PlanCourse planCourse in plans)
             {
@@ -397,10 +408,12 @@ namespace CIS726_Assignment2.Controllers
         {
             if (id > 0)
             {
-                PlanCourse pcourse = planCourses.Find(id);
+                //PlanCourse pcourse = planCourses.Find(id);
+                PlanCourse pcourse = _planCourseProducer.Get(new PlanCourse() { ID = id });
                 if (pcourse != null)
                 {
-                    Plan planAttached = plans.Find(pcourse.planID);
+                    //Plan planAttached = plans.Find(pcourse.planID);
+                    Plan planAttached = pcourse.plan;
                     if (webSecurity.CurrentUser.IsInRole("Advisor") || planAttached.userID == webSecurity.CurrentUserId)
                     {
                         if (pcourse.electiveListID != null)
@@ -434,23 +447,28 @@ namespace CIS726_Assignment2.Controllers
         [Authorize]
         public ActionResult MoveCourse(int ID, int semester, int order)
         {
-            PlanCourse pcourseAttached = planCourses.Find(ID);
-            Plan planAttached = plans.Find(pcourseAttached.planID);
+            //PlanCourse pcourseAttached = planCourses.Find(ID);
+            PlanCourse pcourseAttached = _planCourseProducer.Get(new PlanCourse { ID = ID });
+            //Plan planAttached = plans.Find(pcourseAttached.planID);
+            Plan planAttached = pcourseAttached.plan;
             if (webSecurity.CurrentUser.IsInRole("Advisor") || planAttached.userID == webSecurity.CurrentUserId)
             {
-                if (semesters.Find(semester) != null)
+                //if (semesters.Find(semester) != null)
+                if(_semesterProducer.Get(new Semester(){ID = semester}) != null)
                 {
                     int oldSemester = pcourseAttached.semesterID;
                     int oldOrder = pcourseAttached.order;
                     if (semester != oldSemester)
                     {
                         List<PlanCourse> moveUp = planAttached.planCourses.Where(s => s.semesterID == oldSemester).ToList();
+                        //List<PlanCourse> moveUp = 
                         foreach (PlanCourse pc in moveUp)
                         {
                             if (pc.order > oldOrder)
                             {
                                 pc.order = pc.order - 1;
-                                planCourses.UpdateValues(pc, pc);
+                                //planCourses.UpdateValues(pc, pc);
+                                _planCourseProducer.Update(pc);
                             }
                         }
                         List<PlanCourse> moveDown = planAttached.planCourses.Where(s => s.semesterID == semester).ToList();
@@ -459,7 +477,8 @@ namespace CIS726_Assignment2.Controllers
                             if (pc.order >= order)
                             {
                                 pc.order = pc.order + 1;
-                                planCourses.UpdateValues(pc, pc);
+                                //planCourses.UpdateValues(pc, pc);
+                                _planCourseProducer.Update(pc);
                             }
                         }
                     }
@@ -473,7 +492,8 @@ namespace CIS726_Assignment2.Controllers
                                 if (pc.order > oldOrder && pc.order <= order)
                                 {
                                     pc.order = pc.order - 1;
-                                    planCourses.UpdateValues(pc, pc);
+                                    //planCourses.UpdateValues(pc, pc);
+                                    _planCourseProducer.Update(pc);
                                 }
                             }
                         }
@@ -485,7 +505,8 @@ namespace CIS726_Assignment2.Controllers
                                 if (pc.order >= order && pc.order < order)
                                 {
                                     pc.order = pc.order + 1;
-                                    planCourses.UpdateValues(pc, pc);
+                                    //planCourses.UpdateValues(pc, pc);
+                                    _planCourseProducer.Update(pc);
                                 }
                             }
                         }
@@ -499,8 +520,9 @@ namespace CIS726_Assignment2.Controllers
                     {
                         pcourseAttached.order = 7;
                     }
-                    planCourses.UpdateValues(pcourseAttached, pcourseAttached);
-                    planCourses.SaveChanges();
+                    //planCourses.UpdateValues(pcourseAttached, pcourseAttached);
+                    //planCourses.SaveChanges();
+                    _planCourseProducer.Update(pcourseAttached);
                     return new HttpStatusCodeResult(HttpStatusCode.OK);
                 }
             }
@@ -513,14 +535,17 @@ namespace CIS726_Assignment2.Controllers
         {
             if (ModelState.IsValid)
             {
-                PlanCourse pcourseAttached = planCourses.Find(ID);
-                Plan planAttached = plans.Find(pcourseAttached.planID);
+                //PlanCourse pcourseAttached = planCourses.Find(ID);
+                PlanCourse pcourseAttached = _planCourseProducer.Get(new PlanCourse() { ID = ID });
+                //Plan planAttached = plans.Find(pcourseAttached.planID);
+                Plan planAttached = pcourseAttached.plan;
                 if (webSecurity.CurrentUser.IsInRole("Advisor") || planAttached.userID == webSecurity.CurrentUserId)
                 {
                     pcourseAttached.notes = notes;
                     pcourseAttached.courseID = courseID;
-                    planCourses.UpdateValues(pcourseAttached, pcourseAttached);
-                    planCourses.SaveChanges();
+                    //planCourses.UpdateValues(pcourseAttached, pcourseAttached);
+                    //planCourses.SaveChanges();
+                    _planCourseProducer.Update(pcourseAttached);
                     return new HttpStatusCodeResult(HttpStatusCode.OK);
                 }
             }
@@ -529,7 +554,8 @@ namespace CIS726_Assignment2.Controllers
 
         public JsonResult GetSemesters(int id)
         {
-            var sems = semesters.Where(i => i.ID >= id).ToList();
+            //var sems = semesters.Where(i => i.ID >= id).ToList();
+            var sems = _semesterProducer.GetAll().Where(i => i.ID >= id).ToList();
             var results = sems.Select(sem => new { sem.ID, sem.semesterName });
             return Json(results, JsonRequestBehavior.AllowGet);
         }
@@ -537,7 +563,8 @@ namespace CIS726_Assignment2.Controllers
         [Authorize]
         public JsonResult GetPlanCourses(int id)
         {
-            Plan plan = plans.Find(id);
+            //Plan plan = plans.Find(id);
+            Plan plan = _planProducer.Get(new Plan() { ID = id });
             if (webSecurity.CurrentUser.IsInRole("Advisor") || plan.userID == webSecurity.CurrentUserId){
                 List<FlowchartCourse> results = new List<FlowchartCourse>();
                 foreach (PlanCourse pcourse in plan.planCourses)
@@ -572,7 +599,7 @@ namespace CIS726_Assignment2.Controllers
 
         protected override void Dispose(bool disposing)
         {
-            plans.Dispose();
+            //plans.Dispose();
             base.Dispose(disposing);
         }
     }

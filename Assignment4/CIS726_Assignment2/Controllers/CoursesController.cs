@@ -14,9 +14,10 @@ namespace CIS726_Assignment2.Controllers
 {
     public class CoursesController : Controller
     {
-        private IGenericRepository<PrerequisiteCourse> prerequisiteCourses;
+        //private IGenericRepository<PrerequisiteCourse> prerequisiteCourses;
 
         private IMessageQueueProducer<Course> _courseProducer;
+        private IMessageQueueProducer<PrerequisiteCourse> _prerequisiteCourseProducer;
 
         //private IMessageQueuePublisher _publisher;
         //private IMessageQueueConsumer _consumer;
@@ -27,9 +28,10 @@ namespace CIS726_Assignment2.Controllers
         public CoursesController()
         {
             _courseProducer = new BasicMessageQueueProducer<Course>();
+            _prerequisiteCourseProducer = new BasicMessageQueueProducer<PrerequisiteCourse>();
 
             CourseDBContext context = new CourseDBContext();
-            prerequisiteCourses = new GenericRepository<PrerequisiteCourse>(new StorageContext<PrerequisiteCourse>(context));
+            //prerequisiteCourses = new GenericRepository<PrerequisiteCourse>(new StorageContext<PrerequisiteCourse>(context));
         }
 
         /// <summary>
@@ -39,7 +41,7 @@ namespace CIS726_Assignment2.Controllers
         public CoursesController(IGenericRepository<Course> fake, IGenericRepository<PrerequisiteCourse> fakePrereq)
         {
             //courses = fake;
-            prerequisiteCourses = fakePrereq;
+            //prerequisiteCourses = fakePrereq;
         }
 
         //
@@ -472,7 +474,8 @@ namespace CIS726_Assignment2.Controllers
                     {
                         if (!PrerequisiteCourses.Contains(pcourse))
                         {
-                            PrerequisiteCourse elcourseAttached = prerequisiteCourses.Where(reqc => reqc.ID == pcourse.ID).First();
+                            //PrerequisiteCourse elcourseAttached = prerequisiteCourses.Where(reqc => reqc.ID == pcourse.ID).First();
+                            PrerequisiteCourse elcourseAttached = _prerequisiteCourseProducer.Get(new PrerequisiteCourse() { ID = pcourse.ID });
                             toRemove.AddFirst(elcourseAttached);
                         }
                     }
@@ -482,7 +485,8 @@ namespace CIS726_Assignment2.Controllers
                 {
                     PrerequisiteCourse removeme = toRemove.First();
                     toRemove.RemoveFirst();
-                    prerequisiteCourses.Remove(removeme);
+                    //prerequisiteCourses.Remove(removeme);
+                    _prerequisiteCourseProducer.Remove(removeme);
                 }
                 //clear the list
                 course.prerequisites.Clear();
@@ -492,17 +496,22 @@ namespace CIS726_Assignment2.Controllers
                     PrerequisiteCourse pcourseAttached = null; ;
                     if (pcourse.ID > 0)
                     {
-                        pcourseAttached = prerequisiteCourses.Where(reqc => reqc.ID == pcourse.ID).First();
-                        prerequisiteCourses.UpdateValues(pcourseAttached, pcourse);
+                        //pcourseAttached = prerequisiteCourses.Where(reqc => reqc.ID == pcourse.ID).First();
+                        pcourseAttached = _prerequisiteCourseProducer.Get(new PrerequisiteCourse() { ID = pcourse.ID });
+                        //prerequisiteCourses.UpdateValues(pcourseAttached, pcourse);
+                        _prerequisiteCourseProducer.Update(pcourse); //TODO: check if works correctly or need to switch w/ pcourseAttached
                     }
                     else
                     {
                         
                         if (courseList.FirstOrDefault(x => x.ID == pcourse.prerequisiteCourseID) != null)
                         {
-                            prerequisiteCourses.Add(pcourse);
-                            prerequisiteCourses.SaveChanges();
-                            pcourseAttached = prerequisiteCourses.Where(reqc => reqc.ID == pcourse.ID).First();
+                            //prerequisiteCourses.Add(pcourse);
+                            //prerequisiteCourses.SaveChanges();
+                            _prerequisiteCourseProducer.Create(pcourse);
+
+                            //pcourseAttached = prerequisiteCourses.Where(reqc => reqc.ID == pcourse.ID).First();
+                            pcourseAttached = _prerequisiteCourseProducer.Get(new PrerequisiteCourse() { ID = pcourse.ID });
                         }
                     }
                     if (pcourseAttached != null)
