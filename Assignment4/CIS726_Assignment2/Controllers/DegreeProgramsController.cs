@@ -114,7 +114,7 @@ namespace CIS726_Assignment2.Controllers
 
         public ActionResult Details(int id = 0)
         {
-            DegreeProgram degreeprogram = degreePrograms.Find(id);
+            DegreeProgram degreeprogram = degreePrograms.Find(new DegreeProgram() { ID = id });
             if (degreeprogram == null)
             {
                 return HttpNotFound();
@@ -153,7 +153,7 @@ namespace CIS726_Assignment2.Controllers
         [Authorize(Roles = "Administrator")]
         public ActionResult Edit(int id = 0)
         {
-            DegreeProgram degreeprogram = degreePrograms.Find(id);
+            DegreeProgram degreeprogram = degreePrograms.Find(new DegreeProgram() { ID = id });
             if (degreeprogram == null)
             {
                 return HttpNotFound();
@@ -217,7 +217,7 @@ namespace CIS726_Assignment2.Controllers
                     }
                     else
                     {
-                        if (courses.Find(reqcourse.courseID) != null)
+                        if (courses.Find(new Course() { ID = reqcourse.courseID }) != null)
                         {
                             requiredCourses.Add(reqcourse);
                             requiredCourses.SaveChanges();
@@ -260,7 +260,7 @@ namespace CIS726_Assignment2.Controllers
                     }
                     else
                     {
-                        if (electiveLists.Find(elcourse.electiveListID) != null)
+                        if (electiveLists.Find(new ElectiveList() { ID = elcourse.electiveListID }) != null)
                         {
                             electiveCourses.Add(elcourse);
                             electiveCourses.SaveChanges();
@@ -283,7 +283,7 @@ namespace CIS726_Assignment2.Controllers
                 {
                     if (course.courseID > 0)
                     {
-                        course.course = courses.Find(course.courseID);
+                        course.course = courses.Find(new Course() { ID = course.courseID });
                     }
                 }
             }
@@ -295,7 +295,7 @@ namespace CIS726_Assignment2.Controllers
                 {
                     if (course.electiveListID > 0)
                     {
-                        course.electiveList = electiveLists.Find(course.electiveListID);
+                        course.electiveList = electiveLists.Find(new ElectiveList() { ID = course.electiveListID });
                     }
                 }
             }
@@ -358,7 +358,7 @@ namespace CIS726_Assignment2.Controllers
         [Authorize(Roles = "Administrator")]
         public ActionResult Delete(int id = 0)
         {
-            DegreeProgram degreeprogram = degreePrograms.Find(id);
+            DegreeProgram degreeprogram = degreePrograms.Find(new DegreeProgram() { ID = id });
             if (degreeprogram == null)
             {
                 return HttpNotFound();
@@ -375,7 +375,7 @@ namespace CIS726_Assignment2.Controllers
         [Authorize(Roles = "Administrator")]
         public ActionResult DeleteConfirmed(int id)
         {
-            DegreeProgram degreeprogram = degreePrograms.Find(id);
+            DegreeProgram degreeprogram = degreePrograms.Find(new DegreeProgram() { ID = id });
             degreePrograms.Remove(degreeprogram);
             degreePrograms.SaveChanges();
             return RedirectToAction("Index");
@@ -383,7 +383,7 @@ namespace CIS726_Assignment2.Controllers
 
         public JsonResult GetCourses(int id)
         {
-            DegreeProgram degreeProgram = degreePrograms.Find(id);
+            DegreeProgram degreeProgram = degreePrograms.Find(new DegreeProgram() { ID = id });
             if (degreeProgram != null)
             {
                 List<FlowchartCourse> results = new List<FlowchartCourse>();

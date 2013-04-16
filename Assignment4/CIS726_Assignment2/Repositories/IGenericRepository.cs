@@ -20,6 +20,7 @@ namespace CIS726_Assignment2.Repositories
         IQueryable<T> GetAll();
         IQueryable<T> Where(Expression<Func<T, bool>> predicate);
         T Find(int id);
+        T Find(T data);
         void Add(T entity);
         void Remove(T entity);
         void Edit(T entity);

@@ -107,7 +107,7 @@ namespace CIS726_Assignment2.Controllers
 
         public ActionResult Details(int id = 0)
         {
-            ElectiveList electivelist = electiveLists.Find(id);
+            ElectiveList electivelist = electiveLists.Find(new ElectiveList() { ID = id });
             if (electivelist == null)
             {
                 return HttpNotFound();
@@ -147,7 +147,7 @@ namespace CIS726_Assignment2.Controllers
         [Authorize(Roles = "Administrator")]
         public ActionResult Edit(int id = 0)
         {
-            ElectiveList electivelist = electiveLists.Find(id);
+            ElectiveList electivelist = electiveLists.Find(new ElectiveList() { ID = id });
             if (electivelist == null)
             {
                 return HttpNotFound();
@@ -206,7 +206,7 @@ namespace CIS726_Assignment2.Controllers
                     }
                     else
                     {
-                        if (courses.Find(elcourse.courseID) != null)
+                        if (courses.Find(new Course() { ID = elcourse.courseID }) != null)
                         {
                             electiveListCourses.Add(elcourse);
                             electiveListCourses.SaveChanges();
@@ -228,7 +228,7 @@ namespace CIS726_Assignment2.Controllers
                 {
                     if (course.courseID > 0)
                     {
-                        course.course = courses.Find(course.courseID);
+                        course.course = courses.Find(new Course() { ID = course.courseID });
                     }
                 }
             }
@@ -265,7 +265,7 @@ namespace CIS726_Assignment2.Controllers
         [Authorize(Roles = "Administrator")]
         public ActionResult Delete(int id = 0)
         {
-            ElectiveList electivelist = electiveLists.Find(id);
+            ElectiveList electivelist = electiveLists.Find(new ElectiveList() { ID = id });
             if (electivelist == null)
             {
                 return HttpNotFound();
@@ -281,7 +281,7 @@ namespace CIS726_Assignment2.Controllers
         [Authorize(Roles = "Administrator")]
         public ActionResult DeleteConfirmed(int id)
         {
-            ElectiveList electivelist = electiveLists.Find(id);
+            ElectiveList electivelist = electiveLists.Find(new ElectiveList() { ID = id });
             electiveLists.Remove(electivelist);
             electiveLists.SaveChanges();
             return RedirectToAction("Index");

@@ -395,7 +395,7 @@ namespace CIS726_Assignment2.Controllers
 
         public ActionResult Details(int id = 0)
         {
-            Course course = courses.Find(id);
+            Course course = courses.Find(new Course(){ID = id});
             if (course == null)
             {
                 return HttpNotFound();
@@ -431,7 +431,7 @@ namespace CIS726_Assignment2.Controllers
         [Authorize(Roles = "Administrator")]
         public ActionResult Edit(int id = 0)
         {
-            Course course = courses.Find(id);
+            Course course = courses.Find(new Course() { ID = id });
             if (course == null)
             {
                 return HttpNotFound();
@@ -555,7 +555,7 @@ namespace CIS726_Assignment2.Controllers
         [Authorize(Roles = "Administrator")]
         public ActionResult Delete(int id = 0)
         {
-            Course course = courses.Find(id);
+            Course course = courses.Find(new Course() { ID = id });
             if (course == null)
             {
                 return HttpNotFound();
@@ -570,7 +570,7 @@ namespace CIS726_Assignment2.Controllers
         [Authorize(Roles = "Administrator")]
         public ActionResult DeleteConfirmed(int id)
         {
-            Course course = courses.Find(id);
+            Course course = courses.Find(new Course() { ID = id });
             courses.Remove(course);
             return RedirectToAction("Index");
         }

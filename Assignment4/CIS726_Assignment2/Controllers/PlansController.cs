@@ -121,7 +121,7 @@ namespace CIS726_Assignment2.Controllers
         [Authorize]
         public ActionResult Details(int id = 0)
         {
-            Plan plan = plans.Find(id);
+            Plan plan = plans.Find(new Plan() { ID = id });
             if (plan == null)
             {
                 return HttpNotFound();
@@ -169,8 +169,8 @@ namespace CIS726_Assignment2.Controllers
             {
                 plans.Add(plan);
                 plans.SaveChanges();
-                Plan newPlan = plans.Find(plan.ID);
-                newPlan.degreeProgram = degreePrograms.Find(newPlan.degreeProgramID);
+                Plan newPlan = plans.Find(new Plan() {ID = plan.ID});
+                newPlan.degreeProgram = degreePrograms.Find(new DegreeProgram() { ID = newPlan.degreeProgramID });
                 ChangeDegreeProgram(newPlan);
                 return RedirectToAction("Index");
             }
@@ -194,7 +194,7 @@ namespace CIS726_Assignment2.Controllers
         [Authorize]
         public ActionResult Edit(int id = 0)
         {
-            Plan plan = plans.Find(id);
+            Plan plan = plans.Find(new Plan() { ID = id });
             if (plan == null)
             {
                 return HttpNotFound();
@@ -230,14 +230,14 @@ namespace CIS726_Assignment2.Controllers
         {
             if (ModelState.IsValid)
             {
-                Plan planAttached = plans.Find(plan.ID);
+                Plan planAttached = plans.Find(new Plan() { ID = plan.ID });
                 plan.userID = planAttached.userID;
                 if (webSecurity.CurrentUser.IsInRole("Advisor") || plan.userID == webSecurity.CurrentUserId)
                 {
                     plans.UpdateValues(planAttached, plan);
                     plans.SaveChanges();
-                    Plan newPlan = plans.Find(plan.ID);
-                    newPlan.degreeProgram = degreePrograms.Find(newPlan.degreeProgramID);
+                    Plan newPlan = plans.Find(new Plan() { ID = plan.ID });
+                    newPlan.degreeProgram = degreePrograms.Find(new DegreeProgram() { ID = newPlan.degreeProgramID });
                     ChangeDegreeProgram(newPlan);
                     return RedirectToAction("Index");
                 }
@@ -315,7 +315,7 @@ namespace CIS726_Assignment2.Controllers
         [Authorize]
         public ActionResult Delete(int id = 0)
         {
-            Plan plan = plans.Find(id);
+            Plan plan = plans.Find(new Plan() { ID = id });
             if (plan == null)
             {
                 return HttpNotFound();
@@ -337,7 +337,7 @@ namespace CIS726_Assignment2.Controllers
         [Authorize]
         public ActionResult DeleteConfirmed(int id)
         {
-            Plan plan = plans.Find(id);
+            Plan plan = plans.Find(new Plan() { ID = id });
             if (webSecurity.CurrentUser.IsInRole("Advisor") || plan.userID == webSecurity.CurrentUserId)
             {
                 plans.Remove(plan);
@@ -351,10 +351,10 @@ namespace CIS726_Assignment2.Controllers
         {
             if (id > 0)
             {
-                PlanCourse pcourse = planCourses.Find(id);
+                PlanCourse pcourse = planCourses.Find(new PlanCourse() { ID = id });
                 if (pcourse != null)
                 {
-                    Plan planAttached = plans.Find(pcourse.planID);
+                    Plan planAttached = plans.Find(new Plan() { ID = pcourse.planID });
                     if (webSecurity.CurrentUser.IsInRole("Advisor") || planAttached.userID == webSecurity.CurrentUserId)
                     {
                         if (pcourse.electiveListID != null)
@@ -388,11 +388,11 @@ namespace CIS726_Assignment2.Controllers
         [Authorize]
         public ActionResult MoveCourse(int ID, int semester, int order)
         {
-            PlanCourse pcourseAttached = planCourses.Find(ID);
-            Plan planAttached = plans.Find(pcourseAttached.planID);
+            PlanCourse pcourseAttached = planCourses.Find(new PlanCourse() { ID = ID });
+            Plan planAttached = plans.Find(new Plan() { ID = pcourseAttached.planID });
             if (webSecurity.CurrentUser.IsInRole("Advisor") || planAttached.userID == webSecurity.CurrentUserId)
             {
-                if (semesters.Find(semester) != null)
+                if (semesters.Find(new Semester() { ID = semester }) != null)
                 {
                     int oldSemester = pcourseAttached.semesterID;
                     int oldOrder = pcourseAttached.order;
@@ -467,8 +467,8 @@ namespace CIS726_Assignment2.Controllers
         {
             if (ModelState.IsValid)
             {
-                PlanCourse pcourseAttached = planCourses.Find(ID);
-                Plan planAttached = plans.Find(pcourseAttached.planID);
+                PlanCourse pcourseAttached = planCourses.Find(new PlanCourse() { ID = ID });
+                Plan planAttached = plans.Find(new Plan() { ID = pcourseAttached.planID });
                 if (webSecurity.CurrentUser.IsInRole("Advisor") || planAttached.userID == webSecurity.CurrentUserId)
                 {
                     pcourseAttached.notes = notes;
@@ -491,7 +491,7 @@ namespace CIS726_Assignment2.Controllers
         [Authorize]
         public JsonResult GetPlanCourses(int id)
         {
-            Plan plan = plans.Find(id);
+            Plan plan = plans.Find(new Plan() { ID = id });
             if (webSecurity.CurrentUser.IsInRole("Advisor") || plan.userID == webSecurity.CurrentUserId){
                 List<FlowchartCourse> results = new List<FlowchartCourse>();
                 foreach (PlanCourse pcourse in plan.planCourses)

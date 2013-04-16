@@ -74,6 +74,11 @@ namespace CIS726_Assignment2.Repositories
             return _entities.FindByID(anid);
         }
 
+        public T Find(T data)
+        {
+            return null;
+        }
+
         /// <summary>
         /// This adds and entity to the storage containter
         /// </summary>

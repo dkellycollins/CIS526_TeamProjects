@@ -17,6 +17,7 @@ namespace CIS726_Assignment2.Models
     [DataContract(IsReference = true)]
     public abstract class IModel
     {
+        [DataMember]
         public abstract int ID { get; set; }
     }
 }
