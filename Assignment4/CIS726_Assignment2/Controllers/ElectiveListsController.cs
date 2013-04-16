@@ -15,18 +15,27 @@ namespace CIS726_Assignment2.Controllers
     public class ElectiveListsController : Controller
     {
 
-        private IGenericRepository<ElectiveList> electiveLists;
-        private IGenericRepository<Course> courses;
-        private IGenericRepository<ElectiveListCourse> electiveListCourses;
+        //private IGenericRepository<ElectiveList> electiveLists;
+        //private IGenericRepository<Course> courses;
+        //private IGenericRepository<ElectiveListCourse> electiveListCourses;
+
+        IMessageQueueProducer<ElectiveList> _electiveListProducer;
+        IMessageQueueProducer<Course> _courseProducer;
+        IMessageQueueProducer<ElectiveListCourse> _electiveListCourseProducer;
 
         /// <summary>
         /// Constructor used by the web application itself
         /// </summary>
         public ElectiveListsController()
         {
-            electiveLists = new MessageQueueRepository<ElectiveList>(new BasicMessageQueueProducer<ElectiveList>());
-            courses = new MessageQueueRepository<Course>(new BasicMessageQueueProducer<Course>());
-            electiveListCourses = new MessageQueueRepository<ElectiveListCourse>(new BasicMessageQueueProducer<ElectiveListCourse>());
+            CourseDBContext context = new CourseDBContext();
+            //electiveLists = new GenericRepository<ElectiveList>(new StorageContext<ElectiveList>(context));
+            //courses = new GenericRepository<Course>(new StorageContext<Course>(context));
+            //electiveListCourses = new GenericRepository<ElectiveListCourse>(new StorageContext<ElectiveListCourse>(context));
+
+            _electiveListProducer = new BasicMessageQueueProducer<ElectiveList>();
+            _courseProducer = new BasicMessageQueueProducer<Course>();
+            _electiveListCourseProducer = new BasicMessageQueueProducer<ElectiveListCourse>();
         }
 
         /// <summary>
@@ -34,9 +43,9 @@ namespace CIS726_Assignment2.Controllers
         /// </summary>
         public ElectiveListsController(IGenericRepository<ElectiveList> fakeElecList, IGenericRepository<Course> fakeCourse, IGenericRepository<ElectiveListCourse> fakeElecListCourse)
         {
-            electiveLists = fakeElecList;
-            courses = fakeCourse;
-            electiveListCourses = fakeElecListCourse;
+            //electiveLists = fakeElecList;
+            //courses = fakeCourse;
+            //electiveListCourses = fakeElecListCourse;
         }
 
         //
@@ -51,7 +60,8 @@ namespace CIS726_Assignment2.Controllers
 
             bool titleAsc = false;
 
-            var electiveListsList = from s in electiveLists.GetAll() select s;
+            //var electiveListsList = from s in electiveLists.GetAll() select s;
+            var electiveListsList = _electiveListProducer.GetAll().AsQueryable();
 
             if (sortOrder == null)
             {
@@ -107,7 +117,8 @@ namespace CIS726_Assignment2.Controllers
 
         public ActionResult Details(int id = 0)
         {
-            ElectiveList electivelist = electiveLists.Find(new ElectiveList() { ID = id });
+            //ElectiveList electivelist = electiveLists.Find(id);
+            ElectiveList electivelist = _electiveListProducer.Get(new ElectiveList() { ID = id });
             if (electivelist == null)
             {
                 return HttpNotFound();
@@ -133,8 +144,10 @@ namespace CIS726_Assignment2.Controllers
         {
             if (ModelState.IsValid)
             {
-                electiveLists.Add(electivelist);
-                electiveLists.SaveChanges();
+                //electiveLists.Add(electivelist);
+                //electiveLists.SaveChanges();
+                electivelist = _electiveListProducer.Create(electivelist).First();
+                electivelist = _electiveListProducer.Get(electivelist);
                 return RedirectToAction("Edit", new { id = electivelist.ID });
                 //return RedirectToAction("Index");
             }
@@ -147,7 +160,8 @@ namespace CIS726_Assignment2.Controllers
         [Authorize(Roles = "Administrator")]
         public ActionResult Edit(int id = 0)
         {
-            ElectiveList electivelist = electiveLists.Find(new ElectiveList() { ID = id });
+            //ElectiveList electivelist = electiveLists.Find(id);
+            ElectiveList electivelist = _electiveListProducer.Get(new ElectiveList() { ID = id });
             if (electivelist == null)
             {
                 return HttpNotFound();
@@ -165,7 +179,8 @@ namespace CIS726_Assignment2.Controllers
         {
             if (ModelState.IsValid)
             {
-                ElectiveList elistAttached = electiveLists.Where(elist => elist.ID == electivelist.ID).First();
+                //ElectiveList elistAttached = electiveLists.Where(elist => elist.ID == electivelist.ID).First();
+                ElectiveList elistAttached = _electiveListProducer.Get(new ElectiveList() { ID = electivelist.ID });
                 electivelist.courses = elistAttached.courses;
 
                 if (ElectiveListCourses == null)
@@ -181,7 +196,8 @@ namespace CIS726_Assignment2.Controllers
                     {
                         if (!ElectiveListCourses.Contains(course))
                         {
-                            ElectiveListCourse elcourseAttached = electiveListCourses.Where(reqc => reqc.ID == course.ID).First();
+                            //ElectiveListCourse elcourseAttached = electiveListCourses.Where(reqc => reqc.ID == course.ID).First();
+                            ElectiveListCourse elcourseAttached = _electiveListCourseProducer.Get(new ElectiveListCourse() { ID = course.ID });
                             toRemove.AddFirst(elcourseAttached);
                         }
                     }
@@ -191,7 +207,8 @@ namespace CIS726_Assignment2.Controllers
                 {
                     ElectiveListCourse removeme = toRemove.First();
                     toRemove.RemoveFirst();
-                    electiveListCourses.Remove(removeme);
+                    //electiveListCourses.Remove(removeme);
+                    _electiveListCourseProducer.Remove(removeme);
                 }
                 //clear the list
                 electivelist.courses.Clear();
@@ -201,16 +218,21 @@ namespace CIS726_Assignment2.Controllers
                     ElectiveListCourse elcourseAttached = null; ;
                     if (elcourse.ID > 0)
                     {
-                        elcourseAttached = electiveListCourses.Where(reqc => reqc.ID == elcourse.ID).First();
-                        electiveListCourses.UpdateValues(elcourseAttached, elcourse);
+                        //elcourseAttached = electiveListCourses.Where(reqc => reqc.ID == elcourse.ID).First();
+                        elcourseAttached = _electiveListCourseProducer.Get(new ElectiveListCourse() { ID = elcourse.ID });
+                        //electiveListCourses.UpdateValues(elcourseAttached, elcourse);
+                        _electiveListCourseProducer.Update(elcourse);
                     }
                     else
                     {
-                        if (courses.Find(new Course() { ID = elcourse.courseID }) != null)
+                        //if (courses.Find(elcourse.courseID) != null)
+                        if (_courseProducer.Get(new Course() { ID = elcourse.courseID }) != null)
                         {
-                            electiveListCourses.Add(elcourse);
-                            electiveListCourses.SaveChanges();
-                            elcourseAttached = electiveListCourses.Where(reqc => reqc.ID == elcourse.ID).First();
+                            //electiveListCourses.Add(elcourse);
+                            //electiveListCourses.SaveChanges();
+                            _electiveListCourseProducer.Create(elcourse);
+                            //elcourseAttached = electiveListCourses.Where(reqc => reqc.ID == elcourse.ID).First();
+                            elcourseAttached = _electiveListCourseProducer.Get(new ElectiveListCourse() { ID = elcourse.ID });
                         }
                     }
                     if (elcourseAttached != null)
@@ -218,8 +240,9 @@ namespace CIS726_Assignment2.Controllers
                         electivelist.courses.Add(elcourseAttached);
                     }
                 }
-                electiveLists.UpdateValues(elistAttached, electivelist);
-                electiveLists.SaveChanges();
+                //electiveLists.UpdateValues(elistAttached, electivelist);
+                //electiveLists.SaveChanges();
+                _electiveListProducer.Update(electivelist);
                 return RedirectToAction("Index");
             }
             if (ElectiveListCourses != null)
@@ -228,7 +251,8 @@ namespace CIS726_Assignment2.Controllers
                 {
                     if (course.courseID > 0)
                     {
-                        course.course = courses.Find(new Course() { ID = course.courseID });
+                        //course.course = courses.Find(course.courseID);
+                        course.course = _courseProducer.Get(new Course() { ID = course.courseID });
                     }
                 }
             }
@@ -265,7 +289,8 @@ namespace CIS726_Assignment2.Controllers
         [Authorize(Roles = "Administrator")]
         public ActionResult Delete(int id = 0)
         {
-            ElectiveList electivelist = electiveLists.Find(new ElectiveList() { ID = id });
+            //ElectiveList electivelist = electiveLists.Find(id);
+            ElectiveList electivelist = _electiveListProducer.Get(new ElectiveList() { ID = id });
             if (electivelist == null)
             {
                 return HttpNotFound();
@@ -281,9 +306,11 @@ namespace CIS726_Assignment2.Controllers
         [Authorize(Roles = "Administrator")]
         public ActionResult DeleteConfirmed(int id)
         {
-            ElectiveList electivelist = electiveLists.Find(new ElectiveList() { ID = id });
-            electiveLists.Remove(electivelist);
-            electiveLists.SaveChanges();
+            //ElectiveList electivelist = electiveLists.Find(id);
+            ElectiveList electivelist = _electiveListProducer.Get(new ElectiveList() { ID = id });
+            //electiveLists.Remove(electivelist);
+            _electiveListProducer.Remove(electivelist);
+            //electiveLists.SaveChanges();
             return RedirectToAction("Index");
         }
 
@@ -294,7 +321,8 @@ namespace CIS726_Assignment2.Controllers
         /// <returns></returns>
         public JsonResult SearchElectiveLists(string term)
         {
-            var keywords = electiveLists.GetAll().AsEnumerable();
+            //var keywords = electiveLists.GetAll().AsEnumerable();
+            var keywords = _electiveListProducer.GetAll().AsEnumerable();
             string[] terms = term.Split(' ');
             foreach (string t in terms)
             {
@@ -306,9 +334,9 @@ namespace CIS726_Assignment2.Controllers
 
         protected override void Dispose(bool disposing)
         {
-            electiveLists.Dispose();
-            electiveListCourses.Dispose();
-            courses.Dispose();
+            //electiveLists.Dispose();
+            //electiveListCourses.Dispose();
+            //courses.Dispose();
             base.Dispose(disposing);
         }
     }

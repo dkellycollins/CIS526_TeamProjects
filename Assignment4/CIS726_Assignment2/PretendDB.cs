@@ -26,6 +26,7 @@ namespace CIS726_Assignment2
         public PretendDB()
         {
             _context = new CourseDBContext();
+
             InitQueues();
         }
 
@@ -154,8 +155,7 @@ namespace CIS726_Assignment2
 
         Semester _semesterQueue_Get(Semester data)
         {
-            return _context.Set<Semester>()
-                .Where(c => c.ID == data.ID).FirstOrDefault();
+            return Get<Semester>(data.ID);
         }
 
         #endregion
@@ -184,8 +184,12 @@ namespace CIS726_Assignment2
 
         RequiredCourse _requiredCourseQueue_Get(RequiredCourse data)
         {
-            return _context.Set<RequiredCourse>()
-                .Where(c => c.ID == data.ID).FirstOrDefault();
+            RequiredCourse requiredCourse = _context.RequiredCourses.Where(i => i.ID == data.ID)
+                .Include(rc => rc.course)
+                .Include(rc => rc.degreeProgram)
+                .First();
+
+            return requiredCourse;
         }
 
         #endregion
@@ -214,8 +218,12 @@ namespace CIS726_Assignment2
 
         PrerequisiteCourse _prerequisiteCourseQueue_Get(PrerequisiteCourse data)
         {
-            return _context.Set<PrerequisiteCourse>()
-                .Where(c => c.ID == data.ID).FirstOrDefault();
+            PrerequisiteCourse prereq = _context.PrerequisiteCourses.Where(i => i.ID == data.ID)
+                .Include(pc => pc.prerequisiteCourse)
+                .Include(pc => pc.prerequisiteForCourse)
+                .First();
+
+            return prereq;
         }
 
         #endregion
@@ -242,10 +250,21 @@ namespace CIS726_Assignment2
             return GetAll<PlanCourse>();
         }
 
-        PlanCourse _planCourseQueue_Get(PlanCourse data)
+        PlanCourse _planCourseQueue_Get(PlanCourse partialPlanCourse)
         {
-            return _context.Set<PlanCourse>()
-                .Where(c => c.ID == data.ID).FirstOrDefault();
+            PlanCourse PlanCourse = _context.PlanCourses.Where(c => c.ID == partialPlanCourse.ID)
+                .Include(pc => pc.plan)
+                .Include(pc => pc.plan.degreeProgram)
+                .Include(pc => pc.plan.planCourses.Select(s => s.course.prerequisites))
+                .Include(pc => pc.plan.planCourses.Select(s => s.course.prerequisiteFor))
+                .Include(pc => pc.plan.semester)
+                .Include(pc => pc.plan.user)
+                .Include(pc => pc.semester)
+                .Include(pc => pc.electiveList)
+                .Include(pc => pc.course)
+                .First();
+
+            return PlanCourse;
         }
 
         #endregion
@@ -267,15 +286,33 @@ namespace CIS726_Assignment2
             return Create(data);
         }
 
-        List<Plan> _planQueue_GetAll()
-        {
-            return GetAll<Plan>();
-        }
-
         Plan _planQueue_Get(Plan data)
         {
-            return _context.Set<Plan>()
-                .Where(c => c.ID == data.ID).FirstOrDefault();
+            Plan plan = _context.Plans.Where(p => p.ID == data.ID)
+                .Include(pl => pl.degreeProgram)
+                .Include(pl => pl.degreeProgram.requiredCourses.Select(s => s.course.prerequisites))
+                .Include(pl => pl.degreeProgram.requiredCourses.Select(s => s.course.prerequisiteFor))
+                .Include(pl => pl.degreeProgram.electiveCourses.Select(s => s.electiveList))
+                .Include(pl => pl.user)
+                .Include(pl => pl.semester)
+                .Include(pl => pl.planCourses.Select(s => s.plan))
+                .Include(pl => pl.planCourses.Select(s => s.course))
+                .Include(pl => pl.planCourses.Select(s => s.electiveList))
+                .Include(pl => pl.planCourses.Select(s => s.semester))
+                .First();
+
+            return plan;
+        }
+
+        List<Plan> _planQueue_GetAll()
+        {
+            List<Plan> planList = _context.Set<Plan>()
+                .Include(pl => pl.degreeProgram)
+                .Include(pl => pl.user)
+                .Include(pl => pl.semester)
+                .ToList();
+
+            return planList;
         }
 
         #endregion
@@ -304,8 +341,12 @@ namespace CIS726_Assignment2
 
         ElectiveListCourse _electiveListCourseQueue_Get(ElectiveListCourse data)
         {
-            return _context.Set<ElectiveListCourse>()
-                .Where(c => c.ID == data.ID).FirstOrDefault();
+            ElectiveListCourse elc = _context.ElectiveListCourses.Where(i => i.ID == data.ID)
+                .Include(el => el.course)
+                .Include(el => el.electiveList)
+                .First();
+
+            return elc;
         }
 
         #endregion
@@ -334,8 +375,14 @@ namespace CIS726_Assignment2
 
         ElectiveList _electiveListQueue_Get(ElectiveList data)
         {
-            return _context.Set<ElectiveList>()
-                .Where(c => c.ID == data.ID).FirstOrDefault();
+            ElectiveList electiveList = _context.ElectiveLists.Where(i => i.ID == data.ID)
+                .Include(el => el.courses.Select(s => s.course))
+                .Include(el => el.courses.Select(s => s.electiveList))
+                .Include(el => el.electiveCourses.Select(s => s.degreeProgram))
+                .Include(el => el.electiveCourses.Select(s => s.electiveList))
+                .First();
+
+            return electiveList;
         }
 
         #endregion
@@ -364,8 +411,12 @@ namespace CIS726_Assignment2
 
         ElectiveCourse _electiveCourseQueue_Get(ElectiveCourse data)
         {
-            return _context.Set<ElectiveCourse>()
-                .Where(c => c.ID == data.ID).FirstOrDefault();
+            ElectiveCourse electiveCourse = _context.ElectiveCourses.Where(i => i.ID == data.ID)
+                .Include(ec => ec.degreeProgram)
+                .Include(ec => ec.electiveList)
+                .First();
+
+            return electiveCourse;
         }
 
         #endregion
@@ -394,8 +445,14 @@ namespace CIS726_Assignment2
 
         DegreeProgram _degreeProgramQueue_Get(DegreeProgram data)
         {
-            return _context.Set<DegreeProgram>()
-                .Where(c => c.ID == data.ID).FirstOrDefault();
+            DegreeProgram degreeProgram = _context.DegreePrograms.Where(i => i.ID == data.ID)
+                .Include(dp => dp.electiveCourses.Select(s => s.degreeProgram))
+                .Include(dp => dp.electiveCourses.Select(s => s.electiveList))
+                .Include(dp => dp.requiredCourses.Select(s => s.course))
+                .Include(dp => dp.requiredCourses.Select(s => s.degreeProgram))
+                .First();
+
+            return degreeProgram;
         }
 
         #endregion
@@ -424,12 +481,18 @@ namespace CIS726_Assignment2
 
         Course _coursesQueue_Get(Course partialCourse)
         {
-            return _context.Set<Course>()
-                .Include(c => c.prerequisiteFor)
-                .Include(c => c.prerequisites)
-                .Include(c => c.degreePrograms.Select(d => d.degreeProgram))
-                .Include(c => c.electiveLists)
-                .Where(c => c.ID == partialCourse.ID).FirstOrDefault();
+            Course course = _context.Courses.Where(c => c.ID == partialCourse.ID)
+                .Include(c => c.degreePrograms.Select(s => s.course))
+                .Include(c => c.degreePrograms.Select(s => s.degreeProgram))
+                .Include(c => c.electiveLists.Select(s => s.course))
+                .Include(c => c.electiveLists.Select(s => s.electiveList))
+                .Include(c => c.prerequisiteFor.Select(s => s.prerequisiteCourse))
+                .Include(c => c.prerequisiteFor.Select(s => s.prerequisiteForCourse))
+                .Include(c => c.prerequisites.Select(s => s.prerequisiteCourse))
+                .Include(c => c.prerequisites.Select(s => s.prerequisiteForCourse))
+                .First();
+
+            return course;
         }
 
         #endregion 
@@ -454,7 +517,9 @@ namespace CIS726_Assignment2
             where T : IModel
         {
             _context.Set<T>().Add(data);
+            _context.Entry(data).State = System.Data.EntityState.Added;
             _context.SaveChanges();
+
             return data;
         }
 

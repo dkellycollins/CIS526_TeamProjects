@@ -46,10 +46,10 @@ namespace CIS726_Assignment2.SystemBus
             sendMessage("UPDATE", data);
         }
 
-        public void Create(T data)
+        public List<T> Create(T data)
         {
             sendMessage("CREATE", data);
-            data = recieveMessage().FirstOrDefault();
+            return recieveMessage();
         }
 
         public void Remove(T data)

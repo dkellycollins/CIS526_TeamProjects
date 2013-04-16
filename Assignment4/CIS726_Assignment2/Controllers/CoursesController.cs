@@ -14,19 +14,16 @@ namespace CIS726_Assignment2.Controllers
 {
     public class CoursesController : Controller
     {
-        private IGenericRepository<Course> courses;
-        private IGenericRepository<PrerequisiteCourse> prerequisiteCourses;
-
-        //private IMessageQueuePublisher _publisher;
-        //private IMessageQueueConsumer _consumer;
+        private IMessageQueueProducer<Course> _courseProducer;
+        private IMessageQueueProducer<PrerequisiteCourse> _prerequisiteCourseProducer;
 
         /// <summary>
         /// Constructor used by the web application itself
         /// </summary>
         public CoursesController()
         {
-            courses = new MessageQueueRepository<Course>(new BasicMessageQueueProducer<Course>());
-            prerequisiteCourses = new MessageQueueRepository<PrerequisiteCourse>(new BasicMessageQueueProducer<PrerequisiteCourse>());
+            _courseProducer = new BasicMessageQueueProducer<Course>();
+            _prerequisiteCourseProducer = new BasicMessageQueueProducer<PrerequisiteCourse>();
         }
 
         /// <summary>
@@ -35,8 +32,8 @@ namespace CIS726_Assignment2.Controllers
         /// <param name="fake">A "faked" course repository</param>
         public CoursesController(IGenericRepository<Course> fake, IGenericRepository<PrerequisiteCourse> fakePrereq)
         {
-            courses = fake;
-            prerequisiteCourses = fakePrereq;
+            //_courseProducer = fake;
+            //prerequisiteCourses = fakePrereq;
         }
 
         //
@@ -71,7 +68,7 @@ namespace CIS726_Assignment2.Controllers
             bool numAsc = false;
 
             
-            var courseList = courses.GetAll();
+            var courseList = _courseProducer.GetAll();
             var courseQuery = from s in courseList select s;
 
             if (!String.IsNullOrEmpty(filterString))
@@ -395,7 +392,7 @@ namespace CIS726_Assignment2.Controllers
 
         public ActionResult Details(int id = 0)
         {
-            Course course = courses.Find(new Course(){ID = id});
+            Course course = _courseProducer.Get(new Course(){ID = id});
             if (course == null)
             {
                 return HttpNotFound();
@@ -420,7 +417,7 @@ namespace CIS726_Assignment2.Controllers
         {
             if (ModelState.IsValid)
             {
-                courses.Add(course);
+                _courseProducer.Create(course);
                 return RedirectToAction("Index");
             }
             return View(course);
@@ -431,7 +428,7 @@ namespace CIS726_Assignment2.Controllers
         [Authorize(Roles = "Administrator")]
         public ActionResult Edit(int id = 0)
         {
-            Course course = courses.Find(new Course() { ID = id });
+            Course course = _courseProducer.Get(new Course() { ID = id });
             if (course == null)
             {
                 return HttpNotFound();
@@ -446,7 +443,7 @@ namespace CIS726_Assignment2.Controllers
         [Authorize(Roles = "Administrator")]
         public ActionResult Edit(Course course, IEnumerable<PrerequisiteCourse> PrerequisiteCourses)
         {
-            var courseList = courses.GetAll();
+            var courseList = _courseProducer.GetAll();
             if (ModelState.IsValid)
             {
                 Course cAttached = courseList.AsQueryable().Where(c => c.ID == course.ID).First();
@@ -469,7 +466,8 @@ namespace CIS726_Assignment2.Controllers
                     {
                         if (!PrerequisiteCourses.Contains(pcourse))
                         {
-                            PrerequisiteCourse elcourseAttached = prerequisiteCourses.Where(reqc => reqc.ID == pcourse.ID).First();
+                            //PrerequisiteCourse elcourseAttached = prerequisiteCourses.Where(reqc => reqc.ID == pcourse.ID).First();
+                            PrerequisiteCourse elcourseAttached = _prerequisiteCourseProducer.Get(new PrerequisiteCourse() { ID = pcourse.ID });
                             toRemove.AddFirst(elcourseAttached);
                         }
                     }
@@ -479,7 +477,8 @@ namespace CIS726_Assignment2.Controllers
                 {
                     PrerequisiteCourse removeme = toRemove.First();
                     toRemove.RemoveFirst();
-                    prerequisiteCourses.Remove(removeme);
+                    //prerequisiteCourses.Remove(removeme);
+                    _prerequisiteCourseProducer.Remove(removeme);
                 }
                 //clear the list
                 course.prerequisites.Clear();
@@ -489,17 +488,22 @@ namespace CIS726_Assignment2.Controllers
                     PrerequisiteCourse pcourseAttached = null; ;
                     if (pcourse.ID > 0)
                     {
-                        pcourseAttached = prerequisiteCourses.Where(reqc => reqc.ID == pcourse.ID).First();
-                        prerequisiteCourses.UpdateValues(pcourseAttached, pcourse);
+                        //pcourseAttached = prerequisiteCourses.Where(reqc => reqc.ID == pcourse.ID).First();
+                        pcourseAttached = _prerequisiteCourseProducer.Get(new PrerequisiteCourse() { ID = pcourse.ID });
+                        //prerequisiteCourses.UpdateValues(pcourseAttached, pcourse);
+                        _prerequisiteCourseProducer.Update(pcourse); //TODO: check if works correctly or need to switch w/ pcourseAttached
                     }
                     else
                     {
                         
                         if (courseList.FirstOrDefault(x => x.ID == pcourse.prerequisiteCourseID) != null)
                         {
-                            prerequisiteCourses.Add(pcourse);
-                            prerequisiteCourses.SaveChanges();
-                            pcourseAttached = prerequisiteCourses.Where(reqc => reqc.ID == pcourse.ID).First();
+                            //prerequisiteCourses.Add(pcourse);
+                            //prerequisiteCourses.SaveChanges();
+                            _prerequisiteCourseProducer.Create(pcourse);
+
+                            //pcourseAttached = prerequisiteCourses.Where(reqc => reqc.ID == pcourse.ID).First();
+                            pcourseAttached = _prerequisiteCourseProducer.Get(new PrerequisiteCourse() { ID = pcourse.ID });
                         }
                     }
                     if (pcourseAttached != null)
@@ -555,7 +559,7 @@ namespace CIS726_Assignment2.Controllers
         [Authorize(Roles = "Administrator")]
         public ActionResult Delete(int id = 0)
         {
-            Course course = courses.Find(new Course() { ID = id });
+            Course course = _courseProducer.Get(new Course() { ID = id });
             if (course == null)
             {
                 return HttpNotFound();
@@ -570,8 +574,8 @@ namespace CIS726_Assignment2.Controllers
         [Authorize(Roles = "Administrator")]
         public ActionResult DeleteConfirmed(int id)
         {
-            Course course = courses.Find(new Course() { ID = id });
-            courses.Remove(course);
+            Course course = _courseProducer.Get(new Course() { ID = id });
+            _courseProducer.Remove(course);
             return RedirectToAction("Index");
         }
 
@@ -583,7 +587,7 @@ namespace CIS726_Assignment2.Controllers
         /// <returns></returns>
         public JsonResult SearchCourses(string term)
         {
-            var keywords = courses.GetAll().AsEnumerable();
+            var keywords = _courseProducer.GetAll().AsEnumerable();
             string[] terms = term.Split(' ');
             foreach(string t in terms){
                 keywords = keywords.Where(course => course.courseHeader.Contains(t));
@@ -594,8 +598,8 @@ namespace CIS726_Assignment2.Controllers
 
         protected override void Dispose(bool disposing)
         {
-            courses.Dispose();
-            prerequisiteCourses.Dispose();
+            _courseProducer.Dispose();
+            _prerequisiteCourseProducer.Dispose();
             base.Dispose(disposing);
         }
     }

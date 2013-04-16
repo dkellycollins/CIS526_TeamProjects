@@ -35,7 +35,7 @@ namespace CIS726_Assignment2.SystemBus
         /// Creates all models in the database.
         /// </summary>
         /// <param name="data"></param>
-        void Create(T data);
+        List<T> Create(T data);
 
         /// <summary>
         /// Removes all models contains in the list from the database.
