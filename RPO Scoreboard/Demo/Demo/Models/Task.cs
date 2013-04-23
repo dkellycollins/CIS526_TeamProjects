@@ -65,6 +65,6 @@ namespace Demo.Models
         /// <summary>
         /// Users who have completed this task.
         /// </summary>
-        public virtual ICollection<PlayerProfile> CompletedBy { get; set; }
+        public virtual ICollection<UserProfile> CompletedBy { get; set; }
     }
 }
