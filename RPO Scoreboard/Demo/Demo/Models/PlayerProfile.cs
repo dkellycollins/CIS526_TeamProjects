@@ -20,8 +20,8 @@ namespace Demo.Models
             get
             {
                 int totalScore = 0;
-                foreach (int score in Score.Values)
-                    totalScore += score;
+                //foreach (int score in Score)
+                //    totalScore += score;
                 return totalScore;
             }
         }
@@ -29,16 +29,11 @@ namespace Demo.Models
         /// <summary>
         /// Each inidividual score. The key should be the ARG path.
         /// </summary>
-        public Dictionary<string, int> Score { get; set; }
+        public virtual PointScore Score { get; set; }
 
         /// <summary>
         /// The task that have been completed by the player.
         /// </summary>
         public virtual ICollection<Task> CompletedTask { get; set; }
-
-        /// <summary>
-        /// The milestones that have been completed by the player.
-        /// </summary>
-        public virtual ICollection<MilestoneTask> CompletedMileStone { get; set; }
     }
 }
