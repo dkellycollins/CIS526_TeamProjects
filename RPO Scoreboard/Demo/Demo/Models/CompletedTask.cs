@@ -7,21 +7,21 @@ using System.Web;
 namespace Demo.Models
 {
     /// <summary>
-    /// Join table between UserProfile and PointPath.
+    /// Join table between userprofile and Task.
     /// </summary>
-    public class PointScore
+    public class CompletedTask
     {
         [Key]
         public int ID { get; set; }
 
-        public int Score { get; set; }
+        public DateTime CompletedData { get; set; }
 
         public int UserProfileID { get; set; }
 
-        public int PointPathId { get; set; }
+        public int TaskID { get; set; }
 
         public virtual UserProfile UserProfile { get; set; }
 
-        public virtual PointType PointPath { get; set; }
+        public virtual Task Task { get; set; }
     }
 }

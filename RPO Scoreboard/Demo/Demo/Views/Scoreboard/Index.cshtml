@@ -1,0 +1,20 @@
+﻿@model IList<Demo.Models.PointScore>
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Index</h2>
+
+<table>
+    @foreach (var score in Model)
+    {
+        <tr>
+            <td>
+                @score.UserProfile.UserName
+            </td>
+            <td>
+                @score.Score
+            </td>
+        </tr>
+    }
+</table>
