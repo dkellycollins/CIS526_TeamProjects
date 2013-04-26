@@ -16,9 +16,9 @@ namespace Demo.Models
 
         public int Score { get; set; }
 
-        public int UserProfileID { get; set; }
+        //public int UserProfileID { get; set; }
 
-        public int PointPathId { get; set; }
+        //public int PointPathId { get; set; }
 
         public virtual UserProfile UserProfile { get; set; }
 

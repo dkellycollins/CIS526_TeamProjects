@@ -59,3 +59,11 @@ textarea {
 .validation-summary-valid {
     display: none;
 }
+
+/* Styles for Details pages
+-----------------------------------------------------------*/
+.display-label
+{
+    float:left;
+    padding-right:0.5em;
+}

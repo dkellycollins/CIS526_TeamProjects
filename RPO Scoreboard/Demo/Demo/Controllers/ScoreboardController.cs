@@ -26,14 +26,18 @@ namespace Demo.Controllers
         // GET: /Scoreboard/{pointType}
         public ActionResult Index(string pointType)
         {
-            var pointScores = from u in _pointScoreRepo.GetAll() select u;
+            var users = _userRepo.GetAll();
 
-            if (string.IsNullOrEmpty(pointType))
-                pointScores.Where(s => s.PointPath.Name == "Total");
-            else
-                pointScores.Where(s => s.PointPath.Name == pointType);
+            return View(users.ToList());
+        }
 
-            return View(pointScores.ToList());
+        //
+        // GET: /Scoreboard/Details/{id}
+        public ActionResult Details(int id = 0)
+        {
+            //UserProfile selectedUser = _userRepo.GetAll().Single(su=>su.ID == id);
+            return View(_userRepo.Get(id));
+            //return RedirectToAction("Index");
         }
     }
 }

@@ -14,11 +14,13 @@ namespace Demo.Models
         [Key]
         public int ID { get; set; }
 
+        [Display(Name = "Username")]
         public string UserName { get; set; }
 
         /// <summary>
         /// The player's total score.
         /// </summary>
+        [Display(Name = "Total Score")]
         public int TotalScore
         {
             get
