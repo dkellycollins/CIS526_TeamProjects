@@ -4,38 +4,28 @@ namespace Demo.Migrations
     using System.Data.Entity;
     using System.Data.Entity.Migrations;
     using System.Linq;
-using Demo.Models;
 
     internal sealed class Configuration : DbMigrationsConfiguration<Demo.Models.MasterContext>
     {
         public Configuration()
         {
-            AutomaticMigrationsEnabled = true;
+            AutomaticMigrationsEnabled = false;
         }
 
-        protected override void Seed(MasterContext context)
+        protected override void Seed(Demo.Models.MasterContext context)
         {
-            seedUser(context);
-            seedScores(context);
-        }
+            //  This method will be called after migrating to the latest version.
 
-        private void seedUser(MasterContext context)
-        {
-            context.UserProfiles.Add(new UserProfile()
-            {
-                UserName = "JoeJiggty"
-            });
-        }
-
-        private void seedScores(MasterContext context)
-        {
-            foreach (UserProfile user in context.UserProfiles)
-            {
-                user.Score.Add(new PointScore()
-                {
-                    Score = 100
-                });
-            }
+            //  You can use the DbSet<T>.AddOrUpdate() helper extension method 
+            //  to avoid creating duplicate seed data. E.g.
+            //
+            //    context.People.AddOrUpdate(
+            //      p => p.FullName,
+            //      new Person { FullName = "Andrew Peters" },
+            //      new Person { FullName = "Brice Lambson" },
+            //      new Person { FullName = "Rowan Miller" }
+            //    );
+            //
         }
     }
 }
