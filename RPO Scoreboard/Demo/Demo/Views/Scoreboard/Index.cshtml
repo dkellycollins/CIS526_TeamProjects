@@ -37,7 +37,118 @@
         i++;
     }
 
-    </table>
+    <style>
+        div.transbox
+        {
+            position:absolute;
+            top:38%;
+        width: 50%;
+        border-radius: 20px;
+        margin: 0% 10%;
+        background-color: #000000;
+        border: 1px solid black;
+        opacity:0.6;
+        filter:alpha(opacity=60); /* For IE8 and earlier */
+        }
+
+        div.transbox2
+        {   
+                 position:absolute; 
+                 top:38%;   
+        width: 30%;
+        height: 300px;
+        border-radius: 20px;
+        margin: 0% 65%;
+        background-color: #000000;
+        border: 1px solid black;
+        opacity:0.6;
+        filter:alpha(opacity=60); /* For IE8 and earlier */
+        }
+
+        div.transbox p
+        {
+            white-space:pre;
+        margin: 10px 40px;
+        font-size: 16pt;
+        font-family:'Segoe Print';
+        font-weight: bold;
+        color: #ffffff;
+        }
+
+        div.transbox2 p
+        {
+        margin: 10px 40px;
+        font-size: 16pt;
+        font-family:'Segoe Print';
+        font-weight: bold;
+        opacity:100;
+        color: #ffffff;
+        }
+
+        p.Scores {
+            position:absolute;
+            top:25%;
+            left:11%;
+            color:#ffffff;
+            font-family:'Segoe Print';
+            font-size:24pt;
+            z-index:1;
+        }
+
+        p.Section {
+            position:absolute;
+            top:25%;
+            left:65%;
+            color:#ffffff;
+            font-family:'Segoe Print';
+            font-size:24pt;
+            z-index:1;
+        }
+        </style>
+
+    <div>
+    <p class ="Scores">Scores:</p>
+        </div>
+    <div>
+    <p class ="Section">Section Scores:</p>
+        </div>
+
+        <!-- This is the scores box
+            use .js or ajax to update and sort the scores-->
+            <div class="transbox">
+                <p>1    Billy Bob                                  52,502</p>
+                <p>2    Joe Bob                                   51,629</p>
+                <p>3    John Bob                                 50,581</p>
+                <p>4    Steve Bob                                49,751</p>
+                <p>5    Mama Bob                              45,842</p>
+                <p>6    Baby Bob                                 43,571</p>
+                <p>7    Bobby Bob                                40,816</p>
+                <p>8    Red Bob                                   35,870</p>
+                <p>9    Green Bob                                32,475</p>
+                <p>10   Blue Bob                                 27,581</p>
+                <p>10   Blue Bob                                 27,581</p>
+                <p>10   Blue Bob                                 27,581</p>
+                <p>10   Blue Bob                                 27,581</p>
+                <p>10   Blue Bob                                 27,581</p>
+                <p>10   Blue Bob                                 27,581</p>
+                <p>10   Blue Bob                                 27,581</p>
+                <p>10   Blue Bob                                 27,581</p>
+            </div>
+
+    <!-- This is the navigation box-->
+    
+    <div class="transbox2">
+                <p>Attendance</p>
+                <p>Cross-Curricular</p>
+                <p>Group</p>
+                <p>Milestones</p>
+                <p>Puzzle</p>
+                <p></p>
+                <p>Total Points</p>
+            </div>
+
+
+</table>
 </div>
 
 <div class="scoreboardDetailContainer">

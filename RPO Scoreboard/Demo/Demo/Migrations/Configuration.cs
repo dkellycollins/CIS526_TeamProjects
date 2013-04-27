@@ -10,10 +10,10 @@ namespace Demo.Migrations
     {
         public Configuration()
         {
-            AutomaticMigrationsEnabled = true;
+            AutomaticMigrationsEnabled = false;
         }
 
-        protected override void Seed(MasterContext context)
+        protected override void Seed(Demo.Models.MasterContext context)
         {
             context.Database.Delete();
             context.Database.CreateIfNotExists();
@@ -27,6 +27,8 @@ namespace Demo.Migrations
 
         private void seedUser(MasterContext context)
         {
+            Random rn = new Random();
+
             context.UserProfiles.Add(new UserProfile()
             {
                 UserName = "JoeJiggty"

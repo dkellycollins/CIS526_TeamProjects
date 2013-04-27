@@ -141,7 +141,7 @@
     <Compile Include="Repositories\IRepository.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Content\images\main_banner.jpg" />
+    <Content Include="Content\images\powercat background-small.jpg" />
     <Content Include="Content\themes\base\images\ui-bg_flat_0_aaaaaa_40x100.png" />
     <Content Include="Content\themes\base\images\ui-bg_flat_75_ffffff_40x100.png" />
     <Content Include="Content\themes\base\images\ui-bg_glass_55_fbf9ee_1x400.png" />
@@ -229,6 +229,8 @@
     <Content Include="Views\Scoreboard\Index.cshtml" />
     <Content Include="Views\Scoreboard\Details.cshtml" />
     <Content Include="Views\Task\Index.cshtml" />
+    <Content Include="Views\Shared\LoginPartial.cshtml" />
+    <Content Include="Views\Account\Login.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
