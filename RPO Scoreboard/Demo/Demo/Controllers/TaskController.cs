@@ -34,14 +34,15 @@ namespace Demo.Controllers
             return View(_taskRepo.Get(id));
         }
 
-        //
+        //Admin Task
         // GET: /Task/Create/
+        [Authorize]
         public ActionResult Create()
         {
             return View();
         }
 
-        //
+        //Admin Task
         // POST: /Task/Create/
         [Authorize]
         public ActionResult Create(Task item)
@@ -56,6 +57,7 @@ namespace Demo.Controllers
 
         //
         // GET: /Task/Update/
+        [Authorize]
         public ActionResult Update()
         {
             return View();

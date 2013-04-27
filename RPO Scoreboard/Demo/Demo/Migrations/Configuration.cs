@@ -21,6 +21,8 @@ namespace Demo.Migrations
             seedUser(context);
             seedTypes(context);
             seedScores(context);
+            seedTasks(context);
+            seedMilestones(context);
         }
 
         private void seedUser(MasterContext context)
@@ -37,7 +39,7 @@ namespace Demo.Migrations
         {
             context.PointTypes.Add(new PointType()
             {
-                Name = "Total"
+                Name = "Misc"
             });
 
             context.SaveChanges();
@@ -58,10 +60,46 @@ namespace Demo.Migrations
                 {
                     UserProfile = user,
                     Score = rnd.Next(0,1000),
-                    PointPath = context.PointTypes.Single(pt=>pt.Name.Equals("Total"))
+                    PointPath = context.PointTypes.Single(pt=>pt.Name.Equals("Misc"))
                 });
 
             }
+            context.SaveChanges();
+        }
+
+        private void seedTasks(MasterContext context)
+        {
+            context.Tasks.Add(new Task()
+            {
+                Name = "Test Task",
+                Description = "This task is for testing purposes only",
+                IsMilestone = false,
+                Points = 100,
+                BonusPoints = 0,
+                MaxBonusAwards = 10,
+                StartTime = DateTime.Now,
+                PointPath = context.PointTypes.Single(pt=>pt.Name.Equals("Misc")),
+                EndTime = DateTime.Now.AddDays(14)
+            });
+
+            context.SaveChanges();
+        }
+
+        private void seedMilestones(MasterContext context)
+        {
+            context.Tasks.Add(new Task()
+            {
+                Name = "Test Milestone",
+                Description = "This milestone is for testing purposes only",
+                IsMilestone = true,
+                Points = 1000,
+                BonusPoints = 100,
+                MaxBonusAwards = 10,
+                StartTime = DateTime.Now,
+                PointPath = context.PointTypes.Single(pt => pt.Name.Equals("Misc")),
+                EndTime = DateTime.Now.AddYears(1),
+                IconLink = @"~\Content\Images\Milestones\iconLink.jpg"
+            });
             context.SaveChanges();
         }
     }

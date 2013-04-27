@@ -11,6 +11,7 @@ namespace Demo.Models
         [Key]
         public int ID { get; set; }
 
+        [Display(Name="Point Type")]
         public string Name { get; set; }
     }
 }

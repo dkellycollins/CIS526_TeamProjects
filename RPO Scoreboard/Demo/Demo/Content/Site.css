@@ -67,3 +67,19 @@ textarea {
     float:left;
     padding-right:0.5em;
 }
+
+/*Styles for Index pages
+-----------------------------------------------------------*/
+.taskTable
+{
+    overflow:scroll;
+}
+
+.taskItem
+{
+    padding-bottom:1em;
+    padding-top:1em;
+    padding-left:1em;
+    padding-right:1em;
+    text-align:center;
+}
