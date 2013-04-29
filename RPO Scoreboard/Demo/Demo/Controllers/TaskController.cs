@@ -36,7 +36,7 @@ namespace Demo.Controllers
 
         //Admin Task
         // GET: /Task/Create/
-        [Authorize]
+        [Authorize(Roles="admin")]
         public ActionResult Create()
         {
             return View();
@@ -44,7 +44,7 @@ namespace Demo.Controllers
 
         //Admin Task
         // POST: /Task/Create/
-        [Authorize]
+        [Authorize(Roles = "admin")]
         public ActionResult Create(Task item)
         {
             if(ModelState.IsValid)
@@ -57,7 +57,7 @@ namespace Demo.Controllers
 
         //
         // GET: /Task/Update/
-        [Authorize]
+        [Authorize(Roles = "admin")]
         public ActionResult Update()
         {
             return View();
@@ -65,7 +65,7 @@ namespace Demo.Controllers
 
         //
         // POST: /Task/Update/
-        [Authorize]
+        [Authorize(Roles = "admin")]
         public ActionResult Update(Task item)
         {
             if(ModelState.IsValid)
@@ -79,7 +79,7 @@ namespace Demo.Controllers
         //
         // GET: /Task/Delete/{id}
         [HttpGet]
-        [Authorize]
+        [Authorize(Roles = "admin")]
         public ActionResult Delete(int id)
         {
             return View(_taskRepo.Get(id));
@@ -88,7 +88,7 @@ namespace Demo.Controllers
         //
         // POST: /Task/Delete/{id}
         [HttpPost]
-        [Authorize]
+        [Authorize(Roles = "admin")]
         public ActionResult DeleteComfirmed(int id)
         {
             _taskRepo.Delete(id);

@@ -4,7 +4,9 @@ namespace Demo.Migrations
     using System.Data.Entity;
     using System.Data.Entity.Migrations;
     using System.Linq;
+    using System.Web.Security;
     using Demo.Models;
+    using WebMatrix.WebData;
 
     internal sealed class Configuration : DbMigrationsConfiguration<Demo.Models.MasterContext>
     {
@@ -23,6 +25,7 @@ namespace Demo.Migrations
             seedScores(context);
             seedTasks(context);
             seedMilestones(context);
+            seedLogin();
         }
 
         private void seedUser(MasterContext context)
@@ -101,6 +104,26 @@ namespace Demo.Migrations
                 IconLink = @"~\Content\Images\Milestones\iconLink.jpg"
             });
             context.SaveChanges();
+        }
+
+        private void seedLogin()
+        {
+            Demo.Filters.InitializeSimpleMembershipAttribute.SimpleMembershipInitializer init = new Demo.Filters.InitializeSimpleMembershipAttribute.SimpleMembershipInitializer();
+
+            if (!Roles.RoleExists("admin"))
+                Roles.CreateRole("admin");
+
+            //This is bad. We need to change this eventually.
+            if (!WebSecurity.UserExists("admin"))
+            {
+                WebSecurity.CreateUserAndAccount(
+                    "admin",
+                    "admin");
+            }
+            if (!Roles.GetRolesForUser("admin").Contains("admin"))
+            {
+                Roles.AddUserToRole("admin", "admin");
+            }
         }
     }
 }

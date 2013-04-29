@@ -8,7 +8,7 @@ using Demo.Repositories;
 
 namespace Demo.Controllers
 {
-    [Authorize]
+    [Authorize(Roles = "admin")]
     public class PointController : Controller
     {
         private IRepository<PointType> _pointTypeRepo;
