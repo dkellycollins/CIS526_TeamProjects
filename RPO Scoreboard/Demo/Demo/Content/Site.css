@@ -200,7 +200,6 @@ textarea {
     font-family:'Times New Roman';
     font-weight:bolder;
     color:#ffffff;
-
 }
 
 .leaderboardRecords td
@@ -211,6 +210,13 @@ textarea {
     font-weight:bold;
     color:#ffffff;
     padding:10px 0px;
+}
+
+.topTen td
+{
+    font-size:18pt;
+    font-weight:bolder;
+    color:#ffff00;
 }
 
 .Scores {

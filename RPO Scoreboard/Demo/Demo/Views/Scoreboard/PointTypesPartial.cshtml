@@ -1,0 +1,19 @@
+﻿@model IEnumerable<Demo.Models.PointType>
+
+<div class="transbox2">
+    <table>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    <p>@item.Name</p>
+                </td>
+            </tr>
+        }
+        <tr>
+            <td>
+                <p>Total Score</p>
+            </td>
+        </tr>
+    </table>
+</div>

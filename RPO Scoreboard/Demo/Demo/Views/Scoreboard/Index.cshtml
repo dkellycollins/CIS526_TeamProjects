@@ -1,4 +1,4 @@
-﻿@model IEnumerable<Demo.Models.UserProfile>
+﻿@model Demo.Models.ScoreboardViewModel
 
 @{
     ViewBag.Title = "View1";
@@ -16,51 +16,12 @@
 
         <!-- This is the scores box
         use .js or ajax to update and sort the scores-->
-        <div class="transbox">
-            <table class="leaderboardTable">
-                <tr id="leaderboardHeader">
-                    <th></th>
-                    <th>
-                        @Html.DisplayNameFor(model => model.UserName)
-                    </th>
-                    <th>
-                        @Html.DisplayNameFor(model => model.TotalScore)
-                    </th>
-                </tr>
+        @{Html.RenderPartial("LeaderboardPartial", Model.Scoreboard);}
 
-                @{int i = 0;}
-                @foreach (var item in Model)
-                {
-                    string name = "record" + i;
-                    int displayValue = i + 1;
-                    <tr class="leaderboardRecords" id="@name">
-                        <td>
-                            @displayValue.
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.UserName)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.TotalScore)
-                        </td>
-                    </tr>
-        
-                    i++;
-                }
-            </table>
-        </div>
     </div>
     <!-- This is the navigation box-->
     
-    <div class="transbox2">
-        <p>Attendance</p>
-        <p>Cross-Curricular</p>
-        <p>Group</p>
-        <p>Milestones</p>
-        <p>Puzzle</p>
-        <p></p>
-        <p>Total Points</p>
-    </div>
+    @{Html.RenderPartial("PointTypesPartial", Model.PointTypes);}
 </div>
 
 <div class="scoreboardDetailContainer">

@@ -27,125 +27,13 @@ namespace Demo.Migrations
 
         private void seedUser(MasterContext context)
         {
-            Random rn = new Random();
-
-            context.UserProfiles.Add(new UserProfile()
+            for (int i = 0; i < 1000; i++)
             {
-                UserName = "JoeJiggty"
-            });
-
-            context.SaveChanges();
-
-            context.UserProfiles.Add(new UserProfile()
-            {
-                UserName = "Billy Bob"
-            });
-
-            context.SaveChanges();
-
-            context.UserProfiles.Add(new UserProfile()
-            {
-                UserName = "Joe Bob"
-            });
-
-            context.SaveChanges();
-
-            context.UserProfiles.Add(new UserProfile()
-            {
-                UserName = "John Bob"
-            });
-
-            context.SaveChanges();
-
-            context.UserProfiles.Add(new UserProfile()
-            {
-                UserName = "Steve Bob"
-            });
-
-            context.SaveChanges();
-
-            context.UserProfiles.Add(new UserProfile()
-            {
-                UserName = "Mama Bob"
-            });
-
-            context.SaveChanges();
-
-            context.UserProfiles.Add(new UserProfile()
-            {
-                UserName = "Baby Bob"
-            });
-
-            context.SaveChanges();
-
-            context.UserProfiles.Add(new UserProfile()
-            {
-                UserName = "Bobby Bob"
-            });
-
-            context.SaveChanges();
-
-            context.UserProfiles.Add(new UserProfile()
-            {
-                UserName = "Red Bob"
-            });
-
-            context.SaveChanges();
-
-            context.UserProfiles.Add(new UserProfile()
-            {
-                UserName = "Green Bob"
-            });
-
-            context.SaveChanges();
-
-            context.UserProfiles.Add(new UserProfile()
-            {
-                UserName = "Blue Bob"
-            });
-
-            context.SaveChanges();
-
-            context.UserProfiles.Add(new UserProfile()
-            {
-                UserName = "Blue Bob1"
-            });
-
-            context.SaveChanges();
-
-            context.UserProfiles.Add(new UserProfile()
-            {
-                UserName = "Blue Bob2"
-            });
-
-            context.SaveChanges();
-
-            context.UserProfiles.Add(new UserProfile()
-            {
-                UserName = "Blue Bob3"
-            });
-
-            context.SaveChanges();
-
-            context.UserProfiles.Add(new UserProfile()
-            {
-                UserName = "Blue Bob4"
-            });
-
-            context.SaveChanges();
-
-            context.UserProfiles.Add(new UserProfile()
-            {
-                UserName = "Blue Bob5"
-            });
-
-            context.SaveChanges();
-
-            context.UserProfiles.Add(new UserProfile()
-            {
-                UserName = "Blue Bob6"
-            });
-
+                context.UserProfiles.Add(new UserProfile()
+                {
+                    UserName = "Joe Jiggty " + i
+                });
+            }
             context.SaveChanges();
         }
 
@@ -153,7 +41,27 @@ namespace Demo.Migrations
         {
             context.PointTypes.Add(new PointType()
             {
-                Name = "Misc"
+                Name = "Attendance"
+            });
+
+            context.PointTypes.Add(new PointType()
+            {
+                Name = "Puzzle"
+            });
+
+            context.PointTypes.Add(new PointType()
+            {
+                Name = "Crosscurricular"
+            });
+
+            context.PointTypes.Add(new PointType()
+            {
+                Name = "Cooperation"
+            });
+
+            context.PointTypes.Add(new PointType()
+            {
+                Name = "Story"
             });
 
             context.SaveChanges();
@@ -174,7 +82,7 @@ namespace Demo.Migrations
                 {
                     UserProfile = user,
                     Score = rnd.Next(0,1000),
-                    PointPath = context.PointTypes.Single(pt=>pt.Name.Equals("Misc"))
+                    PointPath = context.PointTypes.Single(pt=>pt.Name.Equals("Story"))
                 });
 
             }
@@ -192,7 +100,7 @@ namespace Demo.Migrations
                 BonusPoints = 0,
                 MaxBonusAwards = 10,
                 StartTime = DateTime.Now,
-                PointPath = context.PointTypes.Single(pt=>pt.Name.Equals("Misc")),
+                PointPath = context.PointTypes.Single(pt=>pt.Name.Equals("Puzzle")),
                 EndTime = DateTime.Now.AddDays(14)
             });
 
@@ -210,7 +118,7 @@ namespace Demo.Migrations
                 BonusPoints = 100,
                 MaxBonusAwards = 10,
                 StartTime = DateTime.Now,
-                PointPath = context.PointTypes.Single(pt => pt.Name.Equals("Misc")),
+                PointPath = context.PointTypes.Single(pt => pt.Name.Equals("Attendance")),
                 EndTime = DateTime.Now.AddYears(1),
                 IconLink = @"~\Content\Images\Milestones\iconLink.jpg"
             });

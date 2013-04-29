@@ -231,6 +231,8 @@
     <Content Include="Views\Task\Index.cshtml" />
     <Content Include="Views\Shared\LoginPartial.cshtml" />
     <Content Include="Views\Account\Login.cshtml" />
+    <Content Include="Views\Scoreboard\LeaderboardPartial.cshtml" />
+    <Content Include="Views\Scoreboard\PointTypesPartial.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
