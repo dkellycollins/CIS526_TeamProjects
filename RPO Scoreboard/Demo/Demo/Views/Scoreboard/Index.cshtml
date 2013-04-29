@@ -1,43 +1,27 @@
-﻿@model IEnumerable<Demo.Models.UserProfile>
+﻿@model Demo.Models.ScoreboardViewModel
 
 @{
     ViewBag.Title = "View1";
 }
 
-<h2>View1</h2>
-
 <div class="scoreboardContainer">
-    <table>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.UserName)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.TotalScore)
-            </th>
-        </tr>
+    <div class="scoreContainer">
 
-        @{int i = 0;}
-    @foreach (var item in Model)
-    {
+        <div>
+        <p class ="Scores">Scores:</p>
+            </div>
+        <div>
+        <p class ="Section">Section Scores:</p>
+        </div>
 
-        string name = "record" + i;
-        <tr id="@name">
-            <td>
-                @Html.DisplayFor(modelItem => item.UserName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.TotalScore)
-            </td>
-            <td>
-                @Html.ActionLink("Details", "Details", new { id = item.ID })
-            </td>
-        </tr>
-        
-        i++;
-    }
+        <!-- This is the scores box
+        use .js or ajax to update and sort the scores-->
+        @{Html.RenderPartial("LeaderboardPartial", Model.Scoreboard);}
 
-    </table>
+    </div>
+    <!-- This is the navigation box-->
+    
+    @{Html.RenderPartial("PointTypesPartial", Model.PointTypes);}
 </div>
 
 <div class="scoreboardDetailContainer">

@@ -15,7 +15,7 @@ namespace Demo.Migrations
             AutomaticMigrationsEnabled = true;
         }
 
-        protected override void Seed(MasterContext context)
+        protected override void Seed(Demo.Models.MasterContext context)
         {
             context.Database.Delete();
             context.Database.CreateIfNotExists();
@@ -30,11 +30,13 @@ namespace Demo.Migrations
 
         private void seedUser(MasterContext context)
         {
-            context.UserProfiles.Add(new UserProfile()
+            for (int i = 0; i < 1000; i++)
             {
-                UserName = "JoeJiggty"
-            });
-
+                context.UserProfiles.Add(new UserProfile()
+                {
+                    UserName = "Joe Jiggty " + i
+                });
+            }
             context.SaveChanges();
         }
 
@@ -42,7 +44,27 @@ namespace Demo.Migrations
         {
             context.PointTypes.Add(new PointType()
             {
-                Name = "Misc"
+                Name = "Attendance"
+            });
+
+            context.PointTypes.Add(new PointType()
+            {
+                Name = "Puzzle"
+            });
+
+            context.PointTypes.Add(new PointType()
+            {
+                Name = "Crosscurricular"
+            });
+
+            context.PointTypes.Add(new PointType()
+            {
+                Name = "Cooperation"
+            });
+
+            context.PointTypes.Add(new PointType()
+            {
+                Name = "Story"
             });
 
             context.SaveChanges();
@@ -63,7 +85,7 @@ namespace Demo.Migrations
                 {
                     UserProfile = user,
                     Score = rnd.Next(0,1000),
-                    PointPath = context.PointTypes.Single(pt=>pt.Name.Equals("Misc"))
+                    PointPath = context.PointTypes.Single(pt=>pt.Name.Equals("Story"))
                 });
 
             }
@@ -81,7 +103,7 @@ namespace Demo.Migrations
                 BonusPoints = 0,
                 MaxBonusAwards = 10,
                 StartTime = DateTime.Now,
-                PointPath = context.PointTypes.Single(pt=>pt.Name.Equals("Misc")),
+                PointPath = context.PointTypes.Single(pt=>pt.Name.Equals("Puzzle")),
                 EndTime = DateTime.Now.AddDays(14)
             });
 
@@ -99,7 +121,7 @@ namespace Demo.Migrations
                 BonusPoints = 100,
                 MaxBonusAwards = 10,
                 StartTime = DateTime.Now,
-                PointPath = context.PointTypes.Single(pt => pt.Name.Equals("Misc")),
+                PointPath = context.PointTypes.Single(pt => pt.Name.Equals("Attendance")),
                 EndTime = DateTime.Now.AddYears(1),
                 IconLink = @"~\Content\Images\Milestones\iconLink.jpg"
             });
