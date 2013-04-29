@@ -10,7 +10,7 @@ namespace Demo.Migrations
     {
         public Configuration()
         {
-            AutomaticMigrationsEnabled = false;
+            AutomaticMigrationsEnabled = true;
         }
 
         protected override void Seed(Demo.Models.MasterContext context)
@@ -32,6 +32,118 @@ namespace Demo.Migrations
             context.UserProfiles.Add(new UserProfile()
             {
                 UserName = "JoeJiggty"
+            });
+
+            context.SaveChanges();
+
+            context.UserProfiles.Add(new UserProfile()
+            {
+                UserName = "Billy Bob"
+            });
+
+            context.SaveChanges();
+
+            context.UserProfiles.Add(new UserProfile()
+            {
+                UserName = "Joe Bob"
+            });
+
+            context.SaveChanges();
+
+            context.UserProfiles.Add(new UserProfile()
+            {
+                UserName = "John Bob"
+            });
+
+            context.SaveChanges();
+
+            context.UserProfiles.Add(new UserProfile()
+            {
+                UserName = "Steve Bob"
+            });
+
+            context.SaveChanges();
+
+            context.UserProfiles.Add(new UserProfile()
+            {
+                UserName = "Mama Bob"
+            });
+
+            context.SaveChanges();
+
+            context.UserProfiles.Add(new UserProfile()
+            {
+                UserName = "Baby Bob"
+            });
+
+            context.SaveChanges();
+
+            context.UserProfiles.Add(new UserProfile()
+            {
+                UserName = "Bobby Bob"
+            });
+
+            context.SaveChanges();
+
+            context.UserProfiles.Add(new UserProfile()
+            {
+                UserName = "Red Bob"
+            });
+
+            context.SaveChanges();
+
+            context.UserProfiles.Add(new UserProfile()
+            {
+                UserName = "Green Bob"
+            });
+
+            context.SaveChanges();
+
+            context.UserProfiles.Add(new UserProfile()
+            {
+                UserName = "Blue Bob"
+            });
+
+            context.SaveChanges();
+
+            context.UserProfiles.Add(new UserProfile()
+            {
+                UserName = "Blue Bob1"
+            });
+
+            context.SaveChanges();
+
+            context.UserProfiles.Add(new UserProfile()
+            {
+                UserName = "Blue Bob2"
+            });
+
+            context.SaveChanges();
+
+            context.UserProfiles.Add(new UserProfile()
+            {
+                UserName = "Blue Bob3"
+            });
+
+            context.SaveChanges();
+
+            context.UserProfiles.Add(new UserProfile()
+            {
+                UserName = "Blue Bob4"
+            });
+
+            context.SaveChanges();
+
+            context.UserProfiles.Add(new UserProfile()
+            {
+                UserName = "Blue Bob5"
+            });
+
+            context.SaveChanges();
+
+            context.UserProfiles.Add(new UserProfile()
+            {
+                UserName = "Blue Bob6"
             });
 
             context.SaveChanges();

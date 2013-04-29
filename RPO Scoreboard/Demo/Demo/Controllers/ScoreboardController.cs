@@ -26,9 +26,11 @@ namespace Demo.Controllers
         // GET: /Scoreboard/{pointType}
         public ActionResult Index(string pointType)
         {
-            var users = _userRepo.GetAll();
+            List<UserProfile> users = _userRepo.GetAll().ToList();
 
-            return View(users.ToList());
+            users.Sort(CompareByScore);
+
+            return View(users);
         }
 
         //
@@ -38,6 +40,11 @@ namespace Demo.Controllers
             //UserProfile selectedUser = _userRepo.GetAll().Single(su=>su.ID == id);
             return View(_userRepo.Get(id));
             //return RedirectToAction("Index");
+        }
+
+        private static int CompareByScore(UserProfile x, UserProfile y)
+        {
+            return x.TotalScore.CompareTo(y.TotalScore) * -1;
         }
     }
 }
