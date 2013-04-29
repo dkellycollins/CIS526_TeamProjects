@@ -9,15 +9,32 @@
 </head>
 <body>
     <header id="header">
-        <h1>RPO Scoreboard</h1>
-        <div>
-            <!-- Login -->
+
+        <div class="backgroundImages">
+            <div class="bgBackground">
+                <img id="background" src="@Url.Content("~/Content/Images/powercat background-small.jpg")"/>
+            </div>
         </div>
+
+        <div class="backgroundImages">
+            <div class="bgBanner">
+                <img id="banner" src="@Url.Content("~/Content/Images/banner-small2.jpg")"/>
+            </div>
+        </div>
+
+        <nav class="top_menu">
+        <ul>
+          @if(User.IsInRole("Administrator")){ <li>@Html.ActionLink("Manage Users", "Index", "Users")</li> }
+        </ul>
+      </nav>
+
         <div>
             <!-- Search -->
         </div>
     </header>
 
+    
+    
     <div id="content">
         @RenderBody()
     </div>

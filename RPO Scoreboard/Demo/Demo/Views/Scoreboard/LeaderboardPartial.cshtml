@@ -1,0 +1,39 @@
+﻿@model IEnumerable<Demo.Models.UserProfile>
+
+<div class="transbox">
+        <table class="leaderboardTable">
+            <tr id="leaderboardHeader">
+                <th></th>
+                <th>
+                    @Html.DisplayNameFor(model => model.UserName)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.TotalScore)
+                </th>
+            </tr>
+
+            @{int i = 0;}
+            @foreach (var item in Model)
+            {                
+                string name = "record" + i;
+                int displayValue = i + 1;
+                string classes = "leaderboardRecords";
+                if (i < 10) { classes += " topTen"; }
+                
+                <tr class="@classes" id="@name">
+                    <td>
+                        @displayValue.
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.UserName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.TotalScore)
+                    </td>
+                </tr>
+        
+                i++;
+            }
+        </table>
+    </div>
+</div>
