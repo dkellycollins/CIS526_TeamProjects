@@ -154,6 +154,9 @@ namespace Demo.Migrations
             SeedTypes st;
             string typeString = "";
 
+            st = (SeedTypes)enumVals.GetValue(rnd.Next(enumVals.Length));
+            typeString = st.ToString();
+
             context.Tasks.Add(new Task()
             {
                 Name = "Test Milestone",
@@ -163,7 +166,7 @@ namespace Demo.Migrations
                 BonusPoints = rnd.Next(200),
                 MaxBonusAwards = rnd.Next(20),
                 StartTime = DateTime.Now,
-                PointPath = context.PointTypes.Single(pt => pt.Name.Equals("Attendance")),
+                PointPath = context.PointTypes.Single(pt => pt.Name.Equals(typeString)),
                 EndTime = DateTime.Now.AddYears(1),
                 IconLink = linkArray[rnd.Next(3)]
             });
