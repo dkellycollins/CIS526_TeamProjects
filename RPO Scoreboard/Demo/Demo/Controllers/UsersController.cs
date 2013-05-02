@@ -62,7 +62,7 @@ namespace Demo.Controllers
             {
                 if (task.Task.IsMilestone)
                 {
-                    viewModel.CompletedMilestones.Add(new MilestoneViewModel()
+                    viewModel.CompletedMilestones.Add(new UserDetialsMilestoneViewModel()
                     {
                         TaskID = task.ID,
                         Name = task.Task.Name,
@@ -73,7 +73,7 @@ namespace Demo.Controllers
                 }
                 else
                 {
-                    viewModel.CompletedTask.Add(new TaskViewModel()
+                    viewModel.CompletedTask.Add(new UserDetialsTaskViewModel()
                     {
                         TaskID = task.ID,
                         Name = task.Task.Name,

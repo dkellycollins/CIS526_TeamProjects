@@ -9,11 +9,11 @@ namespace Demo.ViewModels
     {
         public string UserName { get; set; }
         public Dictionary<string, int> Scores { get; set; }
-        public List<TaskViewModel> CompletedTask { get; set; }
-        public List<MilestoneViewModel> CompletedMilestones { get; set; }
+        public List<UserDetialsTaskViewModel> CompletedTask { get; set; }
+        public List<UserDetialsMilestoneViewModel> CompletedMilestones { get; set; }
     }
 
-    public class TaskViewModel
+    public class UserDetialsTaskViewModel
     {
         public int TaskID { get; set; }
         public string Name { get; set; }
@@ -21,7 +21,7 @@ namespace Demo.ViewModels
         public int PointsEarned { get; set; }
     }
 
-    public class MilestoneViewModel : TaskViewModel
+    public class UserDetialsMilestoneViewModel : UserDetialsTaskViewModel
     {
         public string ImgLink { get; set; }
     }
