@@ -157,6 +157,7 @@
     <Compile Include="Controllers\PointController.cs" />
     <Compile Include="Controllers\ScoreboardController.cs" />
     <Compile Include="Controllers\TaskController.cs" />
+    <Compile Include="Controllers\UsersController.cs" />
     <Compile Include="Filters\InitializeSimpleMembershipAttribute.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -171,6 +172,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repositories\BasicRepo.cs" />
     <Compile Include="Repositories\IRepository.cs" />
+    <Compile Include="ViewModels\UserDetailsViewModels.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\images\banner-small2.jpg" />
@@ -258,7 +260,9 @@
     <Content Include="Web.Release.config">
       <DependentUpon>Web.config</DependentUpon>
     </Content>
-    <Content Include="Views\Web.config" />
+    <Content Include="Views\Web.config">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="Views\_ViewStart.cshtml" />
     <Content Include="Views\Shared\Error.cshtml" />
     <Content Include="Views\Shared\_Layout.cshtml" />
@@ -279,6 +283,8 @@
     <Content Include="Views\Account\_SetPasswordPartial.cshtml" />
     <Content Include="Views\Task\MilestoneListPartial.cshtml" />
     <Content Include="Views\Task\TaskListPartial.cshtml" />
+    <Content Include="Views\Users\UserDetialsPartial.cshtml" />
+    <Content Include="Views\Users\UserDetials.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

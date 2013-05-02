@@ -14,7 +14,9 @@ namespace Demo.Models
         [Key]
         public int ID { get; set; }
 
-        public DateTime CompletedData { get; set; }
+        public DateTime CompletedDate { get; set; }
+
+        public int AwardedPoints { get; set; }
 
         public int UserProfileID { get; set; }
 

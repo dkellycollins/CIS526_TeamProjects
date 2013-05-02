@@ -104,7 +104,7 @@ namespace Demo.Models
         /// <summary>
         /// The task that have been completed by the player.
         /// </summary>
-        public virtual ICollection<Task> CompletedTask { get; set; }
+        public virtual ICollection<CompletedTask> CompletedTask { get; set; }
     }
 
     #region Other Models

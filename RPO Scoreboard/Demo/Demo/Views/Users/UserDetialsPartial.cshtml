@@ -1,0 +1,58 @@
+﻿@model Demo.ViewModels.UserDetailsViewModel
+
+<div id="UserScores">
+    <table>
+        @foreach(var item in Model.Scores) 
+        {
+            <tr>
+                <td>
+                    @item.Key
+                </td>
+                <td>
+                    @item.Value
+                </td>
+            </tr>
+        }
+    </table>
+</div>
+
+<div id="CompletedMilestones">
+    <table>
+        @foreach (var milestone in Model.CompletedMilestones)
+        {
+            <tr>
+                <td>
+                    <img src="@milestone.ImgLink" />
+                </td>
+                <td>
+                    @Html.ActionLink(milestone.Name, "Task", "Details", new { id = milestone.TaskID })
+                </td>
+                <td>
+                    @milestone.CompletedOn.ToString()
+                </td>
+                <td>
+                    @milestone.PointsEarned
+                </td>
+            </tr>
+        }
+    </table>
+</div>
+
+<div id="CompletedTask">
+    <table>
+        @foreach (var task in Model.CompletedTask)
+        {
+            <tr>
+                <td>
+                    @Html.ActionLink(task.Name, "Task", "Details", new { id = task.TaskID })
+                </td>
+                <td>
+                    @task.CompletedOn.ToString()
+                </td>
+                <td>
+                    @task.PointsEarned
+                </td>
+            </tr>
+        }
+    </table>
+</div>
