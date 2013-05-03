@@ -104,6 +104,7 @@ namespace Demo.Models
         /// <summary>
         /// The task that have been completed by the player.
         /// </summary>
+        [Display(Name="Milestones")]
         public virtual ICollection<CompletedTask> CompletedTask { get; set; }
     }
 
