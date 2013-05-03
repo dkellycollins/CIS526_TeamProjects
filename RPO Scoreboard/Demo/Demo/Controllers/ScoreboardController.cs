@@ -6,6 +6,7 @@ using System.Web.Mvc;
 using Demo.Models;
 using Demo.Repositories;
 using System.ComponentModel.DataAnnotations;
+using Demo.Filters;
 
 namespace Demo.Models
 {

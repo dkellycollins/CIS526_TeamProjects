@@ -2,7 +2,9 @@
     font-size: .85em;
     font-family: "Segoe UI", Verdana, Helvetica, Sans-Serif;
     color: #232323;
-    background-color: #fff;
+    
+    /* background-image: url("images/powercat background-small.jpg"); */
+    background-color: purple;
     margin: 0px 0px 0px 0px;
 }
 
@@ -99,9 +101,11 @@ textarea {
 #header
 {
     width:100%;
-    height:100%;
+    height:231px;
     float:left;
     margin:0px;
+    background-image: url("images/banner-small2.jpg");
+    background-size: cover;
 }
 
 #background
@@ -150,10 +154,13 @@ textarea {
     border-radius: 20px;
     margin-left: 5%;
     margin-right: 5%;
+    margin-top: 5%;
+    margin-bottom: 5%;
     background: rgb(0,0,0);
     background: rgba(0,0,0,0.6);
     filter:alpha(opacity=60); /* For IE8 and earlier */
     float:left;
+    text-align: center;
 }
 
 .transbox p
@@ -170,7 +177,7 @@ textarea {
 .transbox2
 {   
     width: 100%;
-    //border-radius: 20px;
+    /*border-radius: 20px; */
     background-color: #000000;
     float:left;
 }
@@ -360,4 +367,61 @@ textarea {
 .milestoneIcon
 {
     width:32px;
+}
+
+.top_menu {
+    width: 70%;
+    float: right;
+    text-align: right;
+    display:block;
+    margin: 10px 10px 10px 10px;
+}
+
+    .top_menu li {
+        display: inline-block;
+        margin-left: 7px;
+    }
+
+    .top_menu a,
+    .top_menu a:visited {
+        color: #FFFFFF;
+    }
+
+    .top_menu ol, ul {
+        list-style: none outside none;
+        margin: 0px;
+        padding: 0px;
+    }
+
+    .top_menu a:hover,
+    .top_menu a:visited:hover {
+      color:#FFD400;
+    }
+
+/* These classes will display the table like the library hsowed us.*/
+
+.tbox
+{
+    top:38%;
+    width: 90%;
+    border-radius: 20px;
+    margin-left: 5%;
+    margin-right: 5%;
+    background: rgb(0,0,0);
+    background: rgba(0,0,0,0.6);
+    filter:alpha(opacity=60); /* For IE8 and earlier */
+    float:left;
+}
+
+.leaderboardTable2
+{
+    border-color: #333333;
+    border-width: 2px;
+    background-color: #000000;
+}
+
+.center
+{
+    margin-left:auto;
+    margin-right:auto;
 }

@@ -7,6 +7,7 @@ namespace Demo.Migrations
     using System.Web.Security;
     using Demo.Models;
     using WebMatrix.WebData;
+    using Demo.Filters;
 
     internal sealed class Configuration : DbMigrationsConfiguration<Demo.Models.MasterContext>
     {

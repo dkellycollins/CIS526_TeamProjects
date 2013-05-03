@@ -1,7 +1,10 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Web;
+using System.Web.Mvc;
 using Demo.Models;
 
 namespace Demo.Repositories
@@ -18,6 +21,11 @@ namespace Demo.Repositories
         public T Get(int entityID)
         {
             return _context.Set<T>().Find(entityID);
+        }
+
+        public IEnumerable<T> Get(Expression<Func<T, bool>> selector)
+        {
+            return _context.Set<T>().Where(selector);
         }
 
         public IQueryable<T> GetAll()

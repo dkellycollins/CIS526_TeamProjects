@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Web;
 
 namespace Demo.Repositories
@@ -17,6 +19,13 @@ namespace Demo.Repositories
         /// <param name="entityID">ID of the entity.</param>
         /// <returns>Entity</returns>
         T Get(int entityID);
+
+        /// <summary>
+        /// Performs the given query on the datbase and returns the result.
+        /// </summary>
+        /// <param name="selector"></param>
+        /// <returns></returns>
+        IEnumerable<T> Get(Expression<Func<T, bool>> selector);
 
         /// <summary>
         /// Retrives all entities from the database.

@@ -9,23 +9,12 @@
 </head>
 <body>
     <div id="header">
-        <div class="backgroundImages">
-            <div class="bgBackground">
-                <img id="background" src="@Url.Content("~/Content/Images/powercat background-small.jpg")"/>
-            </div>
-        </div>
-
-        <div class="backgroundImages">
-            <div class="bgBanner">
-                <img id="banner" src="@Url.Content("~/Content/Images/banner-small2.jpg")"/>
-            </div>
-        </div>
-
         <nav class="top_menu">
-        <ul>
-          @if(User.IsInRole("Administrator")){ <li>@Html.ActionLink("Manage Users", "Index", "Users")</li> }
-        </ul>
-      </nav>
+            <ul>
+                @if(User.IsInRole("Administrator")){ <li>@Html.ActionLink("Manage Users", "Index", "Users")</li> }
+                @Html.Partial("LoginPartial")
+            </ul>
+        </nav>
 
         <div>
             <!-- Search -->

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Transactions;
 using System.Web;
 using System.Web.Mvc;
@@ -19,19 +20,28 @@ namespace Demo.Controllers
     [InitializeSimpleMembership]
     public class AccountController : Controller
     {
+        private const string SELECT_USER_PROFILE = "SELECT username FROM Users WHERE username = @user_name";
+        private IRepository<UserProfile> _userProfileRepo;
+
+        public AccountController()
+        {
+            _userProfileRepo = new BasicRepo<UserProfile>();
+        }
+
         //
         // GET: /Account/Login
-
-        [AllowAnonymous]
         public ActionResult Login(string returnUrl)
         {
-            ViewBag.ReturnUrl = returnUrl;
-            return View();
+            //This is where we should check to see if the user has an account.
+            var user = _userProfileRepo.Get(SELECT_USER_PROFILE, User.Identity.Name);
+            ExpressionHelper.GetExpressionText(
+            user.AsQueryable().Expression.
+            return RedirectToAction("Index", "Scoreboard");
         }
 
         //
         // POST: /Account/Login
-
+        /*
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
@@ -46,7 +56,7 @@ namespace Demo.Controllers
             ModelState.AddModelError("", "The user name or password provided is incorrect.");
             return View(model);
         }
-
+        */
         //
         // POST: /Account/LogOff
 
@@ -56,7 +66,7 @@ namespace Demo.Controllers
         {
             WebSecurity.Logout();
 
-            return RedirectToAction("Index", "Home");
+            return RedirectToAction("Index", "Scoreboard");
         }
 
         //
