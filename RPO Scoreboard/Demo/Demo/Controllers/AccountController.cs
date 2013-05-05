@@ -33,9 +33,18 @@ namespace Demo.Controllers
         public ActionResult Login(string returnUrl)
         {
             //This is where we should check to see if the user has an account.
-            var user = _userProfileRepo.Get(SELECT_USER_PROFILE, User.Identity.Name);
-            ExpressionHelper.GetExpressionText(
-            user.AsQueryable().Expression.
+            if (_userProfileRepo.Get((x) => x.UserName == User.Identity.Name).Count() > 0)
+            {
+                //This will take the user to the user agreement page.
+                return View();
+            }
+            return RedirectToAction("Index", "Scoreboard");
+        }
+
+        [HttpPost]
+        public ActionResult CreateProfile()
+        {
+            //Create account
             return RedirectToAction("Index", "Scoreboard");
         }
 
