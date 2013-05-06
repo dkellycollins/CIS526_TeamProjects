@@ -1,0 +1,40 @@
+﻿@model IEnumerable<Demo.Models.Log>
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Admin Logs</h2>
+
+<table>
+    <tr>
+        <th>
+            @Html.DisplayNameFor(modelItem => modelItem.UserName)
+        </th>
+        <th>
+            @Html.DisplayNameFor(modelItem => modelItem.UserName)
+        </th>
+        <th>
+            @Html.DisplayNameFor(modelItem => modelItem.UserName)
+        </th>
+        <th>
+            @Html.DisplayNameFor(modelItem => modelItem.UserName)
+        </th>
+    </tr>
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(item => item.UserName)
+            </td>
+            <td>
+                @Html.DisplayFor(item => item.Action)
+            </td>
+            <td>
+                @Html.DisplayFor(item => item.Time)
+            </td>
+            <td>
+                @Html.DisplayFor(item => item.Controller);
+            </td>
+        </tr>
+    }
+</table>
