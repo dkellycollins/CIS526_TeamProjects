@@ -34,20 +34,21 @@ namespace Demo.Controllers
             //This is where we should check to see if the user has an account.
             int profileCount = _userProfileRepo.Get((x) => x.UserName == User.Identity.Name).Count();
 
-            if (User.IsInRole(Util.Roles.ADMIN) || profileCount > 0)
+            //if (User.IsInRole(Util.ProjectRoles.ADMIN) || profileCount > 0)
+            if(profileCount > 0)
                 return RedirectToAction("Index", "Scoreboard");
-            return RedirectToAction("CreateProfile");
+            return RedirectToAction("UserAgreement");
         }
 
-        public ActionResult CreateProfile()
+        public ActionResult UserAgreement()
         {
             return View();
         }
 
         [HttpPost]
-        public ActionResult CreateProfile(UserProfile userProfile)
+        public ActionResult CreateProfile()
         {
-            _userProfileRepo.Create(userProfile);
+            //_userProfileRepo.Create(userProfile);
 
             return RedirectToAction("Index", "Scoreboard");
         }

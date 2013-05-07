@@ -1,0 +1,14 @@
+﻿@{
+    ViewBag.Title = "CreateProfile";
+}
+
+<div id="userAgreement">
+    <h2>User Agreement</h2>
+    <br />
+    <iframe id="userAgreementFrame" src="~/Content/UserAgreement.txt"></iframe>
+
+    @using (Html.BeginForm("CreateProfile", "Account", FormMethod.Post, new { @id = "editform" }))
+    {
+        <input type="submit" value="I Agree" />
+    }
+</div>

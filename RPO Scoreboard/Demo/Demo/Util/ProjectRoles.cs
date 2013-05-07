@@ -5,7 +5,7 @@ using System.Web;
 
 namespace Demo.Util
 {
-    public class Roles
+    public class ProjectRoles
     {
         public const string ADMIN = "admin";
     }

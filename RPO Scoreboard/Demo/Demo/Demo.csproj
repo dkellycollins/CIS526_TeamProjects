@@ -175,7 +175,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repositories\BasicRepo.cs" />
     <Compile Include="Repositories\IRepository.cs" />
-    <Compile Include="Util\RoleNames.cs" />
+    <Compile Include="Util\ProjectRoles.cs" />
     <Compile Include="ViewModels\UserDetailsViewModels.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -276,24 +276,15 @@
     <Content Include="Views\Scoreboard\Index.cshtml" />
     <Content Include="Views\Scoreboard\Details.cshtml" />
     <Content Include="Views\Task\Index.cshtml" />
-    <Content Include="Views\Account\ExternalLoginConfirmation.cshtml" />
-    <Content Include="Views\Account\ExternalLoginFailure.cshtml" />
-    <Content Include="Views\Account\Login.cshtml" />
-    <Content Include="Views\Account\Manage.cshtml" />
     <Content Include="Views\Scoreboard\LeaderboardPartial.cshtml" />
     <Content Include="Views\Scoreboard\PointTypesPartial.cshtml" />
-    <Content Include="Views\Account\Register.cshtml" />
-    <Content Include="Views\Account\_ChangePasswordPartial.cshtml" />
-    <Content Include="Views\Account\_ExternalLoginsListPartial.cshtml" />
-    <Content Include="Views\Account\_RemoveExternalLoginsPartial.cshtml" />
-    <Content Include="Views\Account\_SetPasswordPartial.cshtml" />
     <Content Include="Views\Task\MilestoneListPartial.cshtml" />
     <Content Include="Views\Task\TaskListPartial.cshtml" />
     <Content Include="Views\Users\UserDetialsPartial.cshtml" />
     <Content Include="Views\Users\UserDetials.cshtml" />
     <Content Include="Views\Shared\LoginPartial.cshtml" />
     <Content Include="Views\Users\Index.cshtml" />
-    <Content Include="Views\Account\CreateProfile.cshtml" />
+    <Content Include="Views\Account\UserAgreement.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
