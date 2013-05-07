@@ -21,7 +21,7 @@ namespace Demo.Controllers
 
         //
         // GET: /User/
-        [Authorize(Roles="admin")]
+        [Authorize(Roles=Util.Roles.ADMIN)]
         public ActionResult Index()
         {
             return View();
@@ -29,7 +29,7 @@ namespace Demo.Controllers
 
         //
         // GET: /User/Details/5
-        [Authorize(Roles="admin")]
+        [Authorize(Roles=Util.Roles.ADMIN)]
         public ActionResult Details(int id)
         {
             UserProfile profile = _userProfileRepo.Get(id);
@@ -88,7 +88,7 @@ namespace Demo.Controllers
 
         //
         // GET: /User/Create
-        [Authorize(Roles = "admin")]
+        [Authorize(Roles = Util.Roles.ADMIN)]
         public ActionResult Create()
         {
             return View();
@@ -98,7 +98,7 @@ namespace Demo.Controllers
         // POST: /User/Create
 
         [HttpPost]
-        [Authorize(Roles = "admin")]
+        [Authorize(Roles = Util.Roles.ADMIN)]
         public ActionResult Create(FormCollection collection)
         {
             try
@@ -115,7 +115,7 @@ namespace Demo.Controllers
 
         //
         // GET: /User/Edit/5
-        [Authorize(Roles = "admin")]
+        [Authorize(Roles = Util.Roles.ADMIN)]
         public ActionResult Edit(int id)
         {
             return View();
@@ -125,7 +125,7 @@ namespace Demo.Controllers
         // POST: /User/Edit/5
 
         [HttpPost]
-        [Authorize(Roles = "admin")]
+        [Authorize(Roles = Util.Roles.ADMIN)]
         public ActionResult Edit(int id, FormCollection collection)
         {
             try
@@ -142,7 +142,7 @@ namespace Demo.Controllers
 
         //
         // GET: /User/Delete/5
-        [Authorize(Roles = "admin")]
+        [Authorize(Roles = Util.Roles.ADMIN)]
         public ActionResult Delete(int id)
         {
             return View();
@@ -152,7 +152,7 @@ namespace Demo.Controllers
         // POST: /User/Delete/5
 
         [HttpPost]
-        [Authorize(Roles = "admin")]
+        [Authorize(Roles = Util.Roles.ADMIN)]
         public ActionResult Delete(int id, FormCollection collection)
         {
             try

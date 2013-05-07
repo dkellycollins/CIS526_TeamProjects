@@ -11,7 +11,7 @@
     <div id="header">
         <nav class="top_menu">
             <ul>
-                @if(User.IsInRole("Administrator")){ <li>@Html.ActionLink("Manage Users", "Index", "Users")</li> }
+                @if(User.IsInRole(Util.Roles.ADMIN)){ <li>@Html.ActionLink("Manage Users", "Index", "Users")</li> }
                 @Html.Partial("LoginPartial")
             </ul>
         </nav>

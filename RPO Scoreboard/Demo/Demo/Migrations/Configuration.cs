@@ -203,19 +203,19 @@ namespace Demo.Migrations
         {
             Demo.Filters.InitializeSimpleMembershipAttribute.SimpleMembershipInitializer init = new Demo.Filters.InitializeSimpleMembershipAttribute.SimpleMembershipInitializer();
 
-            if (!Roles.RoleExists("admin"))
-                Roles.CreateRole("admin");
+            if (!Roles.RoleExists(Util.Roles.ADMIN))
+                Roles.CreateRole(Util.Roles.ADMIN);
 
             //This is bad. We need to change this eventually.
-            if (!WebSecurity.UserExists("admin"))
+            if (!WebSecurity.UserExists(Util.Roles.ADMIN))
             {
                 WebSecurity.CreateUserAndAccount(
                     "admin",
                     "admin");
             }
-            if (!Roles.GetRolesForUser("admin").Contains("admin"))
+            if (!Roles.GetRolesForUser("admin").Contains(Util.Roles.ADMIN))
             {
-                Roles.AddUserToRole("admin", "admin");
+                Roles.AddUserToRole("admin", Util.Roles.ADMIN);
             }
         }
     }
