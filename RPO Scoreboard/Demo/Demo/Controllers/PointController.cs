@@ -5,10 +5,11 @@ using System.Web;
 using System.Web.Mvc;
 using Demo.Models;
 using Demo.Repositories;
+using Demo.Filters;
 
 namespace Demo.Controllers
 {
-    [Authorize(Roles = "admin")]
+    [CasAuthorize]
     public class PointController : Controller
     {
         private IRepository<PointType> _pointTypeRepo;

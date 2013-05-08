@@ -7,6 +7,7 @@ namespace Demo.Migrations
     using System.Web.Security;
     using Demo.Models;
     using WebMatrix.WebData;
+    using Demo.Filters;
     using System.Collections.Generic;
 
     internal sealed class Configuration : DbMigrationsConfiguration<Demo.Models.MasterContext>
@@ -25,9 +26,10 @@ namespace Demo.Migrations
 
             seedUser(context);
             seedTypes(context);
+            //seedScores(context);
             seedTasks(context);
             seedMilestones(context);
-            seedLogin();
+            //seedLogin();
             seedScores(context);
             seedCompletedTasks(context);
 
@@ -35,8 +37,12 @@ namespace Demo.Migrations
 
         private void seedUser(MasterContext context)
         {
-            for (int i = 0; i < 200; i++)
+            context.UserProfiles.Add(new UserProfile()
             {
+                ID = 0,
+                UserName = "playerOne",
+                IsAdmin = true
+            });            for (int i = 0; i < 1000; i++)            {
                 context.UserProfiles.Add(new UserProfile()
                 {
                     UserName = "Joe Jiggty " + i
@@ -215,19 +221,19 @@ namespace Demo.Migrations
         {
             Demo.Filters.InitializeSimpleMembershipAttribute.SimpleMembershipInitializer init = new Demo.Filters.InitializeSimpleMembershipAttribute.SimpleMembershipInitializer();
 
-            if (!Roles.RoleExists("admin"))
-                Roles.CreateRole("admin");
+            if (!Roles.RoleExists(Util.ProjectRoles.ADMIN))
+                Roles.CreateRole(Util.ProjectRoles.ADMIN);
 
             //This is bad. We need to change this eventually.
-            if (!WebSecurity.UserExists("admin"))
+            if (!WebSecurity.UserExists(Util.ProjectRoles.ADMIN))
             {
                 WebSecurity.CreateUserAndAccount(
                     "admin",
                     "admin");
             }
-            if (!Roles.GetRolesForUser("admin").Contains("admin"))
+            if (!Roles.GetRolesForUser("admin").Contains(Util.ProjectRoles.ADMIN))
             {
-                Roles.AddUserToRole("admin", "admin");
+                Roles.AddUserToRole("admin", Util.ProjectRoles.ADMIN);
             }
         }
 

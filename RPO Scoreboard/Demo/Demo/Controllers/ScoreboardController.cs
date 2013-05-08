@@ -6,6 +6,7 @@ using System.Web.Mvc;
 using Demo.Models;
 using Demo.Repositories;
 using System.ComponentModel.DataAnnotations;
+using Demo.Filters;
 
 namespace Demo.Models
 {
@@ -84,6 +85,9 @@ namespace Demo.Controllers
 
             foreach (var user in _userRepo.GetAll())
             {
+                if (user.IsAdmin)
+                    continue; //Ignore admin profiles.
+
                 svm.Scoreboard.Add(new ScoreboardRecord()
                 {
                     User = user,

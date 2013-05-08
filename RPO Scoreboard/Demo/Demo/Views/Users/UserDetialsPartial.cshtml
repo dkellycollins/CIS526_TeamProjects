@@ -2,6 +2,14 @@
 
 <div id="UserScores">
     <table>
+        <tr>
+            <td>
+                Total Score
+            </td>
+            <td>
+                @Model.TotalScore
+            </td>
+        </tr>
         @foreach(var item in Model.Scores) 
         {
             <tr>

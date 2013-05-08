@@ -1,8 +1,9 @@
 ﻿@model IEnumerable<Demo.Models.ScoreboardRecord>
 
 <div class="transbox">
+    <h1>ScoreBoard</h1>
     <table class="leaderboardTable">
-        <tr id="leaderboardHeader">
+        <!-- <tr id="leaderboardHeader">
             <th></th>
             <th>
                 @Html.DisplayNameFor(model => model.User)
@@ -13,7 +14,7 @@
             <th>
                 @Html.DisplayNameFor(model => model.Score)
             </th>
-        </tr>
+        </tr> -->
 
         @{int i = 0;}
         @foreach (var item in Model)

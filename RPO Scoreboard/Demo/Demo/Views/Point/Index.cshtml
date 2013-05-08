@@ -1,0 +1,29 @@
+﻿@model IEnumerable<Demo.Models.PointType>
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Index</h2>
+
+<table>
+    <tr>
+        <td>
+            Point Type
+        </td>        
+    </tr>
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @item.Name
+            </td>
+            <td>
+                @Html.ActionLink("Edit", "Edit") |
+                @Html.ActionLink("Delete", "Delete")
+            </td>
+        </tr>
+    }
+</table>
+
+@Html.ActionLink("Create", "Create");
+
