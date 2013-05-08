@@ -9,6 +9,9 @@
                 @Html.DisplayNameFor(model => model.User)
             </th>
             <th>
+                @Html.DisplayNameFor(model => model.User.CompletedTask)
+            </th>
+            <th>
                 @Html.DisplayNameFor(model => model.Score)
             </th>
         </tr> -->
@@ -27,6 +30,15 @@
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.User.UserName)
+                </td>
+                <td>
+                    @foreach (var milestone in item.User.CompletedTask)
+                    {
+                        string source = milestone.Task.IconLink;
+                        string altText = milestone.Task.Description;
+                        
+                        <img src="@Url.Content(source)" title="@altText" class="milestoneIcon"/>
+                    }
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.Score)

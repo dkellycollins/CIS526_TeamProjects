@@ -95,6 +95,9 @@ namespace Demo.Controllers
                 }
             }
 
+            viewModel.CompletedTask.Sort(delegate(UserDetialsTaskViewModel x, UserDetialsTaskViewModel y) { return x.CompletedOn.CompareTo(y.CompletedOn); });
+            viewModel.CompletedMilestones.Sort(delegate(UserDetialsMilestoneViewModel x, UserDetialsMilestoneViewModel y) { return x.CompletedOn.CompareTo(y.CompletedOn); });
+
             return viewModel;
         }
 
