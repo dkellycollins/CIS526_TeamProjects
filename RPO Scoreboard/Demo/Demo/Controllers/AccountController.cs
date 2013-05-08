@@ -32,10 +32,9 @@ namespace Demo.Controllers
         public ActionResult Login(string returnUrl)
         {
             //This is where we should check to see if the user has an account.
-            int profileCount = _userProfileRepo.Get((x) => x.UserName == User.Identity.Name).Count();
+            UserProfile profile = _userProfileRepo.Get((x) => x.UserName == User.Identity.Name).FirstOrDefault();
 
-            //if (User.IsInRole(Util.ProjectRoles.ADMIN) || profileCount > 0)
-            if(profileCount > 0)
+            if(profile != null)
                 return RedirectToAction("Index", "Scoreboard");
             return RedirectToAction("UserAgreement");
         }
@@ -48,7 +47,12 @@ namespace Demo.Controllers
         [HttpPost]
         public ActionResult CreateProfile()
         {
-            //_userProfileRepo.Create(userProfile);
+            UserProfile profile = new UserProfile()
+            {
+                ID = eid,
+                UserName = User.Identity.Name,
+                IsAdmin = false,
+            };
 
             return RedirectToAction("Index", "Scoreboard");
         }

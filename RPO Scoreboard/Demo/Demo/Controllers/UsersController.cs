@@ -41,9 +41,9 @@ namespace Demo.Controllers
         }
 
         [Authorize]
-        public ActionResult Details()
+        public ActionResult Profile()
         {
-            string userName = Membership.GetUser().UserName;
+            string userName = User.Identity.Name;
             IQueryable<UserProfile> users = _userProfileRepo.GetAll();
             UserProfile profile = users.Where((x) => x.UserName == userName).FirstOrDefault();
 
@@ -53,11 +53,17 @@ namespace Demo.Controllers
         private UserDetailsViewModel createUserDetailsViewModel(UserProfile userProfile)
         {
             UserDetailsViewModel viewModel = new UserDetailsViewModel();
+            
             viewModel.UserName = userProfile.UserName;
+
+            int totalScore = 0;
             foreach (PointScore pointScore in userProfile.Score)
             {
                 viewModel.Scores.Add(pointScore.PointPath.Name, pointScore.Score);
+                totalScore += pointScore.Score;
             }
+            viewModel.TotalScore = totalScore;
+
             foreach (CompletedTask task in userProfile.CompletedTask)
             {
                 if (task.Task.IsMilestone)
@@ -84,33 +90,6 @@ namespace Demo.Controllers
             }
 
             return viewModel;
-        }
-
-        //
-        // GET: /User/Create
-        [Authorize(Roles = Util.ProjectRoles.ADMIN)]
-        public ActionResult Create()
-        {
-            return View();
-        }
-
-        //
-        // POST: /User/Create
-
-        [HttpPost]
-        [Authorize(Roles = Util.ProjectRoles.ADMIN)]
-        public ActionResult Create(FormCollection collection)
-        {
-            try
-            {
-                // TODO: Add insert logic here
-
-                return RedirectToAction("Index");
-            }
-            catch
-            {
-                return View();
-            }
         }
 
         //

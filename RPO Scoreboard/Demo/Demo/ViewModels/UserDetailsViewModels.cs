@@ -9,6 +9,7 @@ namespace Demo.ViewModels
     {
         public string UserName { get; set; }
         public Dictionary<string, int> Scores { get; set; }
+        public int TotalScore { get; set; }
         public List<UserDetialsTaskViewModel> CompletedTask { get; set; }
         public List<UserDetialsMilestoneViewModel> CompletedMilestones { get; set; }
     }
