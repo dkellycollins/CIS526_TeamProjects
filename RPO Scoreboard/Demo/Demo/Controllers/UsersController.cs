@@ -7,6 +7,7 @@ using System.Web.Security;
 using Demo.Models;
 using Demo.Repositories;
 using Demo.ViewModels;
+using Demo.Filters;
 
 namespace Demo.Controllers
 {
@@ -21,7 +22,7 @@ namespace Demo.Controllers
 
         //
         // GET: /User/
-        [Authorize(Roles=Util.ProjectRoles.ADMIN)]
+        [CasAuthorize]
         public ActionResult Index()
         {
             return View();
@@ -29,7 +30,7 @@ namespace Demo.Controllers
 
         //
         // GET: /User/Details/5
-        [Authorize(Roles=Util.ProjectRoles.ADMIN)]
+        [CasAuthorize]
         public ActionResult Details(int id)
         {
             UserProfile profile = _userProfileRepo.Get(id);
@@ -99,7 +100,7 @@ namespace Demo.Controllers
 
         //
         // GET: /User/Edit/5
-        [Authorize(Roles = Util.ProjectRoles.ADMIN)]
+        [CasAuthorize]
         public ActionResult Edit(int id)
         {
             return View();
@@ -109,7 +110,7 @@ namespace Demo.Controllers
         // POST: /User/Edit/5
 
         [HttpPost]
-        [Authorize(Roles = Util.ProjectRoles.ADMIN)]
+        [CasAuthorize]
         public ActionResult Edit(int id, FormCollection collection)
         {
             try
@@ -126,7 +127,7 @@ namespace Demo.Controllers
 
         //
         // GET: /User/Delete/5
-        [Authorize(Roles = Util.ProjectRoles.ADMIN)]
+        [CasAuthorize]
         public ActionResult Delete(int id)
         {
             return View();
@@ -136,7 +137,7 @@ namespace Demo.Controllers
         // POST: /User/Delete/5
 
         [HttpPost]
-        [Authorize(Roles = Util.ProjectRoles.ADMIN)]
+        [CasAuthorize]
         public ActionResult Delete(int id, FormCollection collection)
         {
             try

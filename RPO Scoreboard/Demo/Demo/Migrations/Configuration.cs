@@ -23,14 +23,20 @@ namespace Demo.Migrations
 
             seedUser(context);
             seedTypes(context);
-            seedScores(context);
+            //seedScores(context);
             seedTasks(context);
             seedMilestones(context);
-            seedLogin();
+            //seedLogin();
         }
 
         private void seedUser(MasterContext context)
         {
+            context.UserProfiles.Add(new UserProfile()
+            {
+                ID = 0,
+                UserName = "playerOne",
+                IsAdmin = true
+            });
             for (int i = 0; i < 1000; i++)
             {
                 context.UserProfiles.Add(new UserProfile()

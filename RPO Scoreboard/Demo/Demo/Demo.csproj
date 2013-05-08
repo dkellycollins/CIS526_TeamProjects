@@ -161,6 +161,7 @@
     <Compile Include="Controllers\ScoreboardController.cs" />
     <Compile Include="Controllers\TaskController.cs" />
     <Compile Include="Controllers\UsersController.cs" />
+    <Compile Include="Filters\CasAuthorize.cs" />
     <Compile Include="Filters\InitializeSimpleMembershipAttribute.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -285,6 +286,10 @@
     <Content Include="Views\Shared\LoginPartial.cshtml" />
     <Content Include="Views\Users\Index.cshtml" />
     <Content Include="Views\Account\UserAgreement.cshtml" />
+    <Content Include="Views\Point\Index.cshtml" />
+    <Content Include="Views\Point\Update.cshtml" />
+    <Content Include="Views\Point\Create.cshtml" />
+    <Content Include="Views\Point\Delete.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
