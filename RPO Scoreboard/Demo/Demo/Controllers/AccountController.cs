@@ -32,7 +32,7 @@ namespace Demo.Controllers
         public ActionResult Login(string returnUrl)
         {
             //This is where we should check to see if the user has an account.
-            UserProfile profile = _userProfileRepo.Get((x) => x.UserName == User.Identity.Name).FirstOrDefault();
+            UserProfile profile = _userProfileRepo.Get((x) => x.UserName == WebSecurity.CurrentUserName).FirstOrDefault();
 
             if(profile != null)
                 return RedirectToAction("Index", "Scoreboard");
@@ -49,10 +49,11 @@ namespace Demo.Controllers
         {
             UserProfile profile = new UserProfile()
             {
-                ID = eid,
-                UserName = User.Identity.Name,
+                ID = WebSecurity.CurrentUserId,
+                UserName = WebSecurity.CurrentUserName,
                 IsAdmin = false,
             };
+            _userProfileRepo.Create(profile);
 
             return RedirectToAction("Index", "Scoreboard");
         }
@@ -63,8 +64,7 @@ namespace Demo.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult LogOff()
         {
-            WebSecurity.Logout();
-
+            FormsAuthentication.SignOut();
             return RedirectToAction("Index", "Scoreboard");
         }
     }

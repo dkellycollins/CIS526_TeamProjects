@@ -85,6 +85,9 @@ namespace Demo.Controllers
 
             foreach (var user in _userRepo.GetAll())
             {
+                if (user.IsAdmin)
+                    continue; //Ignore admin profiles.
+
                 svm.Scoreboard.Add(new ScoreboardRecord()
                 {
                     User = user,

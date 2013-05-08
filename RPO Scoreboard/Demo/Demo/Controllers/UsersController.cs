@@ -44,9 +44,11 @@ namespace Demo.Controllers
         public ActionResult Profile()
         {
             string userName = User.Identity.Name;
-            IQueryable<UserProfile> users = _userProfileRepo.GetAll();
-            UserProfile profile = users.Where((x) => x.UserName == userName).FirstOrDefault();
-
+            UserProfile profile = _userProfileRepo.Get((x) => x.UserName == userName).FirstOrDefault();
+            if (profile == null)
+            {
+                return new HttpNotFoundResult();
+            }
             return View(createUserDetailsViewModel(profile));
         }
 
@@ -57,6 +59,7 @@ namespace Demo.Controllers
             viewModel.UserName = userProfile.UserName;
 
             int totalScore = 0;
+            viewModel.Scores = new Dictionary<string, int>();
             foreach (PointScore pointScore in userProfile.Score)
             {
                 viewModel.Scores.Add(pointScore.PointPath.Name, pointScore.Score);
@@ -64,6 +67,8 @@ namespace Demo.Controllers
             }
             viewModel.TotalScore = totalScore;
 
+            viewModel.CompletedTask = new List<UserDetialsTaskViewModel>();
+            viewModel.CompletedMilestones = new List<UserDetialsMilestoneViewModel>();
             foreach (CompletedTask task in userProfile.CompletedTask)
             {
                 if (task.Task.IsMilestone)

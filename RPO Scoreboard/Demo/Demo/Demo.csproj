@@ -281,7 +281,7 @@
     <Content Include="Views\Task\MilestoneListPartial.cshtml" />
     <Content Include="Views\Task\TaskListPartial.cshtml" />
     <Content Include="Views\Users\UserDetialsPartial.cshtml" />
-    <Content Include="Views\Users\UserDetials.cshtml" />
+    <Content Include="Views\Users\Profile.cshtml" />
     <Content Include="Views\Shared\LoginPartial.cshtml" />
     <Content Include="Views\Users\Index.cshtml" />
     <Content Include="Views\Account\UserAgreement.cshtml" />
