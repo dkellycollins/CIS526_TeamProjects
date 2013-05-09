@@ -42,7 +42,9 @@ namespace Demo.Migrations
                 ID = 0,
                 UserName = "playerOne",
                 IsAdmin = true
-            });            for (int i = 0; i < 1000; i++)            {
+            });            
+            for (int i = 0; i < 200; i++)            
+            {
                 context.UserProfiles.Add(new UserProfile()
                 {
                     UserName = "Joe Jiggty " + i
