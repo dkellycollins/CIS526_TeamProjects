@@ -433,6 +433,14 @@ textarea {
     margin-right:auto;
 }
 
+#infiniteScrollingHook 
+{
+    width:100%;
+    height:40px;
+    float:left;
+    visibility:hidden;
+}
+
 /* Create Profile page */
 
 #userAgreement
@@ -442,8 +450,9 @@ textarea {
     margin-right: 5%;
     width: 90%;
 }
-    #userAgreement iframe
-    {
-        width:100%;
-        background-color: white;
-    }
+
+#userAgreement iframe
+{
+    width:100%;
+    background-color: white;
+}
