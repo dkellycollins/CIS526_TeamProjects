@@ -85,7 +85,6 @@ namespace Demo.Controllers
     public class ScoreboardController : Controller
     {
         private int pageSize = 100;
-        private string currentPointType = "";
 
         private IRepository<UserProfile> _userRepo;
         private IRepository<PointScore> _pointScoreRepo;
@@ -139,14 +138,12 @@ namespace Demo.Controllers
 
             svm.Scoreboard = svm.Scoreboard.Take(pageSize).ToList();
 
-            currentPointType = pointType;
-
             return View(svm);
         }
 
         //POST
         
-        public JsonResult GetNextPage(int currentPage)
+        public JsonResult GetNextPage(int currentPage, string pointType)
         {
             currentPage++;
 
@@ -168,7 +165,7 @@ namespace Demo.Controllers
 
             foreach (PointType pt in _pointTypeRepo.GetAll())
             {
-                pointTypeExists = (pt.Name == currentPointType);
+                pointTypeExists = (pt.Name == pointType);
 
                 if (pointTypeExists) break;
             }
@@ -179,7 +176,7 @@ namespace Demo.Controllers
                 ScoreboardUser newUser = new ScoreboardUser()
                 {
                     Username = user.UserName,
-                    Score = pointTypeExists ? user.ScoreFor(currentPointType) : user.TotalScore,
+                    Score = pointTypeExists ? user.ScoreFor(pointType) : user.TotalScore,
                     Milestones = new List<ScoreboardMilestone>()
                 };
 

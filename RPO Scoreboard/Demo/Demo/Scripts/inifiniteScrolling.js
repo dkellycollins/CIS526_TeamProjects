@@ -53,7 +53,7 @@ function successfulLoad(object) {
     var table = document.getElementById("ScoreboardTable");
     var elementNum = table.rows.length + 1;
 
-    document.getElementById("infiniteScrollingHook").innerHTML = object.PageNum;
+    document.getElementById("infiniScrollPageNumber").innerHTML = object.PageNum;
 
     if (object.FinishedLoading === true) {
         var hook = document.getElementById('infiniteScrollingHook');
@@ -68,14 +68,14 @@ function successfulLoad(object) {
 }
 
 function loadNextPage() {
-    if (document.getElementById("infiniteScrollingHook").innerHTML === "Done")
+    if (document.getElementById("infiniScrollPageNumber").innerHTML === "Done")
         return;
 
-    var pageNum = parseInt(document.getElementById("infiniteScrollingHook").innerHTML);
-
+    var pageNum = parseInt(document.getElementById("infiniScrollPageNumber").innerHTML);
+    var typeOfPoint = document.getElementById("infiniScrollPointType").innerHTML;
     if (!processing) {
         processing = true;
-        $.post("../Scoreboard/JS/GetNextPage", { currentPage: pageNum }, successfulLoad);
+        $.post("../Scoreboard/JS/GetNextPage", { currentPage: pageNum, pointType: typeOfPoint }, successfulLoad);
     }
 }
 
