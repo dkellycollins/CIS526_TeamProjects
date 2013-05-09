@@ -121,9 +121,8 @@ textarea {
 }
 
 .label {
-    position: relative;
-    font-weight: bold;
-    font-size: 36pt;
+    position: absolute;
+    font-size: 30pt;
     color: white;
     top: 10px;
     left: 10px;
