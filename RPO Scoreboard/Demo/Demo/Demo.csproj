@@ -183,6 +183,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\images\banner-small2.jpg" />
+    <Content Include="Content\images\banner.jpg" />
     <Content Include="Content\images\Gate.png" />
     <Content Include="Content\images\key.png" />
     <Content Include="Content\images\powercat background-small.jpg" />
