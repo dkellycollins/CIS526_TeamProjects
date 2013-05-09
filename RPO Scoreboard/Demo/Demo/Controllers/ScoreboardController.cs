@@ -17,6 +17,9 @@ namespace Demo.Models
 
         [Display(Name = "Point Types")]
         public ScoreboardPointType ScoreboardPointTypes { get; set; }
+
+        [Display(Name = "Page Number")]
+        public int PageNumber { get; set; }
     }
 
     public class ScoreboardRecord
@@ -26,6 +29,42 @@ namespace Demo.Models
 
         [Display(Name="Score")]
         public int Score { get; set; }
+    }
+
+    public class ScoreboardJsonResult
+    {
+        [Display(Name = "Page Number")]
+        public int PageNum { get; set; }
+
+        [Display(Name = "Finished Loading")]
+        public bool FinishedLoading { get; set; }
+
+        [Display(Name = "Scoreboard")]
+        public List<ScoreboardUser> Users { get; set; }
+    }
+
+    public class ScoreboardUser
+    {
+        [Display(Name = "Username")]
+        public String Username { get; set; }
+
+        [Display(Name = "Score")]
+        public int Score { get; set; }
+
+        [Display(Name = "Milestones")]
+        public List<ScoreboardMilestone> Milestones { get; set; }
+    }
+
+    public class ScoreboardMilestone
+    {
+        [Display(Name = "Name")]
+        public String Name { get; set; }
+
+        [Display(Name = "Description")]
+        public String Description { get; set; }
+
+        [Display(Name = "IconLink")]
+        public String IconLink { get; set; }
     }
 
     public class ScoreboardPointType
@@ -45,6 +84,9 @@ namespace Demo.Controllers
     /// </summary>
     public class ScoreboardController : Controller
     {
+        private int pageSize = 100;
+        private string currentPointType = "";
+
         private IRepository<UserProfile> _userRepo;
         private IRepository<PointScore> _pointScoreRepo;
         private IRepository<PointType> _pointTypeRepo;
@@ -73,7 +115,8 @@ namespace Demo.Controllers
                 {
                     PointTypes = _pointTypeRepo.GetAll().ToList(),
                     SelectedPointType = pointType
-                }
+                },
+                PageNumber = 0
             };
 
             foreach (PointType pt in svm.ScoreboardPointTypes.PointTypes)
@@ -83,11 +126,8 @@ namespace Demo.Controllers
                 if (pointTypeExists) break;
             }
 
-            foreach (var user in _userRepo.GetAll())
+            foreach (var user in _userRepo.GetAll().Where(ur => ur.IsAdmin == false))
             {
-                if (user.IsAdmin)
-                    continue; //Ignore admin profiles.
-
                 svm.Scoreboard.Add(new ScoreboardRecord()
                 {
                     User = user,
@@ -97,8 +137,78 @@ namespace Demo.Controllers
 
             svm.Scoreboard.Sort(CompareByScore);
 
+            svm.Scoreboard = svm.Scoreboard.Take(pageSize).ToList();
+
+            currentPointType = pointType;
+
             return View(svm);
         }
+
+        //POST
+        
+        public JsonResult GetNextPage(int currentPage)
+        {
+            currentPage++;
+
+            var profiles = _userRepo.GetAll().Where(ur => ur.IsAdmin == false);//.OrderBy(Skip(currentPage * pageSize).Take(pageSize);
+
+            int userCount = profiles.Count();
+
+            int maxPages = (userCount / pageSize) + ((userCount % pageSize) > 0 ? 1 : 0);
+
+            bool pointTypeExists = false;
+
+            ScoreboardJsonResult sjr = new ScoreboardJsonResult()
+            {
+                PageNum = currentPage,
+                FinishedLoading = false
+            };
+
+            if (currentPage >= maxPages) sjr.FinishedLoading = true;
+
+            foreach (PointType pt in _pointTypeRepo.GetAll())
+            {
+                pointTypeExists = (pt.Name == currentPointType);
+
+                if (pointTypeExists) break;
+            }
+
+            List<ScoreboardUser> recordList = new List<ScoreboardUser>();
+            foreach (var user in profiles)
+            {
+                ScoreboardUser newUser = new ScoreboardUser()
+                {
+                    Username = user.UserName,
+                    Score = pointTypeExists ? user.ScoreFor(currentPointType) : user.TotalScore,
+                    Milestones = new List<ScoreboardMilestone>()
+                };
+
+                foreach (CompletedTask ct in user.CompletedTask)
+                {
+                    if (ct.Task.IsMilestone)
+                    {
+                        newUser.Milestones.Add(new ScoreboardMilestone()
+                        {
+                            Name = ct.Task.Name,
+                            Description = ct.Task.Description,
+                            IconLink = ct.Task.IconLink
+                        });
+                    }
+                }
+
+                recordList.Add(newUser);
+            }
+
+
+            recordList.Sort(CompareByScore);
+
+            recordList = recordList.Skip(currentPage * pageSize).Take(pageSize).ToList();
+
+            sjr.Users = recordList;
+
+            return Json(sjr, JsonRequestBehavior.AllowGet);
+        }
+        
 
         //
         // GET: /Scoreboard/Details/{id}
@@ -110,6 +220,11 @@ namespace Demo.Controllers
         }
 
         private static int CompareByScore(ScoreboardRecord x, ScoreboardRecord y)
+        {
+            return x.Score.CompareTo(y.Score) * -1;
+        }
+
+        private static int CompareByScore(ScoreboardUser x, ScoreboardUser y)
         {
             return x.Score.CompareTo(y.Score) * -1;
         }
