@@ -219,26 +219,6 @@ namespace Demo.Migrations
             context.SaveChanges();
         }
 
-        private void seedLogin()
-        {
-            Demo.Filters.InitializeSimpleMembershipAttribute.SimpleMembershipInitializer init = new Demo.Filters.InitializeSimpleMembershipAttribute.SimpleMembershipInitializer();
-
-            if (!Roles.RoleExists(Util.ProjectRoles.ADMIN))
-                Roles.CreateRole(Util.ProjectRoles.ADMIN);
-
-            //This is bad. We need to change this eventually.
-            if (!WebSecurity.UserExists(Util.ProjectRoles.ADMIN))
-            {
-                WebSecurity.CreateUserAndAccount(
-                    "admin",
-                    "admin");
-            }
-            if (!Roles.GetRolesForUser("admin").Contains(Util.ProjectRoles.ADMIN))
-            {
-                Roles.AddUserToRole("admin", Util.ProjectRoles.ADMIN);
-            }
-        }
-
         private void seedCompletedTasks(MasterContext context)
         {
             Random rnd = new Random();
