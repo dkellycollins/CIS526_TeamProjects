@@ -16,7 +16,7 @@ using WebMatrix.WebData;
 
 namespace Demo.Controllers
 {
-    [Authorize]
+    [CasAuthorize]
     [InitializeSimpleMembership]
     public class AccountController : Controller
     {

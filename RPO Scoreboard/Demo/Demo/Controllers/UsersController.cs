@@ -41,7 +41,7 @@ namespace Demo.Controllers
             return View(createUserDetailsViewModel(profile));
         }
 
-        [Authorize]
+        [CasAuthorize]
         public ActionResult Profile()
         {
             string userName = User.Identity.Name;

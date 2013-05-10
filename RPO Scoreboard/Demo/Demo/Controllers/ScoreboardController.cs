@@ -104,9 +104,7 @@ namespace Demo.Controllers
         // GET: /Scoreboard/Details/{id}
         public ActionResult Details(int id = 0)
         {
-            //UserProfile selectedUser = _userRepo.GetAll().Single(su=>su.ID == id);
             return View(_userRepo.Get(id));
-            //return RedirectToAction("Index");
         }
 
         private static int CompareByScore(ScoreboardRecord x, ScoreboardRecord y)
