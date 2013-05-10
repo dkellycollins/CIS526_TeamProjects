@@ -15,6 +15,11 @@ namespace Demo.Models
         public int ID { get; set; }
 
         /// <summary>
+        /// Unqiue token for this task.
+        /// </summary>
+        public string Token { get; set; }
+
+        /// <summary>
         /// Task name.
         /// </summary>
         [Display(Name="Task Name")]
@@ -77,6 +82,9 @@ namespace Demo.Models
                 return this.EndTime.ToShortDateString();
             }
         }
+
+        public string Solution { get; set; }
+
         /// <summary>
         /// The link to the icon image.
         /// </summary>
@@ -92,6 +100,6 @@ namespace Demo.Models
         /// <summary>
         /// Users who have completed this task.
         /// </summary>
-        public virtual ICollection<UserProfile> CompletedBy { get; set; }
+        public virtual ICollection<CompletedTask> CompletedBy { get; set; }
     }
 }

@@ -22,6 +22,12 @@
     
     
     <div id="content">
+        @if (string.IsNullOrEmpty(@ViewBag.StatusMessage))
+        {
+            <span class="statusMessage">
+                @ViewBag.StatusMessage
+            </span>
+        }
         @RenderBody()
     </div>
 

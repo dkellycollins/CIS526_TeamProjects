@@ -15,7 +15,7 @@ namespace Demo.Repositories
 
         public BasicRepo()
         {
-            _context = new MasterContext();
+            _context = MasterContext.Instance;
         }
 
         public T Get(int entityID)
@@ -41,7 +41,7 @@ namespace Demo.Repositories
 
         public void Update(T entityToUpdate)
         {
-            _context.Entry(entityToUpdate).State = System.Data.EntityState.Modified;
+            _context.Entry(entityToUpdate).CurrentValues.SetValues(entityToUpdate);
             _context.SaveChanges();
         }
 

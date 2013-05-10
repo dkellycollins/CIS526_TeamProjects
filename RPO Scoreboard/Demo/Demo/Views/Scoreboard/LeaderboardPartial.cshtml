@@ -34,6 +34,11 @@
                 <td>
                     @foreach (var milestone in item.User.CompletedTask)
                     {
+                        if (!milestone.Task.IsMilestone)
+                        {
+                            continue;
+                        }
+                        
                         string source = milestone.Task.IconLink;
                         string altText = milestone.Task.Description;
                         
