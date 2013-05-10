@@ -1,0 +1,32 @@
+﻿@model Demo.Models.TaskCompleteViewModel
+@{
+    ViewBag.Title = "CompleteTask";
+}
+
+<h2>CompleteTask</h2>
+
+<div>
+    <span>
+        @Model.TaskName
+    </span>
+    <br />
+    <span>
+        @Model.TaskDescription
+    </span>
+
+    @using (Html.BeginForm("CompleteTask", "Task", FormMethod.Post, new { @class = "editform" }))
+    {
+        <input type="hidden" name="taskToken" value="@Model.TaskToken"/>
+        <input type="hidden" name="source" value="Scoreboard" />
+        
+        <label>EID:</label>
+        <input type="text" name="userID" />
+        <br />
+        
+        <label>Solution:</label>
+        <input type="text" name="solution" />
+        <br />
+        
+        <input type="submit" />
+    }
+</div>

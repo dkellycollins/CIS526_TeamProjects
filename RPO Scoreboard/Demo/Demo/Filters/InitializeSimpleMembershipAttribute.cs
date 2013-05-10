@@ -5,6 +5,7 @@ using System.Threading;
 using System.Web.Mvc;
 using WebMatrix.WebData;
 using Demo.Models;
+using Demo.Repositories;
 
 namespace Demo.Filters
 {

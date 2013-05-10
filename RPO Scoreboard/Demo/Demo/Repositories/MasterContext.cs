@@ -14,7 +14,7 @@ namespace Demo.Repositories
         {
             get
             {
-                if (_instance == null)
+                if(_instance == null)
                     _instance = new MasterContext();
                 return _instance;
             }
