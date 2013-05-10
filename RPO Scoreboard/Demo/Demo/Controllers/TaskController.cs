@@ -12,6 +12,7 @@ using Demo.Encryption;
 using Demo.Encryption.RSA;
 using WebMatrix.WebData;
 using Gma.QrCodeNet.Encoding;
+using System.Drawing;
 
 namespace Demo.Controllers
 {
@@ -138,7 +139,7 @@ namespace Demo.Controllers
             string taskToken = formCollection["TaskToken"];
             Task task = _taskRepo.Get((t) => t.Token == taskToken).FirstOrDefault();
             
-            status = commonCompleteTask(user, task, formCollection["Solution"];
+            status = commonCompleteTask(user, task, formCollection["Solution"]);
 
             ViewBag.StatusMessage = status;
             return RedirectToAction("Index", "Scoreboard");
@@ -164,7 +165,7 @@ namespace Demo.Controllers
             commonCompleteTask(user, task);
         }
 
-        public ActionResult GenerateQR(int id)
+        public ActionResult GenerateQRCode(int id)
         {
             Task task = _taskRepo.Get(id);
             if(task == null)
