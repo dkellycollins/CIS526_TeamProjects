@@ -13,6 +13,7 @@ using Demo.Repositories;
 using DotNetOpenAuth.AspNet;
 using Microsoft.Web.WebPages.OAuth;
 using WebMatrix.WebData;
+using DotNetCasClient;
 
 namespace Demo.Controllers
 {
@@ -64,7 +65,7 @@ namespace Demo.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult LogOff()
         {
-            FormsAuthentication.SignOut();
+            CasAuthentication.SingleSignOut();
             return RedirectToAction("Index", "Scoreboard");
         }
     }

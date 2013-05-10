@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Demo.Encryption
 {
-    public class IDecryptor
+    public interface IDecryptor
     {
         string Decrypt(byte[] data);
     }

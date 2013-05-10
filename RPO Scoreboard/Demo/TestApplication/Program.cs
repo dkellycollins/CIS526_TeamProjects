@@ -11,7 +11,7 @@ namespace TestApplication
     class Program
     {
         const string TASK_TOKEN = "A";
-        const string SITE = "localhost:1054/Task/CompleteTask/"
+        const string SITE = "localhost:1054/Task/CompleteTask/";
         
         static void Main(string[] args)
         {
