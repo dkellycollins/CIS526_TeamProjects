@@ -171,7 +171,7 @@
     <Compile Include="Models\UserProfile.cs" />
     <Compile Include="Models\CompletedTask.cs" />
     <Compile Include="Models\Log.cs" />
-    <Compile Include="Models\MasterContext.cs" />
+    <Compile Include="Repositories\MasterContext.cs" />
     <Compile Include="Models\PointType.cs" />
     <Compile Include="Models\PointScore.cs" />
     <Compile Include="Models\Task.cs" />

@@ -15,7 +15,7 @@ namespace Demo.Repositories
 
         public BasicRepo()
         {
-            _context = new MasterContext();
+            _context = MasterContext.Instance;
         }
 
         public T Get(int entityID)
