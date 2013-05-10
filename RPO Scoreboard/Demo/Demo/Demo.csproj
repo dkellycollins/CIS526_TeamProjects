@@ -174,7 +174,6 @@
     <Compile Include="Models\Log.cs" />
     <Compile Include="Repositories\MasterContext.cs" />
     <Compile Include="Models\PointType.cs" />
-    <Compile Include="Models\PointScore.cs" />
     <Compile Include="Models\Task.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repositories\BasicRepo.cs" />

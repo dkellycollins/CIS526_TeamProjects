@@ -19,13 +19,11 @@ namespace Demo.Controllers
         private int pageSize = 100;
 
         private IRepository<UserProfile> _userRepo;
-        private IRepository<PointScore> _pointScoreRepo;
         private IRepository<PointType> _pointTypeRepo;
 
         public ScoreboardController()
         {
             _userRepo = new BasicRepo<UserProfile>();
-            _pointScoreRepo = new BasicRepo<PointScore>();
             _pointTypeRepo = new BasicRepo<PointType>();
         }
 
