@@ -101,10 +101,6 @@ namespace Demo.Controllers
         // GET: /Scoreboard/{pointType}
         public ActionResult Index(string pointType)
         {
-            //List<UserProfile> users = _userRepo.GetAll().ToList();
-
-            //users.Sort(CompareByScore);
-
             bool pointTypeExists = false;
 
             ScoreboardViewModel svm = new ScoreboardViewModel()

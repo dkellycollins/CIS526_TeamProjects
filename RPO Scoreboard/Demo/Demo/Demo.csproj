@@ -168,10 +168,11 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
+    <Compile Include="Models\TaskCompletePacket.cs" />
     <Compile Include="Models\UserProfile.cs" />
     <Compile Include="Models\CompletedTask.cs" />
     <Compile Include="Models\Log.cs" />
-    <Compile Include="Models\MasterContext.cs" />
+    <Compile Include="Repositories\MasterContext.cs" />
     <Compile Include="Models\PointType.cs" />
     <Compile Include="Models\PointScore.cs" />
     <Compile Include="Models\Task.cs" />
@@ -182,6 +183,10 @@
     <Compile Include="ViewModels\UserDetailsViewModels.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="App_Data\aspnet-Demo-20130411145023.mdf" />
+    <Content Include="App_Data\aspnet-Demo-20130411145023_log.ldf">
+      <DependentUpon>aspnet-Demo-20130411145023.mdf</DependentUpon>
+    </Content>
     <Content Include="Content\images\banner-small2.jpg" />
     <Content Include="Content\images\banner.jpg" />
     <Content Include="Content\images\Gate.png" />
@@ -294,10 +299,9 @@
     <Content Include="Views\Point\Create.cshtml" />
     <Content Include="Views\Point\Delete.cshtml" />
     <Content Include="Views\Log\Index.cshtml" />
+    <Content Include="Views\Task\CompleteTask.cshtml" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="App_Data\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <Content Include="packages.config" />
   </ItemGroup>
