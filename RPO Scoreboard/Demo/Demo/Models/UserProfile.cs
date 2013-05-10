@@ -43,11 +43,6 @@ namespace Demo.Models
         }
 
         /// <summary>
-        /// Each inidividual score.
-        /// </summary>
-        public virtual ICollection<PointScore> Score { get; set; }
-
-        /// <summary>
         /// The task that have been completed by the player.
         /// </summary>
         public virtual ICollection<CompletedTask> CompletedTask { get; set; }

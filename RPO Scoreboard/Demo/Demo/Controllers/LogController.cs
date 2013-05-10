@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using Demo.Filters;
 using Demo.Models;
 using Demo.Repositories;
 
@@ -24,7 +25,7 @@ namespace Demo.Controllers
 
         //
         // GET: /Log/
-        [Authorize(Roles="admin")]
+        [CasAuthorize]
         public ActionResult Index()
         {
             return View(_logRepo.GetAll().ToList());

@@ -112,7 +112,7 @@ namespace Demo.Migrations
 
             context.SaveChanges();
 
-            for (int i = 0; i < 100; i++)
+            for (int i = 0; i < 20; i++)
             {
                 st = (SeedTypes)enumVals.GetValue(rnd.Next(enumVals.Length));
                 typeString = st.ToString();
@@ -217,10 +217,6 @@ namespace Demo.Migrations
                         AwardedPoints = score,
                         CompletedDate = DateTime.Today.AddDays(rnd.Next(15)),
                     });
-
-                    //selectedPointType = context.PointScores.Single(ps => (ps.PointPath.Name == milestone.PointPath.Name) && (ps.UserProfile.ID == user.ID));
-                    //throw new Exception("selected Point type = " + selectedPointType.PointPath.Name + " with " + selectedPointType.Score + " points");
-                    //selectedPointType.Score += score;
                 }
             }
             context.SaveChanges();

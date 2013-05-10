@@ -14,10 +14,12 @@ namespace Demo.Controllers
     public class UsersController : Controller
     {
         private IRepository<UserProfile> _userProfileRepo;
+        private IRepository<PointType> _pointTypeRepo;
 
         public UsersController()
         {
             _userProfileRepo = new BasicRepo<UserProfile>();
+            _pointTypeRepo = new BasicRepo<PointType>();
         }
 
         //
@@ -41,7 +43,7 @@ namespace Demo.Controllers
             return View(createUserDetailsViewModel(profile));
         }
 
-        [Authorize]
+        [CasAuthorize]
         public ActionResult Profile()
         {
             string userName = User.Identity.Name;
@@ -61,10 +63,11 @@ namespace Demo.Controllers
 
             int totalScore = 0;
             viewModel.Scores = new Dictionary<string, int>();
-            foreach (PointScore pointScore in userProfile.Score)
+            foreach (PointType pointType in _pointTypeRepo.GetAll())
             {
-                viewModel.Scores.Add(pointScore.PointPath.Name, pointScore.Score);
-                totalScore += pointScore.Score;
+                int pointScore = userProfile.ScoreFor(pointType.Name);
+                viewModel.Scores.Add(pointType.Name, pointScore);
+                totalScore += pointScore;
             }
             viewModel.TotalScore = totalScore;
 

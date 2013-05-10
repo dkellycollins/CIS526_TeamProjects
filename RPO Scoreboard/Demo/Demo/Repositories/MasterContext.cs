@@ -23,7 +23,6 @@ namespace Demo.Repositories
         public DbSet<UserProfile> UserProfiles { get; set; }
         public DbSet<CompletedTask> CompletedTasks { get; set; }
         public DbSet<PointType> PointTypes { get; set; }
-        public DbSet<PointScore> PointScores { get; set; }
         public DbSet<Task> Tasks { get; set; }
 
         public MasterContext()

@@ -7,36 +7,7 @@ using Demo.Models;
 using Demo.Repositories;
 using System.ComponentModel.DataAnnotations;
 using Demo.Filters;
-
-namespace Demo.Models
-{
-    public class ScoreboardViewModel
-    {
-        [Display(Name="Scoreboard")]
-        public List<ScoreboardRecord> Scoreboard { get; set; }
-
-        [Display(Name = "Point Types")]
-        public ScoreboardPointType ScoreboardPointTypes { get; set; }
-    }
-
-    public class ScoreboardRecord
-    {
-        [Display(Name="User")]
-        public UserProfile User { get; set; }
-
-        [Display(Name="Score")]
-        public int Score { get; set; }
-    }
-
-    public class ScoreboardPointType
-    {
-        [Display(Name="Point Types")]
-        public List<PointType> PointTypes { get; set; }
-
-        [Display(Name="Selected Point Type")]
-        public string SelectedPointType { get; set; }
-    }
-}
+using Demo.ViewModels;
 
 namespace Demo.Controllers
 {
@@ -45,14 +16,14 @@ namespace Demo.Controllers
     /// </summary>
     public class ScoreboardController : Controller
     {
+        private int pageSize = 100;
+
         private IRepository<UserProfile> _userRepo;
-        private IRepository<PointScore> _pointScoreRepo;
         private IRepository<PointType> _pointTypeRepo;
 
         public ScoreboardController()
         {
             _userRepo = new BasicRepo<UserProfile>();
-            _pointScoreRepo = new BasicRepo<PointScore>();
             _pointTypeRepo = new BasicRepo<PointType>();
         }
 
@@ -69,7 +40,8 @@ namespace Demo.Controllers
                 {
                     PointTypes = _pointTypeRepo.GetAll().ToList(),
                     SelectedPointType = pointType
-                }
+                },
+                PageNumber = 0
             };
 
             foreach (PointType pt in svm.ScoreboardPointTypes.PointTypes)
@@ -79,11 +51,8 @@ namespace Demo.Controllers
                 if (pointTypeExists) break;
             }
 
-            foreach (var user in _userRepo.GetAll())
+            foreach (var user in _userRepo.GetAll().Where(ur => ur.IsAdmin == false))
             {
-                if (user.IsAdmin)
-                    continue; //Ignore admin profiles.
-
                 svm.Scoreboard.Add(new ScoreboardRecord()
                 {
                     User = user,
@@ -93,19 +62,90 @@ namespace Demo.Controllers
 
             svm.Scoreboard.Sort(CompareByScore);
 
+            svm.Scoreboard = svm.Scoreboard.Take(pageSize).ToList();
+
             return View(svm);
         }
+
+        //POST
+        
+        public JsonResult GetNextPage(int currentPage, string pointType)
+        {
+            currentPage++;
+
+            var profiles = _userRepo.GetAll().Where(ur => ur.IsAdmin == false);//.OrderBy(Skip(currentPage * pageSize).Take(pageSize);
+
+            int userCount = profiles.Count();
+
+            int maxPages = (userCount / pageSize) + ((userCount % pageSize) > 0 ? 1 : 0);
+
+            bool pointTypeExists = false;
+
+            ScoreboardJsonResult sjr = new ScoreboardJsonResult()
+            {
+                PageNum = currentPage,
+                FinishedLoading = false
+            };
+
+            if (currentPage >= maxPages) sjr.FinishedLoading = true;
+
+            foreach (PointType pt in _pointTypeRepo.GetAll())
+            {
+                pointTypeExists = (pt.Name == pointType);
+
+                if (pointTypeExists) break;
+            }
+
+            List<ScoreboardUser> recordList = new List<ScoreboardUser>();
+            foreach (var user in profiles)
+            {
+                ScoreboardUser newUser = new ScoreboardUser()
+                {
+                    Username = user.UserName,
+                    Score = pointTypeExists ? user.ScoreFor(pointType) : user.TotalScore,
+                    Milestones = new List<ScoreboardMilestone>()
+                };
+
+                foreach (CompletedTask ct in user.CompletedTask)
+                {
+                    if (ct.Task.IsMilestone)
+                    {
+                        newUser.Milestones.Add(new ScoreboardMilestone()
+                        {
+                            Name = ct.Task.Name,
+                            Description = ct.Task.Description,
+                            IconLink = ct.Task.IconLink
+                        });
+                    }
+                }
+
+                recordList.Add(newUser);
+            }
+
+
+            recordList.Sort(CompareByScore);
+
+            recordList = recordList.Skip(currentPage * pageSize).Take(pageSize).ToList();
+
+            sjr.Users = recordList;
+
+            return Json(sjr, JsonRequestBehavior.AllowGet);
+        }
+        
 
         //
         // GET: /Scoreboard/Details/{id}
         public ActionResult Details(int id = 0)
         {
-            //UserProfile selectedUser = _userRepo.GetAll().Single(su=>su.ID == id);
             return View(_userRepo.Get(id));
-            //return RedirectToAction("Index");
         }
 
         private static int CompareByScore(ScoreboardRecord x, ScoreboardRecord y)
+        {
+            return x.Score.CompareTo(y.Score) * -1;
+        }
+
+        private static int CompareByScore(ScoreboardUser x, ScoreboardUser y)
         {
             return x.Score.CompareTo(y.Score) * -1;
         }

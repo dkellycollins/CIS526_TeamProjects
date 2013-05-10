@@ -17,7 +17,7 @@ using DotNetCasClient;
 
 namespace Demo.Controllers
 {
-    [Authorize]
+    [CasAuthorize]
     [InitializeSimpleMembership]
     public class AccountController : Controller
     {
