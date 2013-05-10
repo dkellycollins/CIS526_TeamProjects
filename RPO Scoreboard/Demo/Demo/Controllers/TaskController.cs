@@ -10,6 +10,8 @@ using Demo.Filters;
 using Demo.ViewModels;
 using Demo.Encryption;
 using Demo.Encryption.RSA;
+using WebMatrix.WebData;
+using Gma.QrCodeNet.Encoding;
 
 namespace Demo.Controllers
 {
@@ -124,7 +126,6 @@ namespace Demo.Controllers
         //
         // POST: /Task/CompleteTask/
         [HttpPost]
-        //public ActionResult CompeleteTask(TaskCompletePacket packet)
         public ActionResult CompleteTask(FormCollection formCollection)
         {
             string status = null;
@@ -137,6 +138,64 @@ namespace Demo.Controllers
             string taskToken = formCollection["TaskToken"];
             Task task = _taskRepo.Get((t) => t.Token == taskToken).FirstOrDefault();
             
+            status = commonCompleteTask(user, task, formCollection["Solution"];
+
+            ViewBag.StatusMessage = status;
+            return RedirectToAction("Index", "Scoreboard");
+        }
+
+        [HttpPost]
+        public void CompleteTaskExternal(byte[] data)
+        {
+            RsaDecryptor decryptor = new RsaDecryptor();
+            TaskCompletePacket packet = new TaskCompletePacket(decryptor.Decrypt(data));
+            UserProfile user = null;
+            Task task = null;
+
+            commonCompleteTask(user, task);
+        }
+
+        [HttpPost]
+        public void CompleteTaskQR(string taskToken)
+        {
+            UserProfile user = _userRepo.Get(WebSecurity.CurrentUserId);
+            Task task = _taskRepo.Get((t) => t.Token == taskToken).FirstOrDefault();
+
+            commonCompleteTask(user, task);
+        }
+
+        public ActionResult GenerateQR(int id)
+        {
+            Task task = _taskRepo.Get(id);
+            if(task == null)
+                return new HttpNotFoundResult();
+
+            QrEncoder encoder = new QrEncoder();
+            QrCode qrCode;
+            if (encoder.TryEncode(task.Token, out qrCode))
+                return View(qrCode);
+            else
+                return new HttpNotFoundResult();
+        }
+
+        #region Private Members
+
+        private TaskCompleteViewModel createTaskViewModel(Task task)
+        {
+            TaskCompleteViewModel tcvm = new TaskCompleteViewModel()
+            {
+                TaskName = task.Name,
+                TaskDescription = task.Description,
+                TaskToken = task.Token
+            };
+
+            return tcvm;
+        }
+
+        //Verifies that the fields are valid and returns the status.
+        private string commonCompleteTask(UserProfile user, Task task, string solution = null)
+        {
+            string status;
             if (user == null)
             { //Ensure we have a user.
                 status = "User not found";
@@ -153,7 +212,7 @@ namespace Demo.Controllers
             { //Complete the task.
                 if (!string.IsNullOrEmpty(task.Solution))
                 {
-                    if (formCollection["Solution"] == task.Solution)
+                    if (solution == task.Solution)
                     {
                         addTaskToUser(user, task);
                         status = "Correct!";
@@ -170,49 +229,10 @@ namespace Demo.Controllers
                 }
             }
 
-            ViewBag.StatusMessage = status;
-            return RedirectToAction("Index", "Scoreboard");
+            return status;
         }
 
-        [HttpPost]
-        public void CompleteTaskExternal(byte[] data)
-        {
-            RsaDecryptor decryptor = new RsaDecryptor();
-            TaskCompletePacket packet = new TaskCompletePacket(decryptor.Decrypt(data));
-            UserProfile user = null;
-            Task task = null;
-
-            if (!(user == null ||
-                task == null ||
-                task.StartTime < DateTime.Now ||
-                task.EndTime < DateTime.Now))
-            {
-                if (!string.IsNullOrEmpty(task.Solution))
-                {
-                    if (task.Solution == packet.Solution)
-                    {
-                        addTaskToUser(user, task);
-                    }
-                }
-                else
-                {
-                    addTaskToUser(user, task);
-                }
-            }
-        }
-
-        private TaskCompleteViewModel createTaskViewModel(Task task)
-        {
-            TaskCompleteViewModel tcvm = new TaskCompleteViewModel()
-            {
-                TaskName = task.Name,
-                TaskDescription = task.Description,
-                TaskToken = task.Token
-            };
-
-            return tcvm;
-        }
-
+        //Adds a task to the user.
         private void addTaskToUser(UserProfile user, Task task)
         {
             CompletedTask cTask = new CompletedTask()
@@ -234,5 +254,7 @@ namespace Demo.Controllers
             _taskRepo.Update(task);
             _userRepo.Update(user);
         }
+
+        #endregion
     }
 }
