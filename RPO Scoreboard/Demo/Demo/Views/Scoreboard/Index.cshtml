@@ -18,8 +18,11 @@
     
 </div>
 
-<div class="scoreboardDetailContainer">
-
+<div id="infiniteScrollingHook">
+    <div id="infiniScrollPageNumber">
+        @Model.PageNumber
+    </div>
+    <div id="infiniScrollPointType">@Model.ScoreboardPointTypes.SelectedPointType</div>
 </div>
 
 @section Scripts{
