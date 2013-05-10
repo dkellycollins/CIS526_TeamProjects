@@ -7,25 +7,7 @@ using Demo.Models;
 using Demo.Repositories;
 using System.ComponentModel.DataAnnotations;
 using Demo.Filters;
-
-namespace Demo.Models
-{
-    public class TaskViewModel
-    {
-        [Display(Name="Milestones")]
-        public List<Task> MileStones { get; set; }
-
-        [Display(Name="Tasks")]
-        public List<Task> Tasks { get; set; }
-    }
-
-    public class TaskCompleteViewModel
-    {
-        public string TaskName {get; set;}
-        public string TaskDescription { get; set;}
-        public string TaskToken { get; set; }
-    }
-}
+using Demo.ViewModels;
 
 namespace Demo.Controllers
 {

@@ -179,6 +179,7 @@
     <Compile Include="Repositories\BasicRepo.cs" />
     <Compile Include="Repositories\IRepository.cs" />
     <Compile Include="ViewModels\ScoreboardViewModels.cs" />
+    <Compile Include="ViewModels\TaskViewModels.cs" />
     <Compile Include="ViewModels\UserDetailsViewModels.cs" />
   </ItemGroup>
   <ItemGroup>

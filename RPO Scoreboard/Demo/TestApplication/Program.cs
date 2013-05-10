@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Demo.Encryption.RSA;
 using Demo.Models;
 
 namespace TestApplication
@@ -34,6 +36,11 @@ namespace TestApplication
                 TaskToken = TASK_TOKEN,
                 Source = "TestApp"
             };
+            RsaEncryptor encryptor = new RsaEncryptor();
+            byte[] encryptedPacket = encryptor.Encrypt(packet.ToString());
+
+            WebClient client = new WebClient();
+            client.UploadData(SITE, encryptedPacket);
         }
     }
 }
