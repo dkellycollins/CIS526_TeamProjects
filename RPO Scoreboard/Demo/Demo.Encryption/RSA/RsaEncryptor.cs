@@ -13,12 +13,13 @@ namespace Demo.Encryption.RSA
 
         public RsaEncryptor()
         {
+            rsaParams = RSAFacotry.GetRSAProvider().ExportParameters(false);
         }
 
         public byte[] Encrypt(string data)
         {
             UnicodeEncoding encoder = new UnicodeEncoding();
-            return Encrypt(encoder.GetBytes(data), new RSAParameters());
+            return Encrypt(encoder.GetBytes(data), rsaParams);
         }
 
         public byte[] Encrypt(byte[] data, RSAParameters RSAKeyInfo, bool DoOAEPPadding = false)
@@ -31,6 +32,7 @@ namespace Demo.Encryption.RSA
             }
             catch (CryptographicException e)
             {
+                Console.WriteLine(e.Message);
                 return null;
             }
         }

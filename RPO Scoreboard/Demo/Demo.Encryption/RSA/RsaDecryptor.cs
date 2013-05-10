@@ -9,14 +9,17 @@ namespace Demo.Encryption.RSA
 {
     public class RsaDecryptor : IDecryptor
     {
+        private RSAParameters rsaParams;
+
         public RsaDecryptor()
         {
+            rsaParams = RSAFacotry.GetRSAProvider().ExportParameters(true);
         }
 
         public string Decrypt(byte[] data)
         {
             UnicodeEncoding encoder = new UnicodeEncoding();
-            return encoder.GetString(Decrypt(data, new RSAParameters()));
+            return encoder.GetString(Decrypt(data, rsaParams));
         }
 
         public byte[] Decrypt(byte[] data, RSAParameters RSAKeyInfo, bool DoOAEPPadding = false)
@@ -37,6 +40,7 @@ namespace Demo.Encryption.RSA
             }
             catch (CryptographicException e)
             {
+                Console.WriteLine(e.Message);
                 return null;
             }
         }

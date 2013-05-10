@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -12,10 +13,9 @@ namespace TestApplication
 {
     class Program
     {
-        const string TASK_TOKEN = "A";
-        const string SITE = "localhost:1054/Task/CompleteTask/";
+        const string SITE = "localhost:1054/Task/CompleteTaskExternal/";
         
-        static void Main(string[] args)
+        /*static void Main(string[] args)
         {
             string buffer;
             while(true)
@@ -26,6 +26,46 @@ namespace TestApplication
                 else
                     sendPacket(buffer);
             }
+        }*/
+
+        static void Main(string[] args)
+        {
+            try
+            {
+                //Create a UnicodeEncoder to convert between byte array and string.
+                UnicodeEncoding ByteConverter = new UnicodeEncoding();
+
+                //Create byte arrays to hold original, encrypted, and decrypted data.
+                byte[] dataToEncrypt = ByteConverter.GetBytes("Data to Encrypt");
+                byte[] encryptedData;
+                string decryptedData;
+
+                //Create a new instance of RSACryptoServiceProvider to generate
+                //public and private key data.
+                RsaEncryptor encryptor = new RsaEncryptor();
+                RsaDecryptor decryptor = new RsaDecryptor();
+
+                //Pass the data to ENCRYPT, the public key information 
+                //(using RSACryptoServiceProvider.ExportParameters(false),
+                //and a boolean flag specifying no OAEP padding.
+                encryptedData = encryptor.Encrypt("Data to Encrypt");
+
+                //Pass the data to DECRYPT, the private key information 
+                //(using RSACryptoServiceProvider.ExportParameters(true),
+                //and a boolean flag specifying no OAEP padding.
+                decryptedData = decryptor.Decrypt(encryptedData);
+
+                //Display the decrypted plaintext to the console. 
+                Console.WriteLine("Decrypted plaintext: {0}", decryptedData);
+            }
+            catch (ArgumentNullException)
+            {
+                //Catch this exception in case the encryption did
+                //not succeed.
+                Console.WriteLine("Encryption failed.");
+            }
+
+            Console.In.ReadLine();
         }
 
         static void sendPacket(string input)
@@ -33,14 +73,14 @@ namespace TestApplication
             TaskCompletePacket packet = new TaskCompletePacket()
             {
                 UserID = Int32.Parse(input),
-                TaskToken = TASK_TOKEN,
+                TaskToken = TestAppSettings.Default.TaskToken,
                 Source = "TestApp"
             };
             RsaEncryptor encryptor = new RsaEncryptor();
             byte[] encryptedPacket = encryptor.Encrypt(packet.ToString());
 
             WebClient client = new WebClient();
-            client.UploadData(SITE, encryptedPacket);
+            client.UploadData(TestAppSettings.Default.Site, encryptedPacket);
         }
     }
 }

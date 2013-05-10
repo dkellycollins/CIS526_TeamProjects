@@ -8,6 +8,8 @@ using Demo.Repositories;
 using System.ComponentModel.DataAnnotations;
 using Demo.Filters;
 using Demo.ViewModels;
+using Demo.Encryption;
+using Demo.Encryption.RSA;
 
 namespace Demo.Controllers
 {
@@ -170,6 +172,33 @@ namespace Demo.Controllers
 
             ViewBag.StatusMessage = status;
             return RedirectToAction("Index", "Scoreboard");
+        }
+
+        [HttpPost]
+        public void CompleteTaskExternal(byte[] data)
+        {
+            RsaDecryptor decryptor = new RsaDecryptor();
+            TaskCompletePacket packet = new TaskCompletePacket(decryptor.Decrypt(data));
+            UserProfile user = null;
+            Task task = null;
+
+            if (!(user == null ||
+                task == null ||
+                task.StartTime < DateTime.Now ||
+                task.EndTime < DateTime.Now))
+            {
+                if (!string.IsNullOrEmpty(task.Solution))
+                {
+                    if (task.Solution == packet.Solution)
+                    {
+                        addTaskToUser(user, task);
+                    }
+                }
+                else
+                {
+                    addTaskToUser(user, task);
+                }
+            }
         }
 
         private TaskCompleteViewModel createTaskViewModel(Task task)
