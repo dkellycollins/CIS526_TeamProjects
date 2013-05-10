@@ -1,5 +1,17 @@
-﻿@{
+﻿@model IEnumerable<Demo.Models.UserProfile>
+@{
     ViewBag.Title = "Index";
 }
 
 <h2>Index</h2>
+
+<table>
+    @foreach (var user in Model)
+    {
+        <tr>
+            <td>
+                 @Html.ActionLink(user.UserName, "Details", new { id = user.ID})
+            </td>
+        </tr>
+    }
+</table>

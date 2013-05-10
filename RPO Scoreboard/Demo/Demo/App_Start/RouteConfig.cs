@@ -13,11 +13,11 @@ namespace Demo
         {
             routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
 
-            routes.MapRoute(
+            /*routes.MapRoute(
                 name: "Ajax",
                 url: "{controller}/JS/{action}",
                 defaults: new { controller = "Scoreboard", action = "Index" }
-            );
+            );*/
 
             routes.MapRoute(
                 name: "Scoreboard",

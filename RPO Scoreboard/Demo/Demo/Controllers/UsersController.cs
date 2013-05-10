@@ -8,6 +8,7 @@ using Demo.Models;
 using Demo.Repositories;
 using Demo.ViewModels;
 using Demo.Filters;
+using WebMatrix.WebData;
 
 namespace Demo.Controllers
 {
@@ -27,7 +28,7 @@ namespace Demo.Controllers
         [CasAuthorize]
         public ActionResult Index()
         {
-            return View();
+            return View(_userProfileRepo.GetAll());
         }
 
         //
@@ -44,15 +45,21 @@ namespace Demo.Controllers
         }
 
         [CasAuthorize]
-        public ActionResult Profile()
+        public ActionResult ProfileDetails()
         {
-            string userName = User.Identity.Name;
-            UserProfile profile = _userProfileRepo.Get((x) => x.UserName == userName).FirstOrDefault();
+            UserProfile profile = _userProfileRepo.Get((x) => x.UserName == WebSecurity.CurrentUserName).FirstOrDefault();
             if (profile == null)
             {
                 return new HttpNotFoundResult();
             }
-            return View(createUserDetailsViewModel(profile));
+            else if (profile.IsAdmin)
+            {
+                return RedirectToAction("Index");
+            }
+            else
+            {
+                return View(createUserDetailsViewModel(profile));
+            }
         }
 
         private UserDetailsViewModel createUserDetailsViewModel(UserProfile userProfile)

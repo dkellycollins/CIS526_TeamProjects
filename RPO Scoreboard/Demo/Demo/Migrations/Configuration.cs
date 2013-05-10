@@ -36,7 +36,7 @@ namespace Demo.Migrations
         {
             context.UserProfiles.Add(new UserProfile()
             {
-                ID = 0,
+                ID = -1,
                 UserName = "playerOne",
                 IsAdmin = true
             });            
