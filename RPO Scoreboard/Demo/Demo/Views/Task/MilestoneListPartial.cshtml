@@ -67,6 +67,15 @@
                      }
                     <img src="@Url.Content(source)" title="@altText" class="milestoneIcon"/>
                 </td>
+            <td>
+                @Html.ActionLink("Details", "Details", new { id=item.ID })
+            </td>
+            <td>
+                @Html.ActionLink("Update", "Update", new { id=item.ID })
+            </td>
+            <td>
+                @Html.ActionLink("Delete", "Delete", new { id=item.ID })
+            </td>
             </tr>
         }
     </table>

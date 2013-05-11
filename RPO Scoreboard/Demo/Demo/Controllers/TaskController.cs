@@ -52,6 +52,7 @@ namespace Demo.Controllers
         //Admin Task
         // GET: /Task/Create/
         [CasAuthorize]
+        [HttpGet]
         public ActionResult Create()
         {
             return View();
@@ -60,6 +61,7 @@ namespace Demo.Controllers
         //Admin Task
         // POST: /Task/Create/
         [CasAuthorize]
+        [HttpPost, ActionName("Create")]
         public ActionResult Create(Task item)
         {
             if(ModelState.IsValid)
@@ -74,9 +76,10 @@ namespace Demo.Controllers
         //
         // GET: /Task/Update/
         [CasAuthorize]
-        public ActionResult Update()
+        [HttpGet]
+        public ActionResult Update(int id)
         {
-            return View();
+            return View(_taskRepo.Get(id));
         }
 
         //
@@ -102,9 +105,9 @@ namespace Demo.Controllers
         }
 
         //
-        // POST: /Task/Delete/{id}
-        [HttpPost]
+        // POST: /Task/Delete/{id}       
         [CasAuthorize]
+        [HttpPost, ActionName("Delete")]
         public ActionResult DeleteComfirmed(int id)
         {
             _taskRepo.Delete(id);

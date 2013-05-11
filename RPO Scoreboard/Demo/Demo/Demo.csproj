@@ -306,6 +306,12 @@
     <Content Include="Views\Log\Index.cshtml" />
     <Content Include="Views\Task\CompleteTask.cshtml" />
     <Content Include="Views\Task\GenerateQRCode.cshtml" />
+    <Content Include="Views\Task\Create.cshtml" />
+    <Content Include="Views\Task\CreatePartial.cshtml" />
+    <Content Include="Views\Task\Delete.cshtml" />
+    <Content Include="Views\Task\Details.cshtml" />
+    <Content Include="Views\Task\TaskMenu.cshtml" />
+    <Content Include="Views\Task\Update.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Demo.Encryption\Demo.Encryption.csproj">

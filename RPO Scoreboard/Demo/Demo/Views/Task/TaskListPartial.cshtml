@@ -45,6 +45,15 @@
                 <td>
                     @Html.DisplayFor(modelItem => item.EndTimeDisplay)
                 </td>
+            <td>
+                @Html.ActionLink("Details", "Details", new { id=item.ID })
+            </td>
+            <td>
+                @Html.ActionLink("Update", "Update", new { id=item.ID })
+            </td>
+            <td>
+                @Html.ActionLink("Delete", "Delete", new { id=item.ID })
+            </td>
             </tr>
         }
 
