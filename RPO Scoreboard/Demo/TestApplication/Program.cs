@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
+using System.Reflection;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
@@ -15,7 +17,7 @@ namespace TestApplication
     {
         const string SITE = "localhost:1054/Task/CompleteTaskExternal/";
         
-        /*static void Main(string[] args)
+        static void Main(string[] args)
         {
             string buffer;
             while(true)
@@ -26,9 +28,9 @@ namespace TestApplication
                 else
                     sendPacket(buffer);
             }
-        }*/
+        }
 
-        static void Main(string[] args)
+        /*static void Main(string[] args)
         {
             try
             {
@@ -66,7 +68,7 @@ namespace TestApplication
             }
 
             Console.In.ReadLine();
-        }
+        }*/
 
         static void sendPacket(string input)
         {
@@ -76,7 +78,10 @@ namespace TestApplication
                 TaskToken = TestAppSettings.Default.TaskToken,
                 Source = "TestApp"
             };
-            RsaEncryptor encryptor = new RsaEncryptor();
+            Stream keyStream = Assembly.GetEntryAssembly().GetManifestResourceStream("TestApplication.demo_rsa.pub");
+            MemoryStream keyStream2 = new MemoryStream();
+            keyStream.CopyTo(keyStream2);
+            RsaEncryptor encryptor = new RsaEncryptor(keyStream2.ToArray());
             byte[] encryptedPacket = encryptor.Encrypt(packet.ToString());
 
             WebClient client = new WebClient();

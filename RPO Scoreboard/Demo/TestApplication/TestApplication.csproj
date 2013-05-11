@@ -52,6 +52,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <EmbeddedResource Include="demo_rsa.pub" />
     <None Include="TestAppSettings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>TestAppSettings.Designer.cs</LastGenOutput>

@@ -9,17 +9,19 @@ namespace Demo.Encryption.RSA
 {
     public class RsaDecryptor : IDecryptor
     {
-        private RSAParameters rsaParams;
+        private RSACryptoServiceProvider rsa;
 
-        public RsaDecryptor()
+        public RsaDecryptor(byte[] keyBytes)
         {
-            rsaParams = RSAFacotry.GetRSAProvider().ExportParameters(true);
+            rsa = new RSACryptoServiceProvider();
+            rsa.ImportCspBlob(keyBytes);
         }
 
         public string Decrypt(byte[] data)
         {
             UnicodeEncoding encoder = new UnicodeEncoding();
-            return encoder.GetString(Decrypt(data, rsaParams));
+            return encoder.GetString(rsa.Decrypt(data, false));
+            //return encoder.GetString(Decrypt(data, rsaParams));
         }
 
         public byte[] Decrypt(byte[] data, RSAParameters RSAKeyInfo, bool DoOAEPPadding = false)

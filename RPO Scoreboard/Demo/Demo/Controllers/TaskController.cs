@@ -148,7 +148,8 @@ namespace Demo.Controllers
         [HttpPost]
         public ActionResult CompleteTaskExternal(byte[] data)
         {
-            RsaDecryptor decryptor = new RsaDecryptor();
+            //RsaDecryptor decryptor = new RsaDecryptor();
+            RsaDecryptor decryptor = null;
             TaskCompletePacket packet = new TaskCompletePacket(decryptor.Decrypt(data));
             UserProfile user = _userRepo.Get((u) => u.UserName == packet.UserID).FirstOrDefault();
             Task task = _taskRepo.Get((t) => t.Token == packet.TaskToken).FirstOrDefault();

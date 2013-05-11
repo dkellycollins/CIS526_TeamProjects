@@ -253,6 +253,7 @@
     <Content Include="Content\UserAgreement.txt" />
     <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />
+    <Content Include="Content\demo_rsa" />
     <None Include="Scripts\jquery-1.7.1.intellisense.js" />
     <Content Include="Scripts\inifiniteScrolling.js" />
     <Content Include="Scripts\jquery-1.7.1.js" />
