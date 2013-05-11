@@ -9,8 +9,9 @@ namespace Demo.Migrations
     using WebMatrix.WebData;
     using Demo.Filters;
     using System.Collections.Generic;
+    using Demo.Repositories;
 
-    internal sealed class Configuration : DbMigrationsConfiguration<Demo.Models.MasterContext>
+    internal sealed class Configuration : DbMigrationsConfiguration<MasterContext>
     {
         List<Task> milestones = new List<Task>();
 
@@ -19,27 +20,23 @@ namespace Demo.Migrations
             AutomaticMigrationsEnabled = true;
         }
 
-        protected override void Seed(Demo.Models.MasterContext context)
+        protected override void Seed(MasterContext context)
         {
             context.Database.Delete();
             context.Database.CreateIfNotExists();
 
             seedUser(context);
             seedTypes(context);
-            //seedScores(context);
             seedTasks(context);
             seedMilestones(context);
-            //seedLogin();
-            seedScores(context);
             seedCompletedTasks(context);
-
         }
 
         private void seedUser(MasterContext context)
         {
             context.UserProfiles.Add(new UserProfile()
             {
-                ID = 0,
+                ID = -1,
                 UserName = "playerOne",
                 IsAdmin = true
             });            
@@ -92,29 +89,6 @@ namespace Demo.Migrations
             Story
         }
 
-        private void seedScores(MasterContext context)
-        {
-            Random rnd = new Random();
-
-            foreach (UserProfile user in context.UserProfiles)
-            {
-                /*user.Score.Add(new PointScore()
-                {
-                    Score = 100
-                });*/
-                foreach (PointType pt in context.PointTypes)
-                {
-                    context.PointScores.Add(new PointScore()
-                    {
-                        UserProfile = user,
-                        Score = 0,
-                        PointPath = pt
-                    });
-                }
-            }
-            context.SaveChanges();
-        }
-
         private void seedTasks(MasterContext context)
         {
             Random rnd = new Random();
@@ -132,7 +106,8 @@ namespace Demo.Migrations
                 MaxBonusAwards = 0,
                 StartTime = DateTime.Now,
                 PointPath = context.PointTypes.Single(pt=>pt.Name.Equals("Puzzle")),
-                EndTime = DateTime.Now.AddDays(14)
+                EndTime = DateTime.Now.AddDays(14),
+                Token = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
             });
 
             context.SaveChanges();
@@ -152,7 +127,8 @@ namespace Demo.Migrations
                     MaxBonusAwards = 0,
                     StartTime = DateTime.Now,
                     PointPath = context.PointTypes.Single(pt => pt.Name.Equals(typeString)),
-                    EndTime = DateTime.Now.AddHours(12141)
+                    EndTime = DateTime.Now.AddHours(12141),
+                    Token = new Guid().ToString()
                 });
             }
             context.SaveChanges();
@@ -219,33 +195,12 @@ namespace Demo.Migrations
             context.SaveChanges();
         }
 
-        private void seedLogin()
-        {
-            Demo.Filters.InitializeSimpleMembershipAttribute.SimpleMembershipInitializer init = new Demo.Filters.InitializeSimpleMembershipAttribute.SimpleMembershipInitializer();
-
-            if (!Roles.RoleExists(Util.ProjectRoles.ADMIN))
-                Roles.CreateRole(Util.ProjectRoles.ADMIN);
-
-            //This is bad. We need to change this eventually.
-            if (!WebSecurity.UserExists(Util.ProjectRoles.ADMIN))
-            {
-                WebSecurity.CreateUserAndAccount(
-                    "admin",
-                    "admin");
-            }
-            if (!Roles.GetRolesForUser("admin").Contains(Util.ProjectRoles.ADMIN))
-            {
-                Roles.AddUserToRole("admin", Util.ProjectRoles.ADMIN);
-            }
-        }
-
         private void seedCompletedTasks(MasterContext context)
         {
             Random rnd = new Random();
             int nbMilestones = 0;
             int score = 0;
             Task milestone;
-            PointScore selectedPointType;
 
             foreach (UserProfile user in context.UserProfiles)
             {
@@ -263,10 +218,6 @@ namespace Demo.Migrations
                         AwardedPoints = score,
                         CompletedDate = DateTime.Today.AddDays(rnd.Next(15)),
                     });
-
-                    selectedPointType = context.PointScores.Single(ps => (ps.PointPath.Name == milestone.PointPath.Name) && (ps.UserProfile.ID == user.ID));
-                    //throw new Exception("selected Point type = " + selectedPointType.PointPath.Name + " with " + selectedPointType.Score + " points");
-                    selectedPointType.Score += score;
                 }
             }
             context.SaveChanges();

@@ -25,7 +25,7 @@
                 string pointType = (ViewBag.PointType != null) ? ViewBag.PointType : "";
             }
 
-            @using (Ajax.BeginForm("SearchUser", new AjaxOptions() { OnSuccess = "searchAjaxSuccess" }))
+            @using (Ajax.BeginForm("/JS/AJAX/SearchUser", new AjaxOptions() { OnSuccess = "searchAjaxSuccess" }))
             {
                 <input type="input" id ="userName" name="userName" placeholder="Search for a User" />
                 <input type="hidden" id="currentPage" name="currentPage" value="@pageNum" />
@@ -37,15 +37,30 @@
             <!-- Search -->
         </div>
     </div>
+    <nav class="navBar">
+        <ul>
+            <li>
+                @Html.ActionLink("Scoreboard", "Index", "Scoreboard")
+            </li>
+            <li>
+                @Html.ActionLink("Tasks", "Index", "Task")
+            </li>
+        </ul>
+    </nav>
     
     
     <div id="content">
+        @if (!string.IsNullOrEmpty((string)TempData["StatusMessage"]))
+        {
+            <span class="statusMessage">
+                @TempData["StatusMessage"]
+            </span>
+        }
         @RenderBody()
     </div>
 
     <div id="footer">
         <!-- Might put a site map here. -->
-        <p>This is the footer</p>
     </div>
 
     @Scripts.Render("~/bundles/jquery")

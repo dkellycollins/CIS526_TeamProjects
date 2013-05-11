@@ -8,16 +8,19 @@ using Demo.Models;
 using Demo.Repositories;
 using Demo.ViewModels;
 using Demo.Filters;
+using WebMatrix.WebData;
 
 namespace Demo.Controllers
 {
     public class UsersController : Controller
     {
         private IRepository<UserProfile> _userProfileRepo;
+        private IRepository<PointType> _pointTypeRepo;
 
         public UsersController()
         {
             _userProfileRepo = new BasicRepo<UserProfile>();
+            _pointTypeRepo = new BasicRepo<PointType>();
         }
 
         //
@@ -25,7 +28,7 @@ namespace Demo.Controllers
         [CasAuthorize]
         public ActionResult Index()
         {
-            return View();
+            return View(_userProfileRepo.GetAll());
         }
 
         //
@@ -41,16 +44,22 @@ namespace Demo.Controllers
             return View(createUserDetailsViewModel(profile));
         }
 
-        [Authorize]
-        public ActionResult Profile()
+        [CasAuthorize]
+        public ActionResult ProfileDetails()
         {
-            string userName = User.Identity.Name;
-            UserProfile profile = _userProfileRepo.Get((x) => x.UserName == userName).FirstOrDefault();
+            UserProfile profile = _userProfileRepo.Get((x) => x.UserName == WebSecurity.CurrentUserName).FirstOrDefault();
             if (profile == null)
             {
                 return new HttpNotFoundResult();
             }
-            return View(createUserDetailsViewModel(profile));
+            else if (profile.IsAdmin)
+            {
+                return RedirectToAction("Index");
+            }
+            else
+            {
+                return View(createUserDetailsViewModel(profile));
+            }
         }
 
         private UserDetailsViewModel createUserDetailsViewModel(UserProfile userProfile)
@@ -61,10 +70,11 @@ namespace Demo.Controllers
 
             int totalScore = 0;
             viewModel.Scores = new Dictionary<string, int>();
-            foreach (PointScore pointScore in userProfile.Score)
+            foreach (PointType pointType in _pointTypeRepo.GetAll())
             {
-                viewModel.Scores.Add(pointScore.PointPath.Name, pointScore.Score);
-                totalScore += pointScore.Score;
+                int pointScore = userProfile.ScoreFor(pointType.Name);
+                viewModel.Scores.Add(pointType.Name, pointScore);
+                totalScore += pointScore;
             }
             viewModel.TotalScore = totalScore;
 

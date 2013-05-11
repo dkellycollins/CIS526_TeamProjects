@@ -5,6 +5,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Demo", "Demo\Demo.csproj", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Demo.Tests", "Demo.Tests\Demo.Tests.csproj", "{7DE291B0-285E-489A-81F9-723BFA65D037}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestApplication", "TestApplication\TestApplication.csproj", "{A0E1CEDB-010E-40FF-B39B-705083B0A209}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Demo.Encryption", "Demo.Encryption\Demo.Encryption.csproj", "{5DA4CC66-E12B-4989-B990-205A6F433BD0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -19,6 +23,14 @@ Global
 		{7DE291B0-285E-489A-81F9-723BFA65D037}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7DE291B0-285E-489A-81F9-723BFA65D037}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7DE291B0-285E-489A-81F9-723BFA65D037}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A0E1CEDB-010E-40FF-B39B-705083B0A209}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A0E1CEDB-010E-40FF-B39B-705083B0A209}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A0E1CEDB-010E-40FF-B39B-705083B0A209}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A0E1CEDB-010E-40FF-B39B-705083B0A209}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5DA4CC66-E12B-4989-B990-205A6F433BD0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5DA4CC66-E12B-4989-B990-205A6F433BD0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5DA4CC66-E12B-4989-B990-205A6F433BD0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5DA4CC66-E12B-4989-B990-205A6F433BD0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

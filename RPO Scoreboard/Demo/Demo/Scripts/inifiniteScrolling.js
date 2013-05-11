@@ -86,7 +86,7 @@ function loadNextPage() {
     //var typeOfPoint = document.getElementById("infiniScrollPointType").innerHTML;
     if (!processing) {
         processing = true;
-        $.post("../Scoreboard/JS/GetNextPage", { currentPage: pageNum, pointType: typeOfPoint }, successfulLoad);
+        $.post("../Scoreboard/JS/AJAX/GetNextPage", { currentPage: pageNum, pointType: typeOfPoint }, successfulLoad);
     }
 }
 

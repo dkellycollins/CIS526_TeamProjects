@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Web;
 
@@ -12,6 +13,7 @@ namespace Demo.Models
     public class UserProfile
     {
         [Key]
+        [DatabaseGeneratedAttribute(DatabaseGeneratedOption.Identity)]
         public int ID { get; set; }
 
         [Display(Name = "Username")]
@@ -41,11 +43,6 @@ namespace Demo.Models
                 score += completed.AwardedPoints;
             return score;
         }
-
-        /// <summary>
-        /// Each inidividual score.
-        /// </summary>
-        public virtual ICollection<PointScore> Score { get; set; }
 
         /// <summary>
         /// The task that have been completed by the player.

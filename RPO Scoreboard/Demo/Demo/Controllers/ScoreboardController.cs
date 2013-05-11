@@ -7,78 +7,7 @@ using Demo.Models;
 using Demo.Repositories;
 using System.ComponentModel.DataAnnotations;
 using Demo.Filters;
-
-namespace Demo.Models
-{
-    public class ScoreboardViewModel
-    {
-        [Display(Name="Scoreboard")]
-        public List<ScoreboardRecord> Scoreboard { get; set; }
-
-        [Display(Name = "Point Types")]
-        public ScoreboardPointType ScoreboardPointTypes { get; set; }
-
-        [Display(Name = "Page Number")]
-        public int PageNumber { get; set; }
-    }
-
-    public class ScoreboardRecord
-    {
-        [Display(Name="User")]
-        public UserProfile User { get; set; }
-
-        [Display(Name="Score")]
-        public int Score { get; set; }
-    }
-
-    public class ScoreboardJsonResult
-    {
-        [Display(Name = "Page Number")]
-        public int PageNum { get; set; }
-
-        [Display(Name = "Finished Loading")]
-        public bool FinishedLoading { get; set; }
-
-        [Display(Name = "Scoreboard")]
-        public List<ScoreboardUser> Users { get; set; }
-
-        [Display(Name = "Search Number")]
-        public int UserIndex { get; set; }
-    }
-
-    public class ScoreboardUser
-    {
-        [Display(Name = "Username")]
-        public String Username { get; set; }
-
-        [Display(Name = "Score")]
-        public int Score { get; set; }
-
-        [Display(Name = "Milestones")]
-        public List<ScoreboardMilestone> Milestones { get; set; }
-    }
-
-    public class ScoreboardMilestone
-    {
-        [Display(Name = "Name")]
-        public String Name { get; set; }
-
-        [Display(Name = "Description")]
-        public String Description { get; set; }
-
-        [Display(Name = "IconLink")]
-        public String IconLink { get; set; }
-    }
-
-    public class ScoreboardPointType
-    {
-        [Display(Name="Point Types")]
-        public List<PointType> PointTypes { get; set; }
-
-        [Display(Name="Selected Point Type")]
-        public string SelectedPointType { get; set; }
-    }
-}
+using Demo.ViewModels;
 
 namespace Demo.Controllers
 {
@@ -90,13 +19,11 @@ namespace Demo.Controllers
         private int pageSize = 100;
 
         private IRepository<UserProfile> _userRepo;
-        private IRepository<PointScore> _pointScoreRepo;
         private IRepository<PointType> _pointTypeRepo;
 
         public ScoreboardController()
         {
             _userRepo = new BasicRepo<UserProfile>();
-            _pointScoreRepo = new BasicRepo<PointScore>();
             _pointTypeRepo = new BasicRepo<PointType>();
         }
 
@@ -104,10 +31,6 @@ namespace Demo.Controllers
         // GET: /Scoreboard/{pointType}
         public ActionResult Index(string pointType)
         {
-            //List<UserProfile> users = _userRepo.GetAll().ToList();
-
-            //users.Sort(CompareByScore);
-
             bool pointTypeExists = false;
 
             ScoreboardViewModel svm = new ScoreboardViewModel()
@@ -287,9 +210,7 @@ namespace Demo.Controllers
         // GET: /Scoreboard/Details/{id}
         public ActionResult Details(int id = 0)
         {
-            //UserProfile selectedUser = _userRepo.GetAll().Single(su=>su.ID == id);
             return View(_userRepo.Get(id));
-            //return RedirectToAction("Index");
         }
 
         private static int CompareByScore(ScoreboardRecord x, ScoreboardRecord y)

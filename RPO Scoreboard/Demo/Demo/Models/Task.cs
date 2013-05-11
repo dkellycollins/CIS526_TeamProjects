@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Web;
 
@@ -12,7 +13,13 @@ namespace Demo.Models
     public class Task
     {
         [Key]
+        [DatabaseGeneratedAttribute(DatabaseGeneratedOption.Identity)]
         public int ID { get; set; }
+
+        /// <summary>
+        /// Unqiue token for this task.
+        /// </summary>
+        public string Token { get; set; }
 
         /// <summary>
         /// Task name.
@@ -77,6 +84,9 @@ namespace Demo.Models
                 return this.EndTime.ToShortDateString();
             }
         }
+
+        public string Solution { get; set; }
+
         /// <summary>
         /// The link to the icon image.
         /// </summary>
@@ -92,6 +102,6 @@ namespace Demo.Models
         /// <summary>
         /// Users who have completed this task.
         /// </summary>
-        public virtual ICollection<UserProfile> CompletedBy { get; set; }
+        public virtual ICollection<CompletedTask> CompletedBy { get; set; }
     }
 }
