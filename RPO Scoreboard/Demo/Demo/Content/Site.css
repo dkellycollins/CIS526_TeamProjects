@@ -456,3 +456,18 @@ textarea {
     width:100%;
     background-color: white;
 }
+
+.navBar
+{
+    width: 100%;
+    background-color: #000000;
+}
+    .navBar ul
+    {
+        list-style-type: none;
+    }
+
+    .navBar li
+    {
+        float: left;
+    }

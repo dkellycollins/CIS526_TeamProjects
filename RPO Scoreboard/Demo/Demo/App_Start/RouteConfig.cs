@@ -13,12 +13,6 @@ namespace Demo
         {
             routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
 
-            /*routes.MapRoute(
-                name: "Ajax",
-                url: "{controller}/JS/{action}",
-                defaults: new { controller = "Scoreboard", action = "Index" }
-            );*/
-
             routes.MapRoute(
                 name: "Scoreboard",
                 url: "Scoreboard/{pointType}",
@@ -29,6 +23,12 @@ namespace Demo
                 name: "Default",
                 url: "{controller}/{action}/{id}",
                 defaults: new { controller = "Scoreboard", action = "Index", id = UrlParameter.Optional }
+            );
+
+            routes.MapRoute(
+                name: "Ajax",
+                url: "{controller}/JS/AJAX/{action}",
+                defaults: new { controller = "Scoreboard", action = "Index" }
             );
         }
     }

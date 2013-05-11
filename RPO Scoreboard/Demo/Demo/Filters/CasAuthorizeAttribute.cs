@@ -34,8 +34,8 @@ namespace Demo.Filters
 
         protected override bool AuthorizeCore(HttpContextBase httpContext)
         {
-            if (CurrentUser != null && CurrentUser.IsAdmin)
-                return true;
+            if (CurrentUser == null)
+                return false;
             return base.AuthorizeCore(httpContext);
         }
     }

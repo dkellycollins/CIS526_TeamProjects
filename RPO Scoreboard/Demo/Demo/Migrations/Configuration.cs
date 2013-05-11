@@ -107,7 +107,7 @@ namespace Demo.Migrations
                 StartTime = DateTime.Now,
                 PointPath = context.PointTypes.Single(pt=>pt.Name.Equals("Puzzle")),
                 EndTime = DateTime.Now.AddDays(14),
-                Token = new Guid().ToString()
+                Token = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
             });
 
             context.SaveChanges();
@@ -127,7 +127,8 @@ namespace Demo.Migrations
                     MaxBonusAwards = 0,
                     StartTime = DateTime.Now,
                     PointPath = context.PointTypes.Single(pt => pt.Name.Equals(typeString)),
-                    EndTime = DateTime.Now.AddHours(12141)
+                    EndTime = DateTime.Now.AddHours(12141),
+                    Token = new Guid().ToString()
                 });
             }
             context.SaveChanges();

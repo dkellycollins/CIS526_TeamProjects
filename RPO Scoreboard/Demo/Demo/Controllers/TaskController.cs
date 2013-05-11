@@ -1,31 +1,17 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Drawing;
+using System.Drawing.Imaging;
+using System.IO;
 using System.Linq;
-using System.Web;
 using System.Web.Mvc;
+using Demo.Encryption.RSA;
+using Demo.Filters;
 using Demo.Models;
 using Demo.Repositories;
-using System.ComponentModel.DataAnnotations;
-using Demo.Filters;
-
-namespace Demo.Models
-{
-    public class TaskViewModel
-    {
-        [Display(Name="Milestones")]
-        public List<Task> MileStones { get; set; }
-
-        [Display(Name="Tasks")]
-        public List<Task> Tasks { get; set; }
-    }
-
-    public class TaskCompleteViewModel
-    {
-        public string TaskName {get; set;}
-        public string TaskDescription { get; set;}
-        public string TaskToken { get; set; }
-    }
-}
+using Demo.ViewModels;
+using Gma.QrCodeNet.Encoding;
+using Gma.QrCodeNet.Encoding.Windows.Render;
+using WebMatrix.WebData;
 
 namespace Demo.Controllers
 {
@@ -140,7 +126,6 @@ namespace Demo.Controllers
         //
         // POST: /Task/CompleteTask/
         [HttpPost]
-        //public ActionResult CompeleteTask(TaskCompletePacket packet)
         public ActionResult CompleteTask(FormCollection formCollection)
         {
             string status = null;
@@ -149,6 +134,76 @@ namespace Demo.Controllers
             UserProfile user = _userRepo.Get((x) => x.UserName == formCollection["UserID"]).FirstOrDefault();
             Task task = _taskRepo.Get((t) => t.Token == formCollection["TaskToken"]).FirstOrDefault();
             
+            status = commonCompleteTask(user, task, formCollection["Solution"]);
+
+            TempData["StatusMessage"] = status;
+            return RedirectToAction("Index", "Scoreboard");
+        }
+
+        [HttpPost]
+        public ActionResult CompleteTaskExternal(byte[] data)
+        {
+            //RsaDecryptor decryptor = new RsaDecryptor();
+            RsaDecryptor decryptor = null;
+            TaskCompletePacket packet = new TaskCompletePacket(decryptor.Decrypt(data));
+            UserProfile user = _userRepo.Get((u) => u.UserName == packet.UserID).FirstOrDefault();
+            Task task = _taskRepo.Get((t) => t.Token == packet.TaskToken).FirstOrDefault();
+
+            commonCompleteTask(user, task);
+
+            return new HttpStatusCodeResult(204); //Means that we accepted the request.
+        }
+
+        [HttpPost]
+        public ActionResult CompleteTaskQR(string taskToken)
+        {
+            UserProfile user = _userRepo.Get(WebSecurity.CurrentUserId);
+            Task task = _taskRepo.Get((t) => t.Token == taskToken).FirstOrDefault();
+
+            commonCompleteTask(user, task);
+
+            return new HttpStatusCodeResult(204); //Means that we accepted the request.
+        }
+
+        [CasAdminAuthorize]
+        public ActionResult GenerateQRCode(int id)
+        {
+            Task task = _taskRepo.Get(id);
+            if(task == null)
+                return new HttpNotFoundResult();
+
+            QrCode qrCode;
+            QrEncoder encoder = new QrEncoder();
+            encoder.TryEncode(task.Token, out qrCode);
+
+            GraphicsRenderer gRenderer = new GraphicsRenderer(
+                new FixedModuleSize(2, QuietZoneModules.Two),
+                Brushes.Black, Brushes.White);
+
+            MemoryStream ms = new MemoryStream();
+            gRenderer.WriteToStream(qrCode.Matrix, ImageFormat.Png, ms);
+
+            return File(ms.ToArray(), "image/png");
+        }
+
+        #region Private Members
+
+        private TaskCompleteViewModel createTaskViewModel(Task task)
+        {
+            TaskCompleteViewModel tcvm = new TaskCompleteViewModel()
+            {
+                TaskName = task.Name,
+                TaskDescription = task.Description,
+                TaskToken = task.Token
+            };
+
+            return tcvm;
+        }
+
+        //Verifies that the fields are valid and returns the status.
+        private string commonCompleteTask(UserProfile user, Task task, string solution = null)
+        {
+            string status;
             if (user == null)
             { //Ensure we have a user.
                 status = "User not found";
@@ -165,7 +220,7 @@ namespace Demo.Controllers
             { //Complete the task.
                 if (!string.IsNullOrEmpty(task.Solution))
                 {
-                    if (formCollection["Solution"] == task.Solution)
+                    if (solution == task.Solution)
                     {
                         addTaskToUser(user, task);
                         status = "Correct!";
@@ -182,22 +237,10 @@ namespace Demo.Controllers
                 }
             }
 
-            ViewBag.StatusMessage = status;
-            return RedirectToAction("Index", "Scoreboard");
+            return status;
         }
 
-        private TaskCompleteViewModel createTaskViewModel(Task task)
-        {
-            TaskCompleteViewModel tcvm = new TaskCompleteViewModel()
-            {
-                TaskName = task.Name,
-                TaskDescription = task.Description,
-                TaskToken = task.Token
-            };
-
-            return tcvm;
-        }
-
+        //Adds a task to the user.
         private void addTaskToUser(UserProfile user, Task task)
         {
             CompletedTask cTask = new CompletedTask()
@@ -219,5 +262,7 @@ namespace Demo.Controllers
             _taskRepo.Update(task);
             _userRepo.Update(user);
         }
+
+        #endregion
     }
 }
