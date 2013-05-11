@@ -132,12 +132,8 @@ namespace Demo.Controllers
             string status = null;
             
             //Find user and task.
-            int userID;
-            UserProfile user = null;
-            if(Int32.TryParse(formCollection["UserID"], out userID))
-                user = _userRepo.Get(userID);
-            string taskToken = formCollection["TaskToken"];
-            Task task = _taskRepo.Get((t) => t.Token == taskToken).FirstOrDefault();
+            UserProfile user = _userRepo.Get((x) => x.UserName == formCollection["UserID"]).FirstOrDefault();
+            Task task = _taskRepo.Get((t) => t.Token == formCollection["TaskToken"]).FirstOrDefault();
             
             status = commonCompleteTask(user, task, formCollection["Solution"]);
 
