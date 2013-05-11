@@ -1,18 +1,17 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Drawing;
+using System.Drawing.Imaging;
+using System.IO;
 using System.Linq;
-using System.Web;
 using System.Web.Mvc;
+using Demo.Encryption.RSA;
+using Demo.Filters;
 using Demo.Models;
 using Demo.Repositories;
-using System.ComponentModel.DataAnnotations;
-using Demo.Filters;
 using Demo.ViewModels;
-using Demo.Encryption;
-using Demo.Encryption.RSA;
-using WebMatrix.WebData;
 using Gma.QrCodeNet.Encoding;
-using System.Drawing;
+using Gma.QrCodeNet.Encoding.Windows.Render;
+using WebMatrix.WebData;
 
 namespace Demo.Controllers
 {
@@ -166,16 +165,25 @@ namespace Demo.Controllers
             return new HttpStatusCodeResult(204); //Means that we accepted the request.
         }
 
+        [CasAdminAuthorize]
         public ActionResult GenerateQRCode(int id)
         {
             Task task = _taskRepo.Get(id);
             if(task == null)
                 return new HttpNotFoundResult();
 
-            QrEncoder encoder = new QrEncoder();
             QrCode qrCode;
+            QrEncoder encoder = new QrEncoder();
             encoder.TryEncode(task.Token, out qrCode);
-            return View(qrCode);
+
+            GraphicsRenderer gRenderer = new GraphicsRenderer(
+                new FixedModuleSize(2, QuietZoneModules.Two),
+                Brushes.Black, Brushes.White);
+
+            MemoryStream ms = new MemoryStream();
+            gRenderer.WriteToStream(qrCode.Matrix, ImageFormat.Png, ms);
+
+            return File(ms.ToArray(), "image/png");
         }
 
         #region Private Members
