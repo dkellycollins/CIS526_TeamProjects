@@ -5,6 +5,7 @@
 //not too many requests are made to the server at once
 var processing = false;
 var finishedLoading = false;
+var selectedObject = null;
 
 function isScrolledIntoView(elem) {
     var docViewTop = $(window).scrollTop();
@@ -49,11 +50,20 @@ function createRow(table, number, recordValues) {
     }
 }
 
+function generateTable(table, tableValues) {
+    var elementNum = table.rows.length + 1;
+
+    for (var i = 0; i < tableValues.length; i++) {
+        createRow(table, i + elementNum, tableValues[i]);
+    }
+}
+
 function successfulLoad(object) {
     var table = document.getElementById("ScoreboardTable");
     var elementNum = table.rows.length + 1;
 
-    document.getElementById("infiniScrollPageNumber").innerHTML = object.PageNum;
+    //document.getElementById("pageNumber").innerHTML = object.PageNum;
+    document.getElementById("currentPage").value = object.PageNum;
 
     if (object.FinishedLoading === true) {
         var hook = document.getElementById('infiniteScrollingHook');
@@ -61,9 +71,8 @@ function successfulLoad(object) {
         finishedLoading = true;
     }
 
-    for (var i = 0; i < object.Users.length; i++) {
-        createRow(table, i + elementNum, object.Users[i]);
-    }
+    generateTable(table, object.Users);
+
     processing = false;
 }
 
@@ -71,11 +80,13 @@ function loadNextPage() {
     if (document.getElementById("infiniScrollPageNumber").innerHTML === "Done")
         return;
 
-    var pageNum = parseInt(document.getElementById("infiniScrollPageNumber").innerHTML);
-    var typeOfPoint = document.getElementById("infiniScrollPointType").innerHTML;
+    //var pageNum = parseInt(document.getElementById("pageNumber").innerHTML);
+    var pageNum = document.getElementById("currentPage").value;
+    var typeOfPoint = document.getElementById("pointType").value;
+    //var typeOfPoint = document.getElementById("infiniScrollPointType").innerHTML;
     if (!processing) {
         processing = true;
-        $.post("../Scoreboard/JS/GetNextPage", { currentPage: pageNum, pointType: typeOfPoint }, successfulLoad);
+        $.post("../Scoreboard/JS/AJAX/GetNextPage", { currentPage: pageNum, pointType: typeOfPoint }, successfulLoad);
     }
 }
 
@@ -90,3 +101,102 @@ $(document).ready(function(){
         }
     });
 });
+
+
+//Function found here
+//http://lions-mark.com/jquery/scrollTo/
+$.fn.scrollTo = function (target, options, callback) {
+    if (typeof options == 'function' && arguments.length == 2)
+    {
+        callback = options; options = target;
+    }
+
+    var settings = $.extend(
+        {
+        scrollTarget: target,
+        offsetTop: 50,
+        duration: 500,
+        easing: 'swing'
+    }, options);
+
+    return this.each(function () {
+        var scrollPane = $(this);
+        var scrollTarget = (typeof settings.scrollTarget == "number") ? settings.scrollTarget : $(settings.scrollTarget);
+        var scrollY = (typeof scrollTarget == "number") ? scrollTarget : scrollTarget.offset().top + scrollPane.scrollTop() - parseInt(settings.offsetTop);
+        scrollPane.animate({ scrollTop: scrollY }, parseInt(settings.duration), settings.easing, function () {
+            if (typeof callback == 'function') { callback.call(this); }
+        });
+    });
+}
+
+function percentOfScreen(percentVal) {
+    var viewportSize = $(window).height();
+
+    return viewportSize * (percentVal / 100);
+}
+
+function searchAjaxSuccess(jsonResult) {
+    if (processing) return;
+
+    if (!jsonResult.FinishedLoading) {
+        var table = document.getElementById("ScoreboardTable");
+
+        generateTable(table, jsonResult.Users);
+        jsonResult.FinishedLoading = true;
+    }
+
+    searchWait(jsonResult);
+}
+
+var previousHeight = null;
+function searchWait(jsonResult) {
+    var waitLonger = false;
+    var table = $('#ScoreboardTable');
+
+    if (previousHeight == null) {
+        previousHeight = table[0].scrollHeight;
+        waitLonger = true;
+    }
+    else if (previousHeight != table[0].scrollHeight) {
+        previousHeight = table[0].scrollHeight;
+        waitLonger = true;
+    }
+
+    var user = $('#record' + (jsonResult.UserIndex + 1));
+
+    console.log("Previousheight = " + user.offset().top);
+
+    if (waitLonger) {
+        setTimeout(function () { searchWait(jsonResult); }, 50);
+    }
+    else {
+        findUser(jsonResult);
+    }
+}
+
+function findUser(jsonResult) {
+    if (selectedObject != null)
+        selectedObject.removeClass("SelectedObject");
+
+    //document.getElementById("pageNumber").innerHTML = jsonResult.PageNum;
+    document.getElementById("currentPage").value = jsonResult.PageNum;
+
+    var userName = $('#userName')[0].value;
+
+    var searchVal = "#record" + (jsonResult.UserIndex + 1);
+
+    console.log("Searching for user " + userName);
+
+    selectedObject = $(searchVal);
+
+    if (selectedObject.length > 0) {
+        $('body').scrollTo(searchVal, { offsetTop: percentOfScreen(50) });
+        console.log("User " + userName + " found");
+        selectedObject.addClass("SelectedObject");
+    }
+    else {
+        console.log("User " + userName + " not found");
+        selectedObject = null;
+    }
+
+}

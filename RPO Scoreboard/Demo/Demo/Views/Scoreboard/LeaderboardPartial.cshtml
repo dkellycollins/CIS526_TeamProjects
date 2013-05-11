@@ -19,7 +19,7 @@
         @{int i = 0;}
         @foreach (var item in Model)
         {                
-            string name = "record" + i;
+            string name ="record" + (i + 1);
             int displayValue = i + 1;
             string classes = "leaderboardRecords";
             if (i < 10) { classes += " topTen"; }
