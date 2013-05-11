@@ -13,13 +13,13 @@ namespace Demo.Models
         public TaskCompletePacket(string data)
         {
             string[] args = data.Split(';');
-            UserID = Int32.Parse(args[0].Trim());
+            UserID = args[0].Trim();
             TaskToken = args[1].Trim();
             Solution = args[2].Trim();
             Source = args[3].Trim();
         }
 
-        public int UserID { get; set; }
+        public string UserID { get; set; }
         public string TaskToken { get; set; }
         public string Solution { get; set; }
         public string Source { get; set; }

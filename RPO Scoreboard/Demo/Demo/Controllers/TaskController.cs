@@ -141,28 +141,32 @@ namespace Demo.Controllers
             
             status = commonCompleteTask(user, task, formCollection["Solution"]);
 
-            ViewBag.StatusMessage = status;
+            TempData["StatusMessage"] = status;
             return RedirectToAction("Index", "Scoreboard");
         }
 
         [HttpPost]
-        public void CompleteTaskExternal(byte[] data)
+        public ActionResult CompleteTaskExternal(byte[] data)
         {
             RsaDecryptor decryptor = new RsaDecryptor();
             TaskCompletePacket packet = new TaskCompletePacket(decryptor.Decrypt(data));
-            UserProfile user = null;
-            Task task = null;
+            UserProfile user = _userRepo.Get((u) => u.UserName == packet.UserID).FirstOrDefault();
+            Task task = _taskRepo.Get((t) => t.Token == packet.TaskToken).FirstOrDefault();
 
             commonCompleteTask(user, task);
+
+            return new HttpStatusCodeResult(204); //Means that we accepted the request.
         }
 
         [HttpPost]
-        public void CompleteTaskQR(string taskToken)
+        public ActionResult CompleteTaskQR(string taskToken)
         {
             UserProfile user = _userRepo.Get(WebSecurity.CurrentUserId);
             Task task = _taskRepo.Get((t) => t.Token == taskToken).FirstOrDefault();
 
             commonCompleteTask(user, task);
+
+            return new HttpStatusCodeResult(204); //Means that we accepted the request.
         }
 
         public ActionResult GenerateQRCode(int id)
@@ -173,10 +177,8 @@ namespace Demo.Controllers
 
             QrEncoder encoder = new QrEncoder();
             QrCode qrCode;
-            if (encoder.TryEncode(task.Token, out qrCode))
-                return View(qrCode);
-            else
-                return new HttpNotFoundResult();
+            encoder.TryEncode(task.Token, out qrCode);
+            return View(qrCode);
         }
 
         #region Private Members

@@ -72,7 +72,7 @@ namespace TestApplication
         {
             TaskCompletePacket packet = new TaskCompletePacket()
             {
-                UserID = Int32.Parse(input),
+                UserID = input,
                 TaskToken = TestAppSettings.Default.TaskToken,
                 Source = "TestApp"
             };

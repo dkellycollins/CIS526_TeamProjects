@@ -36,10 +36,10 @@
     
     
     <div id="content">
-        @if (string.IsNullOrEmpty(@ViewBag.StatusMessage))
+        @if (!string.IsNullOrEmpty((string)TempData["StatusMessage"]))
         {
             <span class="statusMessage">
-                @ViewBag.StatusMessage
+                @TempData["StatusMessage"]
             </span>
         }
         @RenderBody()
