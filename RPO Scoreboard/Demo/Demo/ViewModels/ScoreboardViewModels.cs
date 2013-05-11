@@ -38,6 +38,9 @@ namespace Demo.ViewModels
 
         [Display(Name = "Scoreboard")]
         public List<ScoreboardUser> Users { get; set; }
+
+        [Display(Name = "Search Number")]
+        public int UserIndex { get; set; }
     }
 
     public class ScoreboardUser

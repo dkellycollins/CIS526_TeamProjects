@@ -15,10 +15,24 @@
             </ul>
         </nav>
 
-        <!--<div class ="label">
+        <div class ="label">
             <p>Ready Player One</p>
-        </div>-->
+        </div>
 
+        <div class ="searchForm">
+            @{
+                int pageNum = (ViewBag.PageNumber != null) ? ViewBag.PageNumber : 0;
+                string pointType = (ViewBag.PointType != null) ? ViewBag.PointType : "";
+            }
+
+            @using (Ajax.BeginForm("/JS/AJAX/SearchUser", new AjaxOptions() { OnSuccess = "searchAjaxSuccess" }))
+            {
+                <input type="input" id ="userName" name="userName" placeholder="Search for a User" />
+                <input type="hidden" id="currentPage" name="currentPage" value="@pageNum" />
+                <input type="hidden" id="pointType" name="pointType" value="@pointType" />
+                <input type="submit" value="Search"/>
+            }
+        </div>
         <div>
             <!-- Search -->
         </div>
@@ -50,6 +64,7 @@
     </div>
 
     @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/jqueryval")
     @RenderSection("scripts", required: false)
 </body>
 </html>

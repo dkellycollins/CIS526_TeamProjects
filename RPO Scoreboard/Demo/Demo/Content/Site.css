@@ -100,11 +100,11 @@ textarea {
 
 #header
 {
+    float:left;
     width:100%;
-    height:231px;
     margin:0px;
     background-image: url("images/banner.jpg");
-    background-size: cover;    
+    background-size: 100% 100%;    
 }
 
 #background
@@ -121,11 +121,37 @@ textarea {
 }
 
 .label {
-    position: absolute;
     font-size: 30pt;
     color: white;
     top: 10px;
     left: 10px;
+    width:100%;
+    margin:inherit;
+    float:left;
+}
+
+p {
+    -webkit-margin-before:0px;
+    -webkit-margin-after:0px;
+}
+
+.searchForm {
+    float:right;
+    color:white;
+    display:table-cell;
+    vertical-align:bottom;
+    max-height:100%;
+    margin-top:60px;
+}
+
+#pageNumber
+{
+    visibility:hidden;
+}
+
+.SelectedObject
+{
+    border: 2px solid yellow;
 }
 
 /* Styles for Details pages
@@ -237,6 +263,7 @@ textarea {
 {
     width:100%;
     height:100%;
+    border-collapse:collapse;
 }
 
 #leaderboardHeader th
@@ -267,7 +294,7 @@ textarea {
     color:#ffff00;
 }
 
-.Scores {
+.Scores,.transbox h1 {
     
     text-align:center;
     color:#ffffff;
@@ -384,26 +411,26 @@ textarea {
     margin: 10px 10px 10px 10px;
 }
 
-    .top_menu li {
-        display: inline-block;
-        margin-left: 7px;
-    }
+.top_menu li {
+    display: inline-block;
+    margin-left: 7px;
+}
 
-    .top_menu a,
-    .top_menu a:visited {
-        color: #FFFFFF;
-    }
+.top_menu a,
+.top_menu a:visited {
+    color: #FFFFFF;
+}
 
-    .top_menu ol, ul {
-        list-style: none outside none;
-        margin: 0px;
-        padding: 0px;
-    }
+.top_menu ol, ul {
+    list-style: none outside none;
+    margin: 0px;
+    padding: 0px;
+}
 
-    .top_menu a:hover,
-    .top_menu a:visited:hover {
-      color:#FFD400;
-    }
+.top_menu a:hover,
+.top_menu a:visited:hover {
+    color:#FFD400;
+}
 
 /* These classes will display the table like the library hsowed us.*/
 

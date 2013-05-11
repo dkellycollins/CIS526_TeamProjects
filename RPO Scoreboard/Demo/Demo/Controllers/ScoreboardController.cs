@@ -64,11 +64,13 @@ namespace Demo.Controllers
 
             svm.Scoreboard = svm.Scoreboard.Take(pageSize).ToList();
 
+            ViewBag.PageNumber = 0;
+            ViewBag.PointType = pointType;
+
             return View(svm);
         }
 
         //POST
-        
         public JsonResult GetNextPage(int currentPage, string pointType)
         {
             currentPage++;
@@ -77,7 +79,7 @@ namespace Demo.Controllers
 
             int userCount = profiles.Count();
 
-            int maxPages = (userCount / pageSize) + ((userCount % pageSize) > 0 ? 1 : 0);
+            int maxPages = (userCount / pageSize);// +((userCount % pageSize) > 0 ? 1 : 0);
 
             bool pointTypeExists = false;
 
@@ -131,7 +133,78 @@ namespace Demo.Controllers
 
             return Json(sjr, JsonRequestBehavior.AllowGet);
         }
-        
+
+        public JsonResult SearchUser(int currentPage, string pointType, string userName)
+        {
+            var profiles = _userRepo.GetAll().Where(ur => ur.IsAdmin == false);
+
+            int userCount = profiles.Count();
+
+            int maxPages = (userCount / pageSize) + ((userCount % pageSize) > 0 ? 1 : 0);
+
+            ScoreboardJsonResult sjr = new ScoreboardJsonResult();
+
+            sjr.FinishedLoading = true;
+
+            bool pointTypeExists = false;
+            foreach (PointType pt in _pointTypeRepo.GetAll())
+            {
+                pointTypeExists = (pt.Name == pointType);
+
+                if (pointTypeExists) break;
+            }
+
+            List<ScoreboardUser> recordList = new List<ScoreboardUser>();
+            foreach (var user in profiles)
+            {
+                ScoreboardUser newUser = new ScoreboardUser()
+                {
+                    Username = user.UserName,
+                    Score = pointTypeExists ? user.ScoreFor(pointType) : user.TotalScore,
+                    Milestones = new List<ScoreboardMilestone>()
+                };
+
+                foreach (CompletedTask ct in user.CompletedTask)
+                {
+                    if (ct.Task.IsMilestone)
+                    {
+                        newUser.Milestones.Add(new ScoreboardMilestone()
+                        {
+                            Name = ct.Task.Name,
+                            Description = ct.Task.Description,
+                            IconLink = ct.Task.IconLink
+                        });
+                    }
+                }
+
+                recordList.Add(newUser);
+            }
+
+            sjr.Users = recordList;
+
+            sjr.Users.Sort(CompareByScore);
+
+            int userIndex = sjr.Users.FindIndex(up => up.Username.Equals(userName));
+
+            int userOnPage = (userIndex / pageSize);
+
+            if (userOnPage > currentPage)
+            {
+                sjr.FinishedLoading = false;
+                //Page that the user is on is not loaded
+                sjr.Users = sjr.Users.Skip((currentPage + 1)* pageSize).Take((userOnPage - currentPage) * pageSize).ToList();
+                sjr.PageNum = userOnPage;
+            }
+            else
+            {
+                sjr.Users = sjr.Users.Take(0).ToList();
+                sjr.PageNum = currentPage;
+            }
+
+            sjr.UserIndex = userIndex;
+
+            return Json(sjr, JsonRequestBehavior.AllowGet);
+        }
 
         //
         // GET: /Scoreboard/Details/{id}
