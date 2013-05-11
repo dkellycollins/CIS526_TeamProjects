@@ -305,6 +305,7 @@
     <Content Include="Views\Point\Delete.cshtml" />
     <Content Include="Views\Log\Index.cshtml" />
     <Content Include="Views\Task\CompleteTask.cshtml" />
+    <Content Include="Views\Task\GenerateQRCode.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Demo.Encryption\Demo.Encryption.csproj">
