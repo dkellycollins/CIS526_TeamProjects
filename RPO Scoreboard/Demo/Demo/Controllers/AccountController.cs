@@ -17,7 +17,7 @@ using DotNetCasClient;
 
 namespace Demo.Controllers
 {
-    [CasAuthorize]
+    [Authorize]
     [InitializeSimpleMembership]
     public class AccountController : Controller
     {
@@ -53,6 +53,7 @@ namespace Demo.Controllers
                 ID = WebSecurity.CurrentUserId,
                 UserName = WebSecurity.CurrentUserName,
                 IsAdmin = false,
+                CompletedTask = new List<CompletedTask>()
             };
             _userProfileRepo.Create(profile);
 
@@ -61,8 +62,6 @@ namespace Demo.Controllers
 
         //
         // POST: /Account/LogOff
-        [HttpPost]
-        [ValidateAntiForgeryToken]
         public ActionResult LogOff()
         {
             CasAuthentication.SingleSignOut();
