@@ -182,6 +182,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repositories\BasicRepo.cs" />
     <Compile Include="Repositories\IRepository.cs" />
+    <Compile Include="Util\RankFormatter.cs" />
     <Compile Include="ViewModels\ScoreboardViewModels.cs" />
     <Compile Include="ViewModels\TaskViewModels.cs" />
     <Compile Include="ViewModels\UserDetailsViewModels.cs" />
