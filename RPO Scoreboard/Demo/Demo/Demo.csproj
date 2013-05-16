@@ -306,7 +306,6 @@
     <Content Include="Views\Point\Delete.cshtml" />
     <Content Include="Views\Log\Index.cshtml" />
     <Content Include="Views\Task\CompleteTask.cshtml" />
-    <Content Include="Views\Task\GenerateQRCode.cshtml" />
     <Content Include="Views\Task\Create.cshtml" />
     <Content Include="Views\Task\CreatePartial.cshtml" />
     <Content Include="Views\Task\Delete.cshtml" />

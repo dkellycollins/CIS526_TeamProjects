@@ -46,7 +46,11 @@ namespace Demo.Controllers
         // GET: /Task/Detials/{id}
         public ActionResult Details(int id)
         {
-            return View(_taskRepo.Get(id));
+            UserProfile userProfile = _userRepo.Get((u) => u.UserName == WebSecurity.CurrentUserName).FirstOrDefault();
+            if (userProfile != null && userProfile.IsAdmin)
+                return View(_taskRepo.Get(id));
+            else
+                return RedirectToAction("CompleteTask", new { id = id });
         }
 
         //Admin Task
@@ -134,8 +138,10 @@ namespace Demo.Controllers
             string status = null;
             
             //Find user and task.
-            UserProfile user = _userRepo.Get((x) => x.UserName == formCollection["UserID"]).FirstOrDefault();
-            Task task = _taskRepo.Get((t) => t.Token == formCollection["TaskToken"]).FirstOrDefault();
+            string userID = formCollection["UserID"];
+            string taskToken = formCollection["TaskToken"];
+            UserProfile user = _userRepo.Get((x) => x.UserName == userID).FirstOrDefault();
+            Task task = _taskRepo.Get((t) => t.Token == taskToken).FirstOrDefault();
             
             status = commonCompleteTask(user, task, formCollection["Solution"]);
 

@@ -162,7 +162,8 @@ namespace Demo.Migrations
                 StartTime = DateTime.Now,
                 PointPath = context.PointTypes.Single(pt => pt.Name.Equals(typeString)),
                 EndTime = DateTime.Now.AddYears(1),
-                IconLink = linkArray[rnd.Next(3)]
+                IconLink = linkArray[rnd.Next(3)],
+                Token = new Guid().ToString()
             };
 
             context.Tasks.Add(currentMilestone);
@@ -185,7 +186,8 @@ namespace Demo.Migrations
                     StartTime = DateTime.Now,
                     PointPath = context.PointTypes.Single(pt => pt.Name.Equals(typeString)),
                     EndTime = DateTime.Now.AddHours(12141),
-                    IconLink = linkArray[rnd.Next(3)]
+                    IconLink = linkArray[rnd.Next(3)],
+                    Token = new Guid().ToString()
                 };
 
                 context.Tasks.Add(currentMilestone);

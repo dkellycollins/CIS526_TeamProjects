@@ -16,15 +16,15 @@
 
     @using (Html.BeginForm("CompleteTask", "Task", FormMethod.Post, new { @class = "editform" }))
     {
-        <input type="hidden" name="taskToken" value="@Model.TaskToken"/>
-        <input type="hidden" name="source" value="Scoreboard" />
+        <input type="hidden" name="TaskToken" value="@Model.TaskToken"/>
+        <input type="hidden" name="Source" value="Scoreboard" />
         
         <label>EID:</label>
-        <input type="text" name="userID" />
+        <input type="text" name="UserID" />
         <br />
         
         <label>Solution:</label>
-        <input type="text" name="solution" />
+        <input type="text" name="Solution" />
         <br />
         
         <input type="submit" />
