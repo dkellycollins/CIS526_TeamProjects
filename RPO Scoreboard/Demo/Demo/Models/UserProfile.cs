@@ -29,6 +29,8 @@ namespace Demo.Models
         {
             get
             {
+                if (CompletedTask == null)
+                    return 0;
                 int score = 0;
                 foreach (CompletedTask completed in CompletedTask)
                     score += completed.AwardedPoints;
