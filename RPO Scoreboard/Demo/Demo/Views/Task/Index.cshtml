@@ -4,6 +4,8 @@
     ViewBag.Title = "Index";
 }
 
+@{Html.RenderPartial("TaskMenu");}
+
 <div class="taskPageContainer">
     <div class="milestoneContainer">
         @{Html.RenderPartial("MilestoneListPartial", Model.MileStones);}

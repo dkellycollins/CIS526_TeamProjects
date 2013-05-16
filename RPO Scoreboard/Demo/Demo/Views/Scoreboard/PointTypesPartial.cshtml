@@ -7,17 +7,24 @@
     <ul>
         @{
             bool isTotal = true;
-            string className = "navItem";
+            string className = "navItem"; 
+            
+            string str;
+            List<string> list = new List<string>();
         }
 
         @foreach (var item in Model.PointTypes)
         {
+            str = item.Name.ToString();
+            
             if (item.Name == Model.SelectedPointType) 
             { 
                 className += " currentScoreboard";
                 isTotal = false;
             }
             
+            if (!list.Contains(str))
+            {
             <li class="@className">
                 <p>
                     @Html.ActionLink(item.Name,"Index", "Scoreboard",  new { pointType = item.Name }, new { })
@@ -25,6 +32,8 @@
             </li>
             
             className = "navItem";
+            list.Add(str);
+            }
         }
 
         @if (isTotal)
