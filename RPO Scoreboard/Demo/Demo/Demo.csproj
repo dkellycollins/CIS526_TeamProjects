@@ -312,6 +312,7 @@
     <Content Include="Views\Task\Details.cshtml" />
     <Content Include="Views\Task\TaskMenu.cshtml" />
     <Content Include="Views\Task\Update.cshtml" />
+    <Content Include="Views\Users\Details.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Demo.Encryption\Demo.Encryption.csproj">

@@ -44,7 +44,7 @@ namespace Demo.Migrations
             {
                 context.UserProfiles.Add(new UserProfile()
                 {
-                    UserName = "Joe Jiggty " + i
+                    UserName = "John Smith " + i
                 });
             }
             context.SaveChanges();
